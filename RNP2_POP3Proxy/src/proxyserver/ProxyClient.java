@@ -40,6 +40,7 @@ public class ProxyClient extends Thread{
 			Thread.sleep(TIMEINTERVAL);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
+			System.out.println("ProxyClient.run(): Sleep interrupted.");
 			e.printStackTrace();
 		}
 		
