@@ -15,9 +15,10 @@ public class Test {
 		System.out.println("false = " + "234d".matches("[0-9][0-9]*"));
 		System.out.println("false = " + "ad234".matches("[0-9][0-9]*"));
 		System.out.println("false = " + "2s3d4".matches("[0-9][0-9]*"));
+		
 		System.out.println("false = " + "".matches("[0-9][0-9]*"));
 		System.out.println("false =" + "2 34".matches("[0-9][0-9]*"));
-
+			
 	}
 
 }

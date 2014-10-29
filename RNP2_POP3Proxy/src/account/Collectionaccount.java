@@ -3,6 +3,9 @@ package account;
 import java.util.ArrayList;
 import java.util.List;
 
+//gaendert, da klasse Email erzeugt wurde und die Verwaltung damit deutlich
+//einfacher faellt. alter code siehe unten
+
 
 /**
  * Repraesentiert den Abholaccount fuer jedes konfigurierte Konto
@@ -11,7 +14,36 @@ import java.util.List;
  *
  */
 public class Collectionaccount {
+	
+	private List<Email> mailList;
+	
+	public Collectionaccount(){
+		this.mailList = new ArrayList<Email>();
+	}
 
+	public void addMails(List<Email> mailList){
+		this.mailList.addAll(mailList);
+	}
+	
+	public void clearMails(){
+		this.mailList.clear();
+	}
+	
+	public void removeMail(int index){
+		this.mailList.remove(index);
+	}
+	
+	public List<Email> getMailList() {
+		return mailList;
+	}
+
+	public void setMailList(List<Email> mailList) {
+		this.mailList = mailList;
+	}
+	
+	
+	
+	/*OLD
 	//liste von mails
 	private List<String> mailList;
 	
@@ -38,6 +70,7 @@ public class Collectionaccount {
 	public void setMailList(List<String> mailList) {
 		this.mailList = mailList;
 	}
+	*/
 	
 	
 }

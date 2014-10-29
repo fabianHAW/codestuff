@@ -1,0 +1,10 @@
+package proxyserver.junit;
+
+public class JUnitCommandTest {
+	
+	@Test
+	public void checkIfCommandsAreValid(){
+		
+	}
+
+}

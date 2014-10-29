@@ -1,0 +1,9 @@
+package account;
+
+public class Email {
+
+	private String text;
+	private int size;
+	private boolean checked;
+	private int uidl;
+}

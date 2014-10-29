@@ -1,0 +1,5 @@
+package proxyserver.junit;
+
+public class JUnitCommandTest {
+
+}

@@ -1,0 +1,14 @@
+package proxyserver.junit;
+
+import org.junit.Test;
+
+import proxyserver.Command;
+
+public class JUnitCommandTest {
+	
+	@Test
+	public void checkIfCommandsAreValid(){
+		Command c = new Command();
+	}
+
+}

@@ -1,0 +1,209 @@
+package proxyserver;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import account.POP3Account;
+
+/**
+ * Klasse zur Kommunikation mit Mailclients. Bearbeitet die Anfragen der Clients.
+ * 
+ * @author Fabian Reiber, Francis Opoku
+ * 
+ */
+public class ProxyServer extends Thread {
+
+	private Socket connection;
+	private Command cObj;
+	private boolean confirmed;
+	private static String USER, PASS;
+	private POP3Account ownAccount;
+	
+	/**
+	 * Liste der Accounts von denen die Mails abegrufen werden sollen
+	 */
+	private List<POP3Account> accountList;
+	
+	/**
+	 * 
+	 * @param c Der Socket auf dem der MainServer einen Client akzeptiert hat.
+	 */
+	public ProxyServer(Socket c) {
+		this.connection = c;
+		this.cObj = new Command();
+		this.confirmed = false;
+		this.ownAccount = null;
+		this.accountList = new ArrayList<POP3Account>();
+		
+		
+		
+		//erkennung des korrekten accounts, da user und pass ggf. identisch fuer unterschiedliche server sein kann
+		//->hashcode?
+		
+		//wenn mails von abholaccoutn geholt werden, abfragen ob != null
+		
+		
+	}
+
+	/**
+	 * Die Kommunikationsreihenfolge ist folgende: Solange der Socket auf dem
+	 * der RequestHandler mit dem Client kommuniziert nicht geschlossen ist 1.
+	 * Wartet er auf dem Socket auf eine ankommende Zeile von maximal 256
+	 * Zeichen. 2. Übergibt diese der Methode handleClientRequest die die
+	 * Eingabezeichenkette analysiert. 3. Löscht sich aus der Liste der von
+	 * MainServer verwalteten RequestHandler.
+	 */
+	public void run() {
+		Scanner readFromClient = null;
+		PrintWriter writeToClient = null;
+		while (!connection.isClosed()) {
+			try {
+
+				readFromClient = new Scanner(
+						connection.getInputStream(),
+						StandardCharsets.UTF_8.name());
+				writeToClient = new PrintWriter(
+						new OutputStreamWriter(connection.getOutputStream(),
+								StandardCharsets.UTF_8), true);
+				
+				String clientRequest = readFromClient.findInLine(".{0,254}");
+				
+				handleClientRequest(clientRequest, writeToClient);
+				
+				
+				
+			} catch (Exception e) {
+				try {
+					connection.close();
+				} catch (IOException e1) {
+					System.out.println("ProxyServer: connection not closed");
+				}
+			}
+
+		}
+
+		POP3Proxy.deleteMe(this);
+
+		try {
+			if(readFromClient != null){
+				readFromClient.close();
+			}
+			if(writeToClient != null){
+				writeToClient.close();
+			}
+			connection.close();
+		} catch (IOException e) {
+			System.out
+					.println("Fehler: ProxyServer.run(): connection.close");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 
+	 * @param command
+	 *            Eingabezeichenfolge des Clients.
+	 * @param writeToClient
+	 *            Der OutputStream des Sockets als PrintWriter um das Ergebnis
+	 *            zum Cliet zu schreiben.
+	 */
+	private void handleClientRequest(String command,
+			PrintWriter writeToClient) {
+	
+		String[] splitedCommand = command.split(" ", 2);
+		String result = "";
+		
+		if(cObj.isValid(command)){
+			//solange noch keine Authentifizierung erfolgte,
+			//weiterhin nur USER und PASS moeglich
+			if(!this.confirmed){
+				switch(splitedCommand[0].toUpperCase()){
+				case "USER":
+					//ggf. user schon einzeln pruefen
+					USER = splitedCommand[1];
+					break;
+				case "PASS":
+					//ggf. pass schon einzeln pruefen
+					PASS = splitedCommand[1];
+					if(!checkAccount(USER, PASS)){
+						result = "-ERR couldn't find account";
+					}
+					break;
+				default:
+					result = "-ERR not authenticated yet";
+					break;
+				}		
+			}
+			else{
+				switch(splitedCommand[0].toUpperCase()){
+				case "STAT":
+					List<String> mailList = this.ownAccount.getMails();
+					 ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					    ObjectOutputStream out;
+						try {
+							out = new ObjectOutputStream(baos);
+						    out.writeObject(list);
+						    out.close();
+						    System.out.println(list.getClass().getSimpleName() +
+						        " used " + baos.toByteArray().length + " bytes");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					result = "+OK " + this.ownAccount.getMails().size()
+						+ " " + this.ownAccount.getMails();
+					break;
+				case "LIST":
+					break;
+				case "RETR":
+					break;
+				case "DELE":
+					break;
+				case "NOOP":
+					break;
+				case "RSET":
+					break;
+				case "UIDL":
+					break;
+				case "QUIT":
+					doQuit();
+					break;
+				default:
+					break;
+				}	
+			}
+		}
+		else{
+			result = "-ERR not a valid command";
+		}
+		if(!result.isEmpty()){
+			writeToClient.println(result);
+		}
+	}
+	
+	private boolean checkAccount(String user, String pass){
+		this.ownAccount = new POP3Account(user, pass,
+				this.connection.getInetAddress().getHostName(), 
+				this.connection.getLocalPort());
+		if(POP3Proxy.getKnownAccounts().contains(this.ownAccount)){
+			this.confirmed = true;
+			return true;
+			}
+		return false;
+	}
+	/**
+	 * Wenn MailClient die Verbindung mit "QUIT" schließen will, wird Thread geschlossen
+	 */
+	private void doQuit() {
+		//close connection
+	}
+
+}

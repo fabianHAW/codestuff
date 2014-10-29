@@ -71,7 +71,7 @@ public class Command {
 	 */
 	public String list(int n) throws InvalidNumberException{
 		if(n < 0){
-			throw new InvalidNumberException("n muss groeßer gleich 0 sein.");
+			throw new InvalidNumberException("n muss groeï¿½er gleich 0 sein.");
 		}
 		
 		return LIST + " " + n;
@@ -85,7 +85,7 @@ public class Command {
 	 */
 	public String retr(int n) throws InvalidNumberException{
 		if(n < 0){
-			throw new InvalidNumberException("n muss groeßer gleich 0 sein.");
+			throw new InvalidNumberException("n muss groeï¿½er gleich 0 sein.");
 		}
 		
 		return RETR + " " + n;
@@ -99,7 +99,7 @@ public class Command {
 	 */
 	public String dele(int n) throws InvalidNumberException{
 		if(n < 0){
-			throw new InvalidNumberException("n muss groeßer gleich 0 sein.");
+			throw new InvalidNumberException("n muss groeï¿½er gleich 0 sein.");
 		}
 		return DELE + " " + n;
 	}
@@ -128,7 +128,7 @@ public class Command {
 	 */
 	public String uidl(int n) throws InvalidNumberException{
 		if(n < 0){
-			throw new InvalidNumberException("n muss groeßer gleich 0 sein.");
+			throw new InvalidNumberException("n muss groeï¿½er gleich 0 sein.");
 		}
 		return UIDL + " " + n;
 	}
@@ -151,10 +151,11 @@ public class Command {
 	 */
 	public boolean isValid(String msg){
 		String[] command = msg.split(" ", 2);
-		
-		switch(command[0]) {
+		//toUpperCase() da auch Kleinschreibung akzeptiert wird
+		switch(command[0].toUpperCase()) {
 			case USER : return isValidUSER(command);
 			case PASS : return isValidPASS(command);
+			case STAT : return isValidSTAT(command);
 			case LIST : return isValidLIST(command);
 			case RETR : return isValidRETR(command);
 			case DELE : return isValidDELE(command);
@@ -168,7 +169,7 @@ public class Command {
 	}
 	
 	/**
-	 * Prueft auf Einhaltung der USER-Kommando-Signatur gemaeß RFC 1939 Standard.
+	 * Prueft auf Einhaltung der USER-Kommando-Signatur gemaeï¿½ RFC 1939 Standard.
 	 * @param command gesplittete msg.
 	 * @return true wenn Benutzername angegeben sonst false.
 	 */
@@ -181,7 +182,7 @@ public class Command {
 	}
 	
 	/**
-	 * Prueft auf Einhaltung der PASS-Kommando-Signatur gemaeß RFC 1939 Standard.
+	 * Prueft auf Einhaltung der PASS-Kommando-Signatur gemaeï¿½ RFC 1939 Standard.
 	 * @param command gesplittete msg.
 	 * @return true wenn PASS angegeben sonst false.
 	 */
@@ -194,7 +195,20 @@ public class Command {
 	}
 	
 	/**
-	 * Prueft auf Einhaltung der LIST-Kommando-Signatur gemaeß RFC 1939 Standard.
+	 * Prueft auf Einhaltung der STAT-Kommando-Signatur gemaeï¿½ RFC 1939 Standard.
+	 * @param command gesplittete msg.
+	 * @return true wenn STAT ohne Parameter sonst false.
+	 */
+	private boolean isValidSTAT(String[] command){
+		if(command.length == 1){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Prueft auf Einhaltung der LIST-Kommando-Signatur gemaeï¿½ RFC 1939 Standard.
 	 * @param command gesplittete msg.
 	 * @return true wenn LIST ohne Parameter ODER Parameter = int >= 0, sonst false;
 	 */
@@ -207,7 +221,7 @@ public class Command {
 	}
 	
 	/**
-	 * Prueft auf Einhaltung der RETR-Kommando-Signatur gemaeß RFC 1939 Standard.
+	 * Prueft auf Einhaltung der RETR-Kommando-Signatur gemaeï¿½ RFC 1939 Standard.
 	 * @param command gesplittete msg.
 	 * @return true wenn RETR mit Parameter = int >= 0, sonst false;
 	 */
@@ -220,7 +234,7 @@ public class Command {
 	}
 	
 	/**
-	 * Prueft auf Einhaltung der DELE-Kommando-Signatur gemaeß RFC 1939 Standard.
+	 * Prueft auf Einhaltung der DELE-Kommando-Signatur gemaeï¿½ RFC 1939 Standard.
 	 * @param command gesplittete msg.
 	 * @return true wenn DELE mit Parameter = int >= 0, sonst false;
 	 */
@@ -232,7 +246,7 @@ public class Command {
 	}
 	
 	/**
-	 * Prueft auf Einhaltung der NOOP-Kommando-Signatur gemaeß RFC 1939 Standard.
+	 * Prueft auf Einhaltung der NOOP-Kommando-Signatur gemaeï¿½ RFC 1939 Standard.
 	 * @param command gesplittete msg.
 	 * @return true wenn NOOP ohne Parameter, sonst false
 	 */
@@ -244,7 +258,7 @@ public class Command {
 	}
 	
 	/**
-	 * Prueft auf Einhaltung der RSET-Kommando-Signatur gemaeß RFC 1939 Standard.
+	 * Prueft auf Einhaltung der RSET-Kommando-Signatur gemaeï¿½ RFC 1939 Standard.
 	 * @param command gesplittete msg.
 	 * @return true wenn RSET ohne Parameter, sonst false.
 	 */
@@ -256,7 +270,7 @@ public class Command {
 	}
 	
 	/**
-	 * Prueft auf Einhaltung der UIDL-Kommando-Signatur gemaeß RFC 1939 Standard.
+	 * Prueft auf Einhaltung der UIDL-Kommando-Signatur gemaeï¿½ RFC 1939 Standard.
 	 * @param command gesplittete msg.
 	 * @return true wenn UIDL ohne Parameter ODER Parameter = int >= 0, sonst false;
 	 */
@@ -269,7 +283,7 @@ public class Command {
 	}
 	
 	/**
-	 * Prueft auf Einhaltung der QUIT-Kommando-Signatur gemaeß RFC 1939 Standard.
+	 * Prueft auf Einhaltung der QUIT-Kommando-Signatur gemaeï¿½ RFC 1939 Standard.
 	 * @param command gesplittete msg.
 	 * @return true wenn QUIT ohne Parameter, sonst false
 	 */
@@ -286,7 +300,12 @@ public class Command {
 	 * @param command Die msg
 	 * @return true wenn dem Kommando nur 1 Parameter folgte, sonst false
 	 */
-	private boolean isValidStringParameter(String[] command){	
+	private boolean isValidStringParameter(String[] command){
+			//BUGFIX aus JUnitTest, nach Kommandos mit abschlieÃŸendem Leerzeichen
+			//wurde dieser als Parameter erkannt
+			if(command[1].matches("^\\s*$")){
+				return false;
+			}
 			String[] commandtmp = command[1].split(" ");
 			
 			//Wenn Kommando mit mehr als 1 Parameter gesendet wurde return false;
@@ -299,7 +318,7 @@ public class Command {
 	
 	/**
 	 * Prueft ob der erwartete Integer-Parameter, der dem Kommando folgte,
-	 * ein Integer-Parameter ist und ob dieser groeßer als -1 ist.
+	 * ein Integer-Parameter ist und ob dieser groeï¿½er als -1 ist.
 	 * @param command Die msg
 	 * @return true, wenn der Parameter der dem Kommando folgte ein int >= 0 ist, sonst false.
 	 */
@@ -310,7 +329,9 @@ public class Command {
 			return false;
 		}
 		
-		if(commandtmp[0].matches("[0-9][0-9]*")){
+		//parameter gleich 0 duerfen auch nicht vorkommen
+		//if(commandtmp[0].matches("[0-9][0-9]*")){
+		if(commandtmp[0].matches("[1-9][1-9]*")){
 			int value = Integer.parseInt(commandtmp[0]);
 			
 			if(value < 0){

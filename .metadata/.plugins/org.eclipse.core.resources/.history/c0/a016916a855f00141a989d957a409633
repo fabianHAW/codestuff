@@ -1,0 +1,21 @@
+package proxyserver;
+
+import java.util.ArrayList;
+
+/**
+ * 
+ * @author Fabian Reiber, Francis Opoku
+ * 
+ */
+
+public class Server  {
+
+	private List<POP3Account> input = new ArrayList<>();
+	public static void main(String[] args) {
+		// Parameter: int = Maximale Anzahl Clients
+		
+		POP3Proxy server = new POP3Proxy(15);
+		server.start();
+	}
+
+}

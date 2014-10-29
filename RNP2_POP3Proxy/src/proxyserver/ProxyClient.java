@@ -1,8 +1,6 @@
 package proxyserver;
 
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import account.POP3Account;
@@ -31,6 +29,12 @@ public class ProxyClient extends Thread{
 		this.accountList = new ArrayList<POP3Account>();
 	}
 	
+	public ProxyClient(List<POP3Account> a){
+		//this.connection = connection;
+		TIMEINTERVAL = 30000;
+		this.accountList = a;
+	}
+	
 	/**
 	 * Hauptroutine in der der Proxy ggü. dem POP3MailServer als Client fungiert und
 	 * alle TIMEINTERVAL ms die Mails abholt und in einem "Abhol-Account" sichert
@@ -56,6 +60,7 @@ public class ProxyClient extends Thread{
 		//Mail in Abholaccount sichern
 	}
 	
+	//ggf. raus? da nur server adden kann?!
 	/**
 	 * hinzufuegen eines neuen Accounts in die Liste
 	 * @param a POP3Account

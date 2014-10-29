@@ -1,0 +1,185 @@
+package proxyserver;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import account.POP3Account;
+
+/**
+ * Klasse zur Kommunikation mit Mailclients. Bearbeitet die Anfragen der Clients.
+ * 
+ * @author Fabian Reiber, Francis Opoku
+ * 
+ */
+public class ProxyServer extends Thread {
+
+	private Socket connection;
+	private Command cObj;
+	private static String USER, PASS;
+	
+	/**
+	 * Liste der Accounts von denen die Mails abegrufen werden sollen
+	 */
+	private List<POP3Account> accountList;
+	
+	/**
+	 * 
+	 * @param c Der Socket auf dem der MainServer einen Client akzeptiert hat.
+	 */
+	public ProxyServer(Socket c) {
+		this.connection = c;
+		this.accountList = new ArrayList<POP3Account>();
+		
+		
+		
+		//erkennung des korrekten accounts, da user und pass ggf. identisch fuer unterschiedliche server sein kann
+		//->hashcode?
+		
+		//wenn mails von abholaccoutn geholt werden, abfragen ob != null
+		
+		
+	}
+
+	/**
+	 * Die Kommunikationsreihenfolge ist folgende: Solange der Socket auf dem
+	 * der RequestHandler mit dem Client kommuniziert nicht geschlossen ist 1.
+	 * Wartet er auf dem Socket auf eine ankommende Zeile von maximal 256
+	 * Zeichen. 2. Übergibt diese der Methode handleClientRequest die die
+	 * Eingabezeichenkette analysiert. 3. Löscht sich aus der Liste der von
+	 * MainServer verwalteten RequestHandler.
+	 */
+	public void run() {
+		while (!connection.isClosed()) {
+			try {
+
+				Scanner readFromClient = new Scanner(
+						connection.getInputStream(),
+						StandardCharsets.UTF_8.name());
+				PrintWriter writeToClient = new PrintWriter(
+						new OutputStreamWriter(connection.getOutputStream(),
+								StandardCharsets.UTF_8), true);
+				
+				String clientRequest = readFromClient.findInLine(".{0,254}");
+
+				System.out.println("after read");
+				
+				handleClientRequest(clientRequest, writeToClient);
+				
+				//readFromClient.close();
+			} catch (Exception e) {
+				try {
+					connection.close();
+				} catch (IOException e1) {
+					System.out.println("ProxyServer: connection not closed");
+				}
+			}
+
+		}
+
+		POP3Proxy.deleteMe(this);
+
+		try {
+			connection.close();
+		} catch (IOException e) {
+			System.out
+					.println("Fehler: ProxyServer.run(): connection.close");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Der Befehl wird von der Eingabezeichenfolge des Clients separiert. Er
+	 * wird Analysiert und entsprechend seiner Gültigkeit dann auf der
+	 * restlichen Zeichenkette durch einen entsprechenden Methodenaufruf
+	 * ausgeführt. Falls es kein gültiger Befehl ist, wird der Client darüber
+	 * informiert.
+	 * 
+	 * @param command
+	 *            Eingabezeichenfolge des Clients.
+	 * @param writeToClient
+	 *            Der OutputStream des Sockets als PrintWriter um das Ergebnis
+	 *            zum Cliet zu schreiben.
+	 */
+	private void handleClientRequest(String command,
+			PrintWriter writeToClient) {
+	
+		String[] splitedCommand = command.split(" ", 2);
+		//System.out.println("bla");
+		System.out.println(command.toString());
+		//System.out.println(cObj.isValid(command.toString()));
+		//if(cObj.isValid(command.toString())){
+		//	System.out.println("after isvlaid");
+			
+			switch(splitedCommand[0].toUpperCase()){
+			case "USER":
+				USER = splitedCommand[1];
+				System.out.println("inside user");
+				break;
+			case "PASS":
+				PASS = splitedCommand[1];
+				System.out.println("user: " + USER);
+				System.out.println("pass: " + PASS);
+				checkAccount(USER, PASS);
+				break;
+			case "STAT":
+				break;
+			case "LIST":
+				break;
+			case "RETR":
+				break;
+			case "DELE":
+				break;
+			case "NOOP":
+				break;
+			case "RSET":
+				break;
+			case "UIDL":
+				break;
+			case "QUIT":
+				doQuit();
+				break;
+			default:
+				break;
+			}
+		//}
+		//else{
+			//was an den mailclient zurueck? -Err?
+		//	System.out.println("-ERR");
+	//	}
+	}
+
+	private void checkAccount(String user, String pass){
+		if(user != null){
+			System.out.println("inside acc");
+			POP3Account newAcc = new POP3Account(user, pass,
+					this.connection.getInetAddress().getHostName(), 
+					this.connection.getLocalPort());
+			System.out.println(this.connection.getInetAddress().getHostName());
+			System.out.println(this.connection.getLocalPort());
+			if(POP3Proxy.getKnownAccounts().contains(newAcc)){
+				System.out.println("inside checkacc");
+			}
+			/*for(POP3Account item : POP3Proxy.getKnownAccounts()){
+				
+				System.out.println("acc: " + item.toString());
+			
+				if(item.equals(newAcc)){
+					System.out.println("inside checkaccounts");
+				}
+			}*/
+		}
+	}
+	/**
+	 * Wenn MailClient die Verbindung mit "QUIT" schließen will, wird Thread geschlossen
+	 */
+	private void doQuit() {
+		//close connection
+	}
+
+}

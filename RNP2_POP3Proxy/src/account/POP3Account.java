@@ -37,10 +37,13 @@ public class POP3Account {
 		this.connectionSem = new Semaphore(1);
 	}
 
+
 	/**
-	 * fuer Client
+	 * Fuegt eine Liste von Emails zu dem bestehenden "Abhol-Accounts" hinzu
+	 * @param mailList jeweilige Liste der E-Mails des POP3 Accounts
 	 */
-	public void addMails(List<String> mailList){
+	//public void addMails(List<String> mailList){
+	public void addMails(List<Email> mailList){
 		try {
 			this.connectionSem.acquire();
 			this.cAccount.addMails(mailList);
@@ -51,15 +54,19 @@ public class POP3Account {
 		this.connectionSem.release();
 	}
 	
+
 	/**
-	 * fuer server
+	 * Gibt die Liste der Emails des jeweiligen Kontos zurueck die im "Abhol-Account"
+	 * liegen
+	 * @return jeweilige Liste der E-Mails des POP3 Accounts
 	 */
-	public List<String> getMails(){
-		List<String> copyAcc = null;
+	//public List<String> getMails(){
+	public List<Email> getMails(){
+		List<Email> copyAcc = null;
 		
 		try {
 			this.connectionSem.acquire();
-			copyAcc = new ArrayList<String>();
+			copyAcc = new ArrayList<Email>();
 			copyAcc.addAll(this.cAccount.getMailList());
 		} catch (InterruptedException e) {
 			System.out.println("not possible to acquire sem");
@@ -68,6 +75,22 @@ public class POP3Account {
 		
 		this.connectionSem.release();
 		return copyAcc;
+	}
+	
+	/**
+	 * Loescht eine Email aus dem "Abhol-Account"
+	 * @param index Email mit angegebenen Listenindex loeschen
+	 */
+	public void removeMail(int index){
+		try {
+			this.connectionSem.acquire();
+			this.cAccount.removeMail(index);
+		} catch (InterruptedException e) {
+			System.out.println("not possible to acquire sem");
+			e.printStackTrace();
+		}
+		
+		this.connectionSem.release();
 	}
 	
 	
@@ -84,15 +107,13 @@ public class POP3Account {
 		}
 	}
 
+	
+	//hashCode() und equals() insofern geaendert, dass einige parameter ignoriert wurden,
+	//da diese fuer die pruefung auf gleichheit irrelevant sind
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((address == null) ? 0 : address.hashCode());
-		result = prime * result
-				+ ((cAccount == null) ? 0 : cAccount.hashCode());
-		result = prime * result
-				+ ((connectionSem == null) ? 0 : connectionSem.hashCode());
 		result = prime * result + ((pass == null) ? 0 : pass.hashCode());
 		result = prime * result + port;
 		result = prime * result
@@ -101,6 +122,8 @@ public class POP3Account {
 		return result;
 	}
 
+	
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -110,21 +133,6 @@ public class POP3Account {
 		if (getClass() != obj.getClass())
 			return false;
 		POP3Account other = (POP3Account) obj;
-		if (address == null) {
-			if (other.address != null)
-				return false;
-		} else if (!address.equals(other.address))
-			return false;
-		if (cAccount == null) {
-			if (other.cAccount != null)
-				return false;
-		} else if (!cAccount.equals(other.cAccount))
-			return false;
-		if (connectionSem == null) {
-			if (other.connectionSem != null)
-				return false;
-		} else if (!connectionSem.equals(other.connectionSem))
-			return false;
 		if (pass == null) {
 			if (other.pass != null)
 				return false;
@@ -143,6 +151,5 @@ public class POP3Account {
 		} else if (!user.equals(other.user))
 			return false;
 		return true;
-	}
-		
+	}		
 }

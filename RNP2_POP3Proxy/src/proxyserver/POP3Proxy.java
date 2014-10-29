@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import account.POP3Account;
+
 /**
  * 
  * @author Fabian Reiber, Francis Opoku Die Klasse erzeugt einen Haupt-Thread,
@@ -25,6 +27,8 @@ public class POP3Proxy extends Thread {
 	private static Scanner adminReader;
 	public boolean serverIsAlive = true;
 	private static List<ProxyServer> activeMailClients;
+	
+	private static List<POP3Account> knownAccounts;
 
 	/**
 	 * 
@@ -32,10 +36,11 @@ public class POP3Proxy extends Thread {
 	 *            Maximale Anzahl an Clients die parallel mit dem Server
 	 *            arbeiten dürfen.
 	 */
-	public POP3Proxy(int max) {
+	public POP3Proxy(int max, List<POP3Account> knownAcc) {
 		maxClients = max;
 		countClients = 0;
 		activeMailClients = new ArrayList<ProxyServer>();
+		knownAccounts = knownAcc;
 	}
 
 	/**
@@ -46,7 +51,7 @@ public class POP3Proxy extends Thread {
 		adminReader = new Scanner(System.in, StandardCharsets.UTF_8.name());
 		if (adminReader.hasNextInt()) {
 			port = Integer.parseInt(adminReader.nextLine());
-			this.proxy_cl = new ProxyClient();
+			this.proxy_cl = new ProxyClient(knownAccounts);
 			this.proxy_cl.start();
 		} else {
 			System.out.println("Bitte geben sie einen gültigen Port (int Wert) ein.");
@@ -69,7 +74,6 @@ public class POP3Proxy extends Thread {
 					ProxyServer proxy_srv = new ProxyServer(connection);
 					storeClientConnections(proxy_srv);
 					proxy_srv.start();
-			
 				}
 			}
 		} catch (IOException e) {
@@ -97,8 +101,6 @@ public class POP3Proxy extends Thread {
 	 * 
 	 * @param proxy_srv
 	 *            Der ProxyServer der mit einem Client kommuniziert.
-	 * @param proxy_cl
-	 * 			  Der ProxyClient der mit dem POP3-MailServer kommuniziert
 	 */
 	private void storeClientConnections(ProxyServer proxy_srv) {
 		activeMailClients.add(proxy_srv);
@@ -117,6 +119,22 @@ public class POP3Proxy extends Thread {
 		activeMailClients.remove(r);
 		countClients = countClients - 1;
 
+	}
+	
+	/**
+	 * gibt alle vorkonfigurierten POP3 Accounts als Liste zurueck
+	 * @return POP3Account Liste alle bekannten Mail-Konten
+	 */
+	public static List<POP3Account> getKnownAccounts(){
+		return knownAccounts;
+	}
+	
+	public static void addAccount(POP3Account a){
+		knownAccounts.add(a);
+	}
+	
+	public static void removeAccount(POP3Account a){
+		knownAccounts.remove(a);
 	}
 
 }
