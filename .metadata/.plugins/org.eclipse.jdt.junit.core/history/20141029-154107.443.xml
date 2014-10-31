@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><testrun name="JUnitCommandTest" project="RNP2_POP3Proxy" tests="2" started="2" failures="0" errors="0" ignored="0">
-  <testsuite name="proxyserver.junit.JUnitCommandTest" time="0.0">
-    <testcase name="checkInvalidNumberException" classname="proxyserver.junit.JUnitCommandTest" time="0.0"/>
-    <testcase name="checkIfCommandsAreValid" classname="proxyserver.junit.JUnitCommandTest" time="0.0"/>
-  </testsuite>
-</testrun>
