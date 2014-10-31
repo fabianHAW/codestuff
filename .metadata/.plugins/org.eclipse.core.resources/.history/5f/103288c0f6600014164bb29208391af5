@@ -1,6 +1,8 @@
 package proxyserver;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -67,11 +69,11 @@ public class ProxyServer extends Thread {
 		while (!connection.isClosed()) {
 			try {
 				
-				//BufferedReader stdin = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				BufferedReader stdin = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-				readFromClient = new Scanner(
+				/*readFromClient = new Scanner(
 						connection.getInputStream(),
-						StandardCharsets.UTF_8.name());
+						StandardCharsets.UTF_8.name());*/
 				writeToClient = new PrintWriter(
 						new OutputStreamWriter(connection.getOutputStream(),
 								StandardCharsets.UTF_8), true);
@@ -79,7 +81,12 @@ public class ProxyServer extends Thread {
 				//dis = new DataInputStream(connection.getInputStream());
 				//dos = new DataOutputStream(connection.getOutputStream());
 				
-				/*
+				System.out.println("inside run");
+				System.out.println("inet: " + connection.getInetAddress());
+				System.out.println("channel: " + connection.getChannel());
+				System.out.println("remotesocketaddress: " + connection.getRemoteSocketAddress());
+				System.out.println("localsocketaddress: " + connection.getLocalSocketAddress());
+				
 				int test;
 				while(stdin.ready()){
 					test = stdin.read();
@@ -87,7 +94,7 @@ public class ProxyServer extends Thread {
 					System.out.println("char: " + (char)test);
 					System.out.println("string: " + Integer.toString(test));
 				}
-				*/
+				
 
 				
 				String clientRequest = readFromClient.findInLine(".{0,254}");

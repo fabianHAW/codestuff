@@ -79,21 +79,14 @@ public class ProxyServer extends Thread {
 				//dis = new DataInputStream(connection.getInputStream());
 				//dos = new DataOutputStream(connection.getOutputStream());
 				
-				/*
-				int test;
-				while(stdin.ready()){
-					test = stdin.read();
-					System.out.println("int: " + test);
-					System.out.println("char: " + (char)test);
-					System.out.println("string: " + Integer.toString(test));
-				}
-				*/
-
+				System.out.println("inside run");
+				System.out.println("inet: " + connection.getInetAddress());
+				System.out.println("channel: " + connection.getChannel());
+				System.out.println("remotesocketaddress: " + connection.getRemoteSocketAddress());
+				System.out.println("localsocketaddress: " + connection.getLocalSocketAddress());
 				
+				//String clientRequest = stdin.readLine();
 				String clientRequest = readFromClient.findInLine(".{0,254}");
-
-				//String clientRequest = readFromClient.next();
-			//	String clientRequest = readFromClient.nextLine();
 				//String clientRequest = dis.readUTF();
 				System.out.println("request: " + clientRequest);
 				handleClientRequest(clientRequest, writeToClient);				
@@ -143,18 +136,15 @@ public class ProxyServer extends Thread {
 					break;
 				case "PASS":
 					doPass(splitedCommand[1], mailList, writeToClient);
-					System.out.println("inside pass");
 					break;
 				case "QUIT":
 					writeToClient.println("+OK dewey POP3 server signing off (maildrop empty)");
 					closeConnection();
 					break;
 				case "CAPA":
-					System.out.println("inside capa");
 					writeToClient.println("-ERR");
 					break;
 				case "AUTH":
-					System.out.println("inside auth");
 					writeToClient.println("-ERR");
 					break;
 				default:

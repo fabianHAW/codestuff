@@ -70,8 +70,8 @@ public class ProxyServer extends Thread {
 				//BufferedReader stdin = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
 				readFromClient = new Scanner(
-						connection.getInputStream(),
-						StandardCharsets.UTF_8.name());
+						connection.getInputStream()/*,
+						StandardCharsets.UTF_8.name()*/);
 				writeToClient = new PrintWriter(
 						new OutputStreamWriter(connection.getOutputStream(),
 								StandardCharsets.UTF_8), true);
@@ -79,21 +79,14 @@ public class ProxyServer extends Thread {
 				//dis = new DataInputStream(connection.getInputStream());
 				//dos = new DataOutputStream(connection.getOutputStream());
 				
-				/*
-				int test;
-				while(stdin.ready()){
-					test = stdin.read();
-					System.out.println("int: " + test);
-					System.out.println("char: " + (char)test);
-					System.out.println("string: " + Integer.toString(test));
-				}
-				*/
-
+				System.out.println("inside run");
+				System.out.println("inet: " + connection.getInetAddress());
+				System.out.println("channel: " + connection.getChannel());
+				System.out.println("remotesocketaddress: " + connection.getRemoteSocketAddress());
+				System.out.println("localsocketaddress: " + connection.getLocalSocketAddress());
 				
+				//String clientRequest = stdin.readLine();
 				String clientRequest = readFromClient.findInLine(".{0,254}");
-
-				//String clientRequest = readFromClient.next();
-			//	String clientRequest = readFromClient.nextLine();
 				//String clientRequest = dis.readUTF();
 				System.out.println("request: " + clientRequest);
 				handleClientRequest(clientRequest, writeToClient);				
