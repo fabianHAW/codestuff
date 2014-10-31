@@ -16,8 +16,6 @@ public class Command {
 
 	private final String USER = "USER";
 	private final String PASS = "PASS";
-	private final String CAPA = "CAPA";
-	private final String AUTH = "AUTH";
 	private final String STAT = "STAT";
 	private final String LIST = "LIST";
 	private final String RETR = "RETR";
@@ -47,21 +45,6 @@ public class Command {
 	 */
 	public String pass(String pass){
 		return PASS + " " + pass;
-	}
-	
-	/**
-	 * Liefert String "CAPA" nach  RFC 5034 Standard zurueck.
-	 * @return "CAPA"
-	 */
-	public String capa(){
-		return CAPA;
-	}
-	/**
-	 * Liefert String "AUTH" nach  RFC 5034 Standard zurueck.
-	 * @return "AUTH"
-	 */
-	public String auth(){
-		return AUTH;
 	}
 	
 	/**
@@ -172,8 +155,6 @@ public class Command {
 		switch(command[0].toUpperCase()) {
 			case USER : return isValidUSER(command);
 			case PASS : return isValidPASS(command);
-			case CAPA : return isValidCAPA(command);
-			case AUTH : return isValidAUTH(command);
 			case STAT : return isValidSTAT(command);
 			case LIST : return isValidLIST(command);
 			case RETR : return isValidRETR(command);
@@ -211,32 +192,6 @@ public class Command {
 		}
 		
 		return isValidStringParameter(command);
-	}
-	
-	/**
-	 * Prueft auf Einhaltung der CAPA-Kommando-Signatur gemae� RFC 5034 Standard.
-	 * @param command gesplittete msg.
-	 * @return true wenn CAPA ohne Parameter sonst false.
-	 */
-	private boolean isValidCAPA(String[] command){
-		if(command.length == 1){
-			return true;
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Prueft auf Einhaltung der AUTH-Kommando-Signatur gemae� RFC 5034 Standard.
-	 * @param command gesplittete msg.
-	 * @return true wenn AUTH ohne Parameter sonst false.
-	 */
-	private boolean isValidAUTH(String[] command){
-		if(command.length == 1){
-			return true;
-		}
-		
-		return false;
 	}
 	
 	/**
@@ -376,7 +331,7 @@ public class Command {
 		
 		//parameter gleich 0 duerfen auch nicht vorkommen
 		//if(commandtmp[0].matches("[0-9][0-9]*")){
-		if(commandtmp[0].matches("[1-9][0-9]*")){
+		if(commandtmp[0].matches("[1-9][1-9]*")){
 			int value = Integer.parseInt(commandtmp[0]);
 			
 			if(value < 0){

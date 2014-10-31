@@ -214,32 +214,6 @@ public class Command {
 	}
 	
 	/**
-	 * Prueft auf Einhaltung der CAPA-Kommando-Signatur gemae� RFC 5034 Standard.
-	 * @param command gesplittete msg.
-	 * @return true wenn CAPA ohne Parameter sonst false.
-	 */
-	private boolean isValidCAPA(String[] command){
-		if(command.length == 1){
-			return true;
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Prueft auf Einhaltung der AUTH-Kommando-Signatur gemae� RFC 5034 Standard.
-	 * @param command gesplittete msg.
-	 * @return true wenn AUTH ohne Parameter sonst false.
-	 */
-	private boolean isValidAUTH(String[] command){
-		if(command.length == 1){
-			return true;
-		}
-		
-		return false;
-	}
-	
-	/**
 	 * Prueft auf Einhaltung der STAT-Kommando-Signatur gemae� RFC 1939 Standard.
 	 * @param command gesplittete msg.
 	 * @return true wenn STAT ohne Parameter sonst false.
@@ -376,7 +350,7 @@ public class Command {
 		
 		//parameter gleich 0 duerfen auch nicht vorkommen
 		//if(commandtmp[0].matches("[0-9][0-9]*")){
-		if(commandtmp[0].matches("[1-9][0-9]*")){
+		if(commandtmp[0].matches("[1-9][1-9]*")){
 			int value = Integer.parseInt(commandtmp[0]);
 			
 			if(value < 0){

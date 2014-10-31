@@ -123,10 +123,6 @@ public class ProxyServer extends Thread {
 					writeToClient.println("+OK dewey POP3 server signing off (maildrop empty)");
 					closeConnection();
 					break;
-				case "CAPA":
-					break;
-				case "AUTH":
-					break;
 				default:
 					writeToClient.println("-ERR authentication failed");
 					closeConnection();
