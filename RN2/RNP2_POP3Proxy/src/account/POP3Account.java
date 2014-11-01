@@ -37,7 +37,7 @@ public class POP3Account {
 		this.connectionSem = new Semaphore(1);
 	}
 
-
+	
 	/**
 	 * Fuegt eine Liste von Emails zu dem bestehenden "Abhol-Accounts" hinzu
 	 * @param mailList jeweilige Liste der E-Mails des POP3 Accounts
@@ -107,6 +107,24 @@ public class POP3Account {
 		}
 	}
 
+/**************************************************************************/
+/************************Getter / Setter***********************************/
+/**************************************************************************/
+	public int getPort(){
+		return port;
+	}
+	
+	public String getServeraddress(){
+		return serveraddress;
+	}
+	
+	public String getUser(){
+		return user;
+	}
+	
+	public String getPass(){
+		return pass;
+	}
 	
 	//hashCode() und equals() insofern geaendert, dass einige parameter ignoriert wurden,
 	//da diese fuer die pruefung auf gleichheit irrelevant sind
