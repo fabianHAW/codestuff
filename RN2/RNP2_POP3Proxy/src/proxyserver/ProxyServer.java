@@ -27,6 +27,7 @@ public class ProxyServer extends Thread {
 	private boolean confirmed;
 	private static String USER, PASS;
 	private POP3Account ownAccount;
+	private List<Email> mailList;
 	
 	/**
 	 * Liste der Accounts von denen die Mails abegrufen werden sollen
@@ -48,6 +49,7 @@ public class ProxyServer extends Thread {
 		this.cObj = new Command();
 		this.confirmed = false;
 		this.ownAccount = null;
+		this.mailList = null;
 		//this.accountList = new ArrayList<POP3Account>();		
 	}
 
@@ -131,7 +133,6 @@ public class ProxyServer extends Thread {
 	
 		String[] splitedCommand = command.split(" ", 2);
 		String result = "";
-		List<Email> mailList = null;	
 		
 		if(cObj.isValid(command)){
 			//solange noch keine Authentifizierung erfolgte,
@@ -142,19 +143,16 @@ public class ProxyServer extends Thread {
 					result = doUser(splitedCommand[1]);
 					break;
 				case "PASS":
-					doPass(splitedCommand[1], mailList, writeToClient);
-					System.out.println("inside pass");
+					doPass(splitedCommand[1], writeToClient);
 					break;
 				case "QUIT":
 					writeToClient.println("+OK dewey POP3 server signing off (maildrop empty)");
 					closeConnection();
 					break;
 				case "CAPA":
-					System.out.println("inside capa");
 					writeToClient.println("-ERR");
 					break;
 				case "AUTH":
-					System.out.println("inside auth");
 					writeToClient.println("-ERR");
 					break;
 				default:
@@ -165,32 +163,32 @@ public class ProxyServer extends Thread {
 			}
 			else{
 				//List<String> mailList = this.ownAccount.getMails();	
-				mailList = this.ownAccount.getMails();	
-				if(mailList != null){
+				//mailList = this.ownAccount.getMails();	
+				if(this.mailList != null){
 					switch(splitedCommand[0].toUpperCase()){
 					case "STAT":
-						result = doStat(mailList);
+						result = doStat();
 						break;
 					case "LIST":
-						doList(splitedCommand, mailList, writeToClient);
+						doList(splitedCommand, writeToClient);
 						break;
 					case "RETR":
-						result = doRetr(splitedCommand[1], mailList, writeToClient);
+						result = doRetr(splitedCommand[1], writeToClient);
 						break;
 					case "DELE":
-						result = doDele(splitedCommand[1], mailList);
+						result = doDele(splitedCommand[1]);
 						break;
 					case "NOOP":
 						result = "+OK";
 						break;
 					case "RSET":
-						result = doRset(mailList);
+						result = doRset();
 						break;
 					case "UIDL":
-						doUidl(splitedCommand, mailList, writeToClient);
+						doUidl(splitedCommand, writeToClient);
 						break;
 					case "QUIT":
-						String quitResult = doQuit(mailList);
+						String quitResult = doQuit();
 						writeToClient.println(quitResult);
 						try {
 							this.connection.close();
@@ -231,19 +229,18 @@ public class ProxyServer extends Thread {
 	 * Authentifizierung erfolgreich war. War sie erfolgreich, so wird der Zustand
 	 * der Mailbox an den Client geschickt
 	 * @param splitedCommand passwort aus dem uebergebenen Befehl
-	 * @param mailList jeweilige Liste der E-Mails des POP3 Accounts
 	 * @param writeToClient Printer, um auf den OutPutStream des Sockets zu schreiben
 	 */
-	private void doPass(String splitedCommand, List<Email> mailList, PrintWriter writeToClient){
+	private void doPass(String splitedCommand, PrintWriter writeToClient){
 		PASS = splitedCommand;
 		if(!checkAccount(USER, PASS)){
 			writeToClient.println("-ERR authentication failed");
 			closeConnection();
 		}
 		else{
-			mailList = this.ownAccount.getMails();
-			if(mailList != null){
-				String[] statResult = doStat(mailList).split(" ");
+			this.mailList = this.ownAccount.getMails();
+			if(this.mailList != null){
+				String[] statResult = doStat().split(" ");
 				writeToClient.println("+OK mailbox \"" + USER + "\" has " + statResult[1]
 						+ " messages (" + statResult[2] + " octets)");
 			}
@@ -262,13 +259,23 @@ public class ProxyServer extends Thread {
 	 * 		und angelegt werden true, sonst false
 	 */
 	private boolean checkAccount(String user, String pass){
+		for(POP3Account item : POP3Proxy.getKnownAccounts()){
+			if(item.getUser().equals(user) && item.getPass().equals(pass)){
+				this.ownAccount = new POP3Account(item);
+				/*this.ownAccount = new POP3Account(user, pass,
+						item.getServeraddress(), item.getPort());*/
+				this.confirmed = true;
+				return true;
+			}
+		}
+		/*
 		this.ownAccount = new POP3Account(user, pass,
 				this.connection.getInetAddress().getHostName(), 
 				this.connection.getLocalPort());
 		if(POP3Proxy.getKnownAccounts().contains(this.ownAccount)){
 			this.confirmed = true;
 			return true;
-			}
+			}*/
 		return false;
 	}
 	
@@ -276,12 +283,11 @@ public class ProxyServer extends Thread {
 	 * Ermittelt den Status der Mailbox auf dem Server: "+OK nn mm"
 	 * nn := Anzahl der vorhandenen Mails auf dem Server 
 	 * mm := Groesse aller Mails auf dem Server
-	 * @param mailList jeweilige Liste der E-Mails des POP3 Accounts
 	 * @return Antwort an Email-Client
 	 */
 	//private String doStat(List<String> mailList){
-	private String doStat(List<Email> mailList){
-		return "+OK " + mailList.size() + " " + getByteSize(mailList);
+	private String doStat(){
+		return "+OK " + this.mailList.size() + " " + getByteSize(this.mailList);
 	}
 	
 	/**
@@ -292,26 +298,25 @@ public class ProxyServer extends Thread {
 	 * und zurueckgegeben.
 	 * Gibt es unter n keine Mail, wird eine entsprechende Error-Meldung zurueckgegeben
 	 * @param splitedCommand angekommene Befehlt vom Email-Client
-	 * @param mailList jeweilige Liste der E-Mails des POP3 Accounts
 	 * @param writeToClient Printer, um auf den OutPutStream des Sockets zu schreiben
 	 */
-	private void doList(String[] splitedCommand, List<Email> mailList, PrintWriter writeToClient){
+	private void doList(String[] splitedCommand, PrintWriter writeToClient){
 		if(splitedCommand.length == 1){
-			writeToClient.println("+OK " + mailList.size() + " messages ("
-					+ getByteSize(mailList) + " octets)");
-			for(int i = 0;i < mailList.size(); i++){
-				writeToClient.println("+OK " + i + " " 
-					+ mailList.get(i).getSize());
+			writeToClient.println("+OK " + this.mailList.size() + " messages ("
+					+ getByteSize(this.mailList) + " octets)");
+			for(int i = 0; i < this.mailList.size(); i++){
+				writeToClient.println("+OK " + (i + 1) + " " 
+					+ this.mailList.get(i).getSize());
 			}
 		}
 		else{
 			int n = Integer.parseInt(splitedCommand[1]);
-			if(n <= mailList.size()){
+			if(n <= this.mailList.size()){
 				writeToClient.println("+OK " + splitedCommand[1] + " " 
-					+ mailList.get(n).getSize());
+					+ this.mailList.get(n - 1).getSize());
 			}
 			else{
-				writeToClient.println("-ERR no such message, only " + mailList.size()
+				writeToClient.println("-ERR no such message, only " + this.mailList.size()
 						+ " messages in maildrop");
 			}
 		}
@@ -321,15 +326,14 @@ public class ProxyServer extends Thread {
 	 * Holt die gesamte Email aus der List und gibt sie zurueck. Wurde unter entsprechenedem
 	 * n keine Mail gefunden, dann Error-Nachricht
 	 * @param splitedCommand Parameter n aus dem uebergebenen Befehl
-	 * @param mailList jeweilige Liste der E-Mails des POP3 Accounts
 	 * @param writeToClient Printer, um auf den OutPutStream des Sockets zu schreiben
 	 * @return Antwort an Email-Client
 	 */
-	private String doRetr(String splitedCommand, List<Email> mailList, PrintWriter writeToClient){
+	private String doRetr(String splitedCommand, PrintWriter writeToClient){
 		int n = Integer.parseInt(splitedCommand);
-		if(n <= mailList.size()){
-			writeToClient.println("+OK " + mailList.get(n).getSize() + " octets");
-			return mailList.get(n).getText();
+		if(n <= this.mailList.size()){
+			writeToClient.println("+OK " + this.mailList.get(n - 1).getSize() + " octets");
+			return this.mailList.get(n - 1).getText();
 		}
 		return "-ERR no such message";
 	}
@@ -339,17 +343,16 @@ public class ProxyServer extends Thread {
 	 * Nachricht an Email-Client zurueck. Wurde unter n keine Mail gefunden, Rueckgabe
 	 * einer entsprechenden Error-Nachricht
 	 * @param splitedCommand Parameter n aus dem uebergebenen Befehl
-	 * @param mailList jeweilige Liste der E-Mails des POP3 Accounts
 	 * @return Antwort an Email-Client
 	 */
-	private String doDele(String splitedCommand, List<Email> mailList){
+	private String doDele(String splitedCommand){
 		int n = Integer.parseInt(splitedCommand);
-		if(n <= mailList.size()){
-			if(mailList.get(n).isChecked()){
+		if(n <= this.mailList.size()){
+			if(this.mailList.get(n - 1).isChecked()){
 				return "-ERR message " + n + " already deleted";
 			}
 			else{
-				mailList.get(n).setChecked(true);
+				this.mailList.get(n - 1).setChecked(true);
 				return "+OK message " + n + " deleted";
 			}
 		}
@@ -359,13 +362,12 @@ public class ProxyServer extends Thread {
 	/**
 	 * Setzt alle markierten Emails auf unmarkiert und gibt eine entsprechende Ausgabe,
 	 * sowie die Anzahl an neu unmarkierten Emails an Email-Client zurueck
-	 * @param mailList jeweilige Liste der E-Mails des POP3 Accounts
 	 * @return Antwort an Email-Client
 	 */
-	private String doRset(List<Email> mailList){
+	private String doRset(){
 		int counter = 0;
 		int byteSize = 0;
-		for(Email item : mailList){
+		for(Email item : this.mailList){
 			if(item.isChecked()){
 				item.setChecked(false);
 				counter++;
@@ -381,15 +383,14 @@ public class ProxyServer extends Thread {
 	 * Email zurueckgegeben
 	 * Wurde keine Email gefunden, wird eine entsprechende Error Nachricht zurueckgegeben
 	 * @param splitedCommand angekommene Befehlt vom Email-Client
-	 * @param mailList jeweilige Liste der E-Mails des POP3 Accounts
 	 * @param writeToClient Printer, um auf den OutPutStream des Sockets zu schreiben
 	 */
-	private void doUidl(String[] splitedCommand, List<Email> mailList, PrintWriter writeToClient){
+	private void doUidl(String[] splitedCommand, PrintWriter writeToClient){
 		if(splitedCommand.length == 1){
-			if(mailList.size() != 0){
+			if(this.mailList.size() != 0){
 				writeToClient.println("+OK");
-				for(int i = 0;i < mailList.size(); i++){
-					writeToClient.println(i + " " + mailList.get(i).getUidl());
+				for(int i = 0; i < this.mailList.size(); i++){
+					writeToClient.println((i + 1) + " " + this.mailList.get(i).getUidl());
 				}
 			}
 			else{
@@ -398,12 +399,12 @@ public class ProxyServer extends Thread {
 		}
 		else{
 			int n = Integer.parseInt(splitedCommand[1]);
-			if(n <= mailList.size()){
+			if(n <= this.mailList.size()){
 				writeToClient.println("+OK " + splitedCommand[1] + " " 
-					+ mailList.get(n).getUidl());
+					+ this.mailList.get(n - 1).getUidl());
 			}
 			else{
-				writeToClient.println("-ERR no such message, only " + mailList.size()
+				writeToClient.println("-ERR no such message, only " + this.mailList.size()
 						+ " messages in maildrop");
 			}
 		}
@@ -413,13 +414,12 @@ public class ProxyServer extends Thread {
 	 * Loescht alle markierten Emails und schliesst die Verbindung mit dem Socket
 	 * Wurden nicht alle Emails gesloescht, da sie nicht markiert waren, wird dies 
 	 * dem Email-Client mitgeteilt
-	 * @param mailList jeweilige Liste der E-Mails des POP3 Accounts
 	 * @return Antwort an Email-Client
 	 */
-	private String doQuit(List<Email> mailList) {
-		int counter = mailList.size();
-		for(int i = 0; i < mailList.size(); i++){
-			Email mail = mailList.get(i);
+	private String doQuit() {
+		int counter = this.mailList.size();
+		for(int i = 0; i < this.mailList.size(); i++){
+			Email mail = this.mailList.get(i);
 			if(mail.isChecked()){
 				ownAccount.removeMail(i);
 				counter--;
@@ -433,7 +433,6 @@ public class ProxyServer extends Thread {
 	
 	/**
 	 * Ermittelt die Groesse der gesamten Email-Liste
-	 * @param mailList jeweilige Liste der E-Mails des POP3 Accounts
 	 * @return Byte-Groesse der gesamten Email-Liste
 	 */
 	private static int getByteSize(List<Email> mailList){

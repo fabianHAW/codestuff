@@ -22,6 +22,7 @@ public class POP3Account {
 	private Collectionaccount cAccount;
 	private Semaphore connectionSem;
 	
+	
 	public POP3Account(String user, String pass, String serveraddress, int port){
 		this.user = user;
 		this.pass = pass;
@@ -36,7 +37,16 @@ public class POP3Account {
 		this.cAccount = new Collectionaccount();
 		this.connectionSem = new Semaphore(1);
 	}
-
+	
+	public POP3Account(POP3Account a){
+		this.user = a.getUser();
+		this.pass = a.getPass();
+		this.serveraddress = a.getServeraddress();
+		this.port = a.getPort();
+		this.address = a.getAddress();
+		this.cAccount = a.getCollectionAccount();
+		this.connectionSem = a.getSemaphoren();
+	}
 	
 	/**
 	 * Fuegt eine Liste von Emails zu dem bestehenden "Abhol-Accounts" hinzu
@@ -72,8 +82,7 @@ public class POP3Account {
 			System.out.println("not possible to acquire sem");
 			e.printStackTrace();
 		}
-		
-		this.connectionSem.release();
+		this.connectionSem.release();	
 		return copyAcc;
 	}
 	
@@ -124,6 +133,14 @@ public class POP3Account {
 	
 	public String getPass(){
 		return pass;
+	}
+	
+	public Collectionaccount getCollectionAccount(){
+		return this.cAccount;
+	}
+	
+	public Semaphore getSemaphoren(){
+		return this.connectionSem;
 	}
 	
 	//hashCode() und equals() insofern geaendert, dass einige parameter ignoriert wurden,

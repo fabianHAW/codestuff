@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,14 +41,14 @@ public class ProxyClient extends Thread{
 	
 	public ProxyClient(){
 		//this.connection = connection;
-		TIMEINTERVAL = 2000;
+		TIMEINTERVAL = 5000;
 		this.accountList = new ArrayList<POP3Account>();
 		commands = new Command();
 	}
 	
 	public ProxyClient(List<POP3Account> a){
 		//this.connection = connection;
-		TIMEINTERVAL = 2000;
+		TIMEINTERVAL = 5000;
 		this.accountList = a;
 		commands = new Command();
 	}
