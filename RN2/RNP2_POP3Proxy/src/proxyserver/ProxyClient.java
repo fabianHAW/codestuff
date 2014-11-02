@@ -60,6 +60,7 @@ public class ProxyClient extends Thread{
 	 * alle TIMEINTERVAL ms die Mails abholt und in einem "Abhol-Account" sichert
 	 */
 	public void run(){
+		while(true){
 		try {
 			Thread.sleep(TIMEINTERVAL);
 		} catch (InterruptedException e) {
@@ -86,7 +87,7 @@ public class ProxyClient extends Thread{
 				e.printStackTrace();
 			}
 		}
-		//loop(every 30secs) do fuer jeden account holen
+		}//loop(every 30secs) do fuer jeden account holen
 			//loop(i to accountList.length) authentifizieren und mails holen
 				//loop(j to numberOfMail) alle vorhandenen Mails vom Server holen und speichern
 	}
@@ -113,6 +114,7 @@ public class ProxyClient extends Thread{
 								
 							}
 				});
+				connectionToMailserver.setKeepAlive(true);
 				connectionToMailserver.startHandshake();
 				//connectionToMailserver.setKeepAlive(true);
 				System.out.println("getKeepAlive " + connectionToMailserver.getKeepAlive());
@@ -144,28 +146,9 @@ public class ProxyClient extends Thread{
 		String response;
 		
 		//User Authentifikation
-		/*
-		System.out.println("getMails:writer.checkError: " + writer.checkError());
-		System.out.println("accountData: " + account.getPass() + " " + account.getUser() + " " + account.getServeraddress());
-		System.out.println("commands.user(): " + commands.user(account.getUser()));
-		*/
-		response = reader.nextLine();
-		System.out.println("response1: " + response);
-		
+		response = reader.nextLine(); //+OK von Verbindungsaufbau auslesen
 		writer.println(commands.user(account.getUser()));
-		
-		/*
-		System.out.println("" + connection.isConnected());
-		System.out.println("" + connection.isInputShutdown());
-		System.out.println("" + connection.isOutputShutdown());
-		System.out.println("" + connection.isBound());
-		System.out.println("" + connection.isClosed());
-		System.out.println(reader.ioException());
-		System.out.println("after write1");
-		*/
-		
-		response = reader.nextLine();
-		System.out.println("response2: " + response);
+		response = reader.nextLine(); 
 		if(! response.matches("\\+OK.*")){
 			throw new InvalidUserException("ProxyClient.getMails: Benutzername falsch.");
 		}
@@ -173,64 +156,60 @@ public class ProxyClient extends Thread{
 		//Passwort Authentifikation
 		writer.println(commands.pass(account.getPass()));
 		response = reader.nextLine();
-		System.out.println("response3: " + response);
 		if(! response.matches("\\+OK.*")){
 			throw new InvalidPasswordException("ProxyClient.getMails: Passwort falsch.");
 		}
 		
-		//LIST Kommando senden, List-Response in Liste speichern
+		// LIST Kommando senden, List-Response in Liste speichern
 		writer.println(commands.list());
 		reader.nextLine();
-		while(!response.equals(".") && reader.hasNextLine()){
+		while (!response.equals(".") && reader.hasNextLine()) {
 			response = reader.nextLine();
-			System.out.println("responsex: " + response);
-			tmpResponseOfListCommand.add(response);
+			if (!response.equals(".")) {
+				tmpResponseOfListCommand.add(response);
+			}
 		}
-		
+
 		int bytesize;
 		String uidl;
 		int tmpNr;
 		String[] splitMessage;
 		//Auswertung LIST Kommando, ggf. Mails empfangen und speichern.
 		for(int i = 0; i < tmpResponseOfListCommand.size(); i++){
-			System.out.println("i: " + i);
-			splitMessage = tmpResponseOfListCommand.get(i).split(" ", 3); //3 = 1 zu viel?
-			for(int j = 0; j < tmpResponseOfListCommand.size(); j++){
-				System.out.println("tmpResponse...:" + tmpResponseOfListCommand.get(j));
-			}
-			System.out.println("" + splitMessage[0] + " " + splitMessage[1]);
+			//LIST Ergebnis aufteilen in [Nr-Email, Bytesize]
+			splitMessage = tmpResponseOfListCommand.get(i).split(" ", 2);
 			bytesize = Integer.parseInt(splitMessage[1]);
 			tmpNr = Integer.parseInt(splitMessage[0]);
-			System.out.println("Integer: " + tmpNr);
+			
+			
 			//UIDL anfordern / TODO: Errorhandling - noMail?
 			writer.println(commands.uidl(tmpNr));
-			System.out.println(commands.uidl(tmpNr));
 			response = reader.nextLine();
-			System.out.println("response5: " + response);
 			splitMessage = response.split(" ", 3);
 			uidl = splitMessage[2];
 			
 			//Mail anfordern / TODO: Errorhandling - noMail?
 			writer.println(commands.retr(tmpNr));
 			response = reader.nextLine(); //Erste Antwort uberspringen (+OK n octets)
-			System.out.println("response6: " + response);
-			response = "";
-			while(!response.equals(".") && reader.hasNextLine()){
-				response += reader.nextLine();
-				//System.out.println("responsex2: " + response);
+			response = " ";
+			String tmpResponse = "";
+		
+			while(!tmpResponse.equals(".") && reader.hasNextLine()){
+				tmpResponse = reader.nextLine();
+				response += tmpResponse;
 			}
-			System.out.println("after " + i);
+
 			Email mail = new Email(response, bytesize, uidl);
-			System.out.println("after "  + i);
+
 			//Empfangene Mail loeschen.
 			writer.println(commands.dele(tmpNr));
-			System.out.println("after "  + i);
+			response = reader.nextLine();
+			
 			mails.add(mail);
-			System.out.println("after "  + i);
+
 		}
-		System.out.println("after end");
 		writer.println(commands.quit());
-		System.out.println("after end 2");
+
 		return mails;
 	}
 	/**
