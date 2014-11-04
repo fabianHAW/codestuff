@@ -22,7 +22,13 @@ public class POP3Account {
 	private Collectionaccount cAccount;
 	private Semaphore connectionSem;
 	
-	
+	/**
+	 * Konstruktor
+	 * @param user username
+	 * @param pass passwort
+	 * @param serveraddress Serveradresse des POP3 Mailaccounts
+	 * @param port POP3-Port
+	 */
 	public POP3Account(String user, String pass, String serveraddress, int port){
 		this.user = user;
 		this.pass = pass;
@@ -38,6 +44,10 @@ public class POP3Account {
 		this.connectionSem = new Semaphore(1);
 	}
 	
+	/**
+	 * Copy-Konstruktor
+	 * @param a von a werden alle Eigenschaften uebernommen
+	 */
 	public POP3Account(POP3Account a){
 		this.user = a.getUser();
 		this.pass = a.getPass();
@@ -52,7 +62,6 @@ public class POP3Account {
 	 * Fuegt eine Liste von Emails zu dem bestehenden "Abhol-Accounts" hinzu
 	 * @param mailList jeweilige Liste der E-Mails des POP3 Accounts
 	 */
-	//public void addMails(List<String> mailList){
 	public void addMails(List<Email> mailList){
 		try {
 			this.connectionSem.acquire();
@@ -70,7 +79,6 @@ public class POP3Account {
 	 * liegen
 	 * @return jeweilige Liste der E-Mails des POP3 Accounts
 	 */
-	//public List<String> getMails(){
 	public List<Email> getMails(){
 		List<Email> copyAcc = null;
 		
@@ -87,13 +95,13 @@ public class POP3Account {
 	}
 	
 	/**
-	 * Loescht eine Email aus dem "Abhol-Account"
+	 * Loescht Liste von Emails aus dem "Abhol-Account"
 	 * @param index Email mit angegebenen Listenindex loeschen
 	 */
-	public void removeMail(int index){
+	public void removeMailList(List<Email> l){
 		try {
 			this.connectionSem.acquire();
-			this.cAccount.removeMail(index);
+			this.cAccount.removeList(l);
 		} catch (InterruptedException e) {
 			System.out.println("not possible to acquire sem");
 			e.printStackTrace();
@@ -143,8 +151,6 @@ public class POP3Account {
 		return this.connectionSem;
 	}
 	
-	//hashCode() und equals() insofern geaendert, dass einige parameter ignoriert wurden,
-	//da diese fuer die pruefung auf gleichheit irrelevant sind
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -157,8 +163,6 @@ public class POP3Account {
 		return result;
 	}
 
-	
-	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

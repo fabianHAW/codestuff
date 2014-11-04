@@ -40,17 +40,47 @@ public class ProxyClient extends Thread{
 	private Command commands;
 	
 	public ProxyClient(){
-		//this.connection = connection;
-		TIMEINTERVAL = 5000;
+		TIMEINTERVAL = 30000;
 		this.accountList = new ArrayList<POP3Account>();
 		commands = new Command();
+		try {
+			Thread.sleep(2000);
+			fetchMails(POP3Proxy.getKnownAccounts());
+		} catch (InvalidUserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidPasswordException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidNumberException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public ProxyClient(List<POP3Account> a){
-		//this.connection = connection;
-		TIMEINTERVAL = 5000;
+		TIMEINTERVAL = 30000;
 		this.accountList = a;
 		commands = new Command();
+		try {
+			Thread.sleep(2000);
+			fetchMails(POP3Proxy.getKnownAccounts());
+		} catch (InvalidUserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidPasswordException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidNumberException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -107,15 +137,15 @@ public class ProxyClient extends Thread{
 							
 							@Override
 							public void handshakeCompleted(HandshakeCompletedEvent event) {
-								System.out.println("Handshake abgeschlossen.");
-								System.out.println("Verwendete cipher suite: " + event.getCipherSuite());
+							//	System.out.println("Handshake abgeschlossen.");
+							//	System.out.println("Verwendete cipher suite: " + event.getCipherSuite());
 								
 							}
 				});
 				connectionToMailserver.setKeepAlive(true);
 				connectionToMailserver.startHandshake();
 				//connectionToMailserver.setKeepAlive(true);
-				System.out.println("getKeepAlive " + connectionToMailserver.getKeepAlive());
+				//System.out.println("getKeepAlive " + connectionToMailserver.getKeepAlive());
 				
 				//reader, writer zum Mailserver
 				PrintWriter writer = new PrintWriter(new OutputStreamWriter(
@@ -194,9 +224,9 @@ public class ProxyClient extends Thread{
 		
 			while(!tmpResponse.equals(".") && reader.hasNextLine()){
 				tmpResponse = reader.nextLine();
-				response += tmpResponse;
+				response += tmpResponse + "\r\n";
 			}
-
+			System.out.println(response);
 			Email mail = new Email(response, bytesize, uidl);
 
 			//Empfangene Mail loeschen.

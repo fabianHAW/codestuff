@@ -5,6 +5,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -28,18 +29,9 @@ public class ProxyServer extends Thread {
 	private static String USER, PASS;
 	private POP3Account ownAccount;
 	private List<Email> mailList;
-	
-	/**
-	 * Liste der Accounts von denen die Mails abegrufen werden sollen
-	 * 
-	 * nicht noetig, da email client sich connected, dann authentifiziert, die mails
-	 * holt, diese löscht, und dann wieder disconnected. besitzt email client nun noch einen
-	 * 2. pop3account, dann baut dieser wieder eine verbindung mit dem pop3_proxy auf und
-	 * die prozedur faengt wieder von vorne an ---> die verbindung bleibt nicht die ganze
-	 * zeit ueber bestehen, sondern wird nur zum mails holen aufgebaut.
-	 */
-	//private List<POP3Account> accountList;
-	
+	private static final String LINE_SEPARATOR_PATTERN =
+              "\r\n|[\n\r\u2028\u2029\u0085]";
+
 	/**
 	 * Konstruktor
 	 * @param c Der Socket auf dem der MainServer einen Client akzeptiert hat.
@@ -49,8 +41,7 @@ public class ProxyServer extends Thread {
 		this.cObj = new Command();
 		this.confirmed = false;
 		this.ownAccount = null;
-		this.mailList = null;
-		//this.accountList = new ArrayList<POP3Account>();		
+		this.mailList = null;	
 	}
 
 	/**
@@ -59,47 +50,41 @@ public class ProxyServer extends Thread {
 	 * 1. Wartet er auf dem Socket auf eine ankommende Zeile von maximal 256 Zeichen. 
 	 * 2. Übergibt diese der Methode handleClientRequest die die
 	 * Eingabezeichenkette analysiert.
-	 * 3. Löscht sich aus der Liste der vom MainServer verwalteten ProxyServer.
+	 * Wurde Verbindung geschlossen:
+	 * 1. Löscht sich der Thread aus der Liste der vom MainServer verwalteten ProxyServer.
 	 */
 	public void run() {
 		Scanner readFromClient = null;
 		PrintWriter writeToClient = null;
-		//DataInputStream dis = null;
-		//DataOutputStream dos = null;
-		while (!connection.isClosed()) {
+		
 			try {
-				
-				//BufferedReader stdin = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-				readFromClient = new Scanner(
-						connection.getInputStream(),
+	            readFromClient = new Scanner(this.connection.getInputStream(),
 						StandardCharsets.UTF_8.name());
 				writeToClient = new PrintWriter(
-						new OutputStreamWriter(connection.getOutputStream(),
+						new OutputStreamWriter(this.connection.getOutputStream(),
 								StandardCharsets.UTF_8), true);
-			
-				//dis = new DataInputStream(connection.getInputStream());
-				//dos = new DataOutputStream(connection.getOutputStream());
 				
-				/*
-				int test;
-				while(stdin.ready()){
-					test = stdin.read();
-					System.out.println("int: " + test);
-					System.out.println("char: " + (char)test);
-					System.out.println("string: " + Integer.toString(test));
-				}
-				*/
-
+				writeToClient.println("+OK POP3 server ready");
 				
-				String clientRequest = readFromClient.findInLine(".{0,254}");
-
-				//String clientRequest = readFromClient.next();
-			//	String clientRequest = readFromClient.nextLine();
-				//String clientRequest = dis.readUTF();
-				System.out.println("request: " + clientRequest);
-				handleClientRequest(clientRequest, writeToClient);				
-			} catch (Exception e) {
+		        String clientRequest = null;
+		        while (!connection.isClosed()) {		  
+		        	
+		        	//Unter WIN7 funktioniert Sylpheed 100%ig
+		        	//Unter WIN7 wurde Thunderbird noch nicht getestet
+		        	//Unter Ubuntu haengt sich sylpheed beim ermitteln der anzahl 
+		        	//der neuen nachrichten auf und bricht nach timeout ab
+		        	//Unter Ubuntu funktioniert Thunderbird 100%ig
+		        	clientRequest = readFromClient.findInLine(".{0,254}");
+		        	readFromClient.skip(LINE_SEPARATOR_PATTERN);			
+		        	
+		        	//geht auch, allerdings ohne Pruefung, ob empfangene Zeile max 256 Bytes gross ist
+		        	//clientRequest = readFromClient.nextLine();
+		        	
+					System.out.println("clienRequest: " + clientRequest);
+					
+					handleClientRequest(clientRequest, writeToClient);					
+					}
+		        } catch (Exception e) {
 				try {
 					connection.close();
 				} catch (IOException e1) {
@@ -107,7 +92,6 @@ public class ProxyServer extends Thread {
 				}
 			}
 
-		}
 		POP3Proxy.deleteMe(this);
 		try {
 			if(readFromClient != null){
@@ -156,14 +140,14 @@ public class ProxyServer extends Thread {
 					writeToClient.println("-ERR");
 					break;
 				default:
-					writeToClient.println("-ERR authentication failed");
-					closeConnection();
+					//kein defualt noetig, da die nicht validen Befehle bereits vorher
+					//abgefangen werden
+					/*writeToClient.println("-ERR authentication failed");
+					closeConnection();*/
 					break;
 				}		
 			}
-			else{
-				//List<String> mailList = this.ownAccount.getMails();	
-				//mailList = this.ownAccount.getMails();	
+			else{	
 				if(this.mailList != null){
 					switch(splitedCommand[0].toUpperCase()){
 					case "STAT":
@@ -173,7 +157,7 @@ public class ProxyServer extends Thread {
 						doList(splitedCommand, writeToClient);
 						break;
 					case "RETR":
-						result = doRetr(splitedCommand[1], writeToClient);
+						doRetr(splitedCommand[1], writeToClient);
 						break;
 					case "DELE":
 						result = doDele(splitedCommand[1]);
@@ -262,20 +246,10 @@ public class ProxyServer extends Thread {
 		for(POP3Account item : POP3Proxy.getKnownAccounts()){
 			if(item.getUser().equals(user) && item.getPass().equals(pass)){
 				this.ownAccount = new POP3Account(item);
-				/*this.ownAccount = new POP3Account(user, pass,
-						item.getServeraddress(), item.getPort());*/
 				this.confirmed = true;
 				return true;
 			}
 		}
-		/*
-		this.ownAccount = new POP3Account(user, pass,
-				this.connection.getInetAddress().getHostName(), 
-				this.connection.getLocalPort());
-		if(POP3Proxy.getKnownAccounts().contains(this.ownAccount)){
-			this.confirmed = true;
-			return true;
-			}*/
 		return false;
 	}
 	
@@ -285,7 +259,6 @@ public class ProxyServer extends Thread {
 	 * mm := Groesse aller Mails auf dem Server
 	 * @return Antwort an Email-Client
 	 */
-	//private String doStat(List<String> mailList){
 	private String doStat(){
 		return "+OK " + this.mailList.size() + " " + getByteSize(this.mailList);
 	}
@@ -305,9 +278,10 @@ public class ProxyServer extends Thread {
 			writeToClient.println("+OK " + this.mailList.size() + " messages ("
 					+ getByteSize(this.mailList) + " octets)");
 			for(int i = 0; i < this.mailList.size(); i++){
-				writeToClient.println("+OK " + (i + 1) + " " 
+				writeToClient.println((i + 1) + " " 
 					+ this.mailList.get(i).getSize());
 			}
+			sendPoint(writeToClient);
 		}
 		else{
 			int n = Integer.parseInt(splitedCommand[1]);
@@ -329,13 +303,16 @@ public class ProxyServer extends Thread {
 	 * @param writeToClient Printer, um auf den OutPutStream des Sockets zu schreiben
 	 * @return Antwort an Email-Client
 	 */
-	private String doRetr(String splitedCommand, PrintWriter writeToClient){
+	private void doRetr(String splitedCommand, PrintWriter writeToClient){
 		int n = Integer.parseInt(splitedCommand);
 		if(n <= this.mailList.size()){
 			writeToClient.println("+OK " + this.mailList.get(n - 1).getSize() + " octets");
-			return this.mailList.get(n - 1).getText();
+			writeToClient.println(this.mailList.get(n - 1).getText());
+			sendPoint(writeToClient);
 		}
-		return "-ERR no such message";
+		else{
+			writeToClient.println("-ERR no such message");
+		}
 	}
 	
 	/**
@@ -392,6 +369,7 @@ public class ProxyServer extends Thread {
 				for(int i = 0; i < this.mailList.size(); i++){
 					writeToClient.println((i + 1) + " " + this.mailList.get(i).getUidl());
 				}
+				sendPoint(writeToClient);
 			}
 			else{
 				writeToClient.println("-ERR no such message");
@@ -417,18 +395,29 @@ public class ProxyServer extends Thread {
 	 * @return Antwort an Email-Client
 	 */
 	private String doQuit() {
+		List<Email> mailsToRemove = new ArrayList<Email>();
 		int counter = this.mailList.size();
-		for(int i = 0; i < this.mailList.size(); i++){
-			Email mail = this.mailList.get(i);
-			if(mail.isChecked()){
-				ownAccount.removeMail(i);
+				
+		for(Email item : this.mailList){
+			if(item.isChecked()){
+				mailsToRemove.add(item);
 				counter--;
 			}
 		}
+		this.ownAccount.removeMailList(mailsToRemove);
+
 		if(counter == 0){
 			return "+OK dewey POP3 server signing off (maildrop empty)";
 		}
 		return "+OK dewey POP3 server signing off (" + counter + " messages left)";
+	}
+	
+	/**
+	 * Sofern notwendig wird dem Client ein Punkt zum Abschluss eines jeweiligen Befehls gesendet
+	 * @param writeToClient writeToClient Printer, um auf den OutPutStream des Sockets zu schreiben
+	 */
+	private void sendPoint(PrintWriter writeToClient){
+		writeToClient.println(".");
 	}
 	
 	/**
@@ -454,65 +443,4 @@ public class ProxyServer extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
-	/* OLD
-	 
-	private void doList(String[] splitedCommand, List<String> mailList, PrintWriter writeToClient){
-		if(splitedCommand.length == 1){
-			writeToClient.println("+OK " + mailList.size() + " messages ("
-					+ getByteSizeOfMails(mailList) + " octets)");
-			for(int i = 0;i < mailList.size(); i++){
-				writeToClient.println("+OK " + i + " " 
-					+ getByteSizeOfMail(mailList.get(i)));
-			}
-		}
-		else{
-			int n = Integer.parseInt(splitedCommand[1]);
-			if(n == mailList.size()){
-				writeToClient.println("+OK " + splitedCommand[1] + " " 
-					+ getByteSizeOfMail(mailList.get(n)));
-			}
-			else{
-				writeToClient.println("-ERR no such message, only " + mailList.size()
-						+ " messages in maildrop");
-			}
-		}
-	}
-	
-	private static int getByteSizeOfMails(List<String> list){
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream out;
-		int byteSize = 0;
-		try {
-			out = new ObjectOutputStream(baos);
-			out.writeObject(list);
-			out.close();
-			byteSize = baos.toByteArray().length;
-			System.out.println(list.getClass().getSimpleName() +
-			      " used " + byteSize + " bytes");
-			} catch (IOException e) {
-				e.printStackTrace();
-				}
-		return byteSize;
-	}
-	
-	private static int getByteSizeOfMail(String mail){
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream out;
-		int byteSize = 0;
-		try {
-			out = new ObjectOutputStream(baos);
-			out.writeObject(mail);
-			out.close();
-			byteSize = baos.toByteArray().length;
-			System.out.println(mail.getClass().getSimpleName() +
-			      " used " + byteSize + " bytes");
-			} catch (IOException e) {
-				e.printStackTrace();
-				}
-		return byteSize;
-	}
-	*/
-
-
 }

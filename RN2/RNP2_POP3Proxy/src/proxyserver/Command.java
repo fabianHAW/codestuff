@@ -168,7 +168,6 @@ public class Command {
 	 */
 	public boolean isValid(String msg){
 		String[] command = msg.split(" ", 2);
-		//toUpperCase() da auch Kleinschreibung akzeptiert wird
 		switch(command[0].toUpperCase()) {
 			case USER : return isValidUSER(command);
 			case PASS : return isValidPASS(command);
@@ -346,8 +345,7 @@ public class Command {
 	 * @return true wenn dem Kommando nur 1 Parameter folgte, sonst false
 	 */
 	private boolean isValidStringParameter(String[] command){
-			//BUGFIX aus JUnitTest, nach Kommandos mit abschließendem Leerzeichen
-			//wurde dieser als Parameter erkannt
+			//Befehle mit anschließendem "leeren" Parameter nicht akzeptieren
 			if(command[1].matches("^\\s*$")){
 				return false;
 			}
@@ -374,8 +372,6 @@ public class Command {
 			return false;
 		}
 		
-		//parameter gleich 0 duerfen auch nicht vorkommen
-		//if(commandtmp[0].matches("[0-9][0-9]*")){
 		if(commandtmp[0].matches("[1-9][0-9]*")){
 			int value = Integer.parseInt(commandtmp[0]);
 			

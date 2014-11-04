@@ -18,6 +18,11 @@ public class Test {
 		
 		System.out.println("false = " + "".matches("[0-9][0-9]*"));
 		System.out.println("false =" + "2 34".matches("[0-9][0-9]*"));
+		String test = "asdfasfdfda";
+		System.out.print(test);
+		System.out.println("bla");
+		
+		System.out.println("\\");
 			
 	}
 
