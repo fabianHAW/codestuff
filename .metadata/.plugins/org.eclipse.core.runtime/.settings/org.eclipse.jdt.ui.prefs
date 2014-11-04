@@ -1,0 +1,19 @@
+content_assist_lru_history=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><history maxLHS\="100" maxRHS\="10"><lhs name\="proxyserver.Command"><rhs name\="proxyserver.Command"/></lhs><lhs name\="java.util.Collection"><rhs name\="java.util.ArrayList"/></lhs><lhs name\="java.lang.Iterable"><rhs name\="java.util.ArrayList"/></lhs><lhs name\="java.util.List"><rhs name\="java.util.ArrayList"/></lhs><lhs name\="account.POP3Account"><rhs name\="account.POP3Account"/></lhs><lhs name\="java.io.Reader"><rhs name\="java.io.BufferedReader"/><rhs name\="java.io.InputStreamReader"/></lhs><lhs name\="java.lang.Readable"><rhs name\="java.io.BufferedReader"/><rhs name\="java.io.InputStreamReader"/></lhs><lhs name\="java.io.Closeable"><rhs name\="java.io.BufferedReader"/><rhs name\="java.io.InputStreamReader"/><rhs name\="java.io.DataInputStream"/><rhs name\="java.io.DataOutputStream"/></lhs><lhs name\="java.lang.AutoCloseable"><rhs name\="java.io.BufferedReader"/><rhs name\="java.io.InputStreamReader"/><rhs name\="java.io.DataInputStream"/><rhs name\="java.io.DataOutputStream"/></lhs><lhs name\="java.io.BufferedReader"><rhs name\="java.io.BufferedReader"/></lhs><lhs name\="java.io.DataInput"><rhs name\="java.io.DataInputStream"/></lhs><lhs name\="java.io.FilterInputStream"><rhs name\="java.io.DataInputStream"/></lhs><lhs name\="java.io.InputStream"><rhs name\="java.io.DataInputStream"/></lhs><lhs name\="java.io.DataInputStream"><rhs name\="java.io.DataInputStream"/></lhs><lhs name\="java.io.DataOutput"><rhs name\="java.io.DataOutputStream"/></lhs><lhs name\="java.io.FilterOutputStream"><rhs name\="java.io.DataOutputStream"/></lhs><lhs name\="java.io.OutputStream"><rhs name\="java.io.DataOutputStream"/></lhs><lhs name\="java.io.Flushable"><rhs name\="java.io.DataOutputStream"/></lhs><lhs name\="java.io.DataOutputStream"><rhs name\="java.io.DataOutputStream"/></lhs><lhs name\="account.Collectionaccount"><rhs name\="account.Collectionaccount"/></lhs></history>
+content_assist_number_of_computers=13
+content_assist_proposals_background=247,247,247
+content_assist_proposals_foreground=44,44,44
+eclipse.preferences.version=1
+fontPropagated=true
+org.eclipse.jdt.ui.editor.tab.width=
+org.eclipse.jdt.ui.formatterprofiles.version=12
+org.eclipse.jdt.ui.javadoclocations.migrated=true
+org.eclipse.jdt.ui.text.code_templates_migrated=true
+org.eclipse.jdt.ui.text.custom_code_templates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates/>
+org.eclipse.jdt.ui.text.custom_templates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates/>
+org.eclipse.jdt.ui.text.templates_migrated=true
+org.eclipse.jface.textfont=1|Monospace|10.0|0|GTK|1|;
+proposalOrderMigrated=true
+spelling_locale_initialized=true
+tabWidthPropagated=true
+useAnnotationsPrefPage=true
+useQuickDiffPrefPage=true
