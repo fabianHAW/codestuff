@@ -72,7 +72,7 @@ public class POP3Proxy extends Thread {
 					Socket connection = socket.accept();
 					
 					ProxyServer proxy_srv = new ProxyServer(connection);
-					storeClientConnections(proxy_srv);
+					storeClientConnection(proxy_srv);
 					proxy_srv.start();
 				}
 			}
@@ -102,8 +102,9 @@ public class POP3Proxy extends Thread {
 	 * @param proxy_srv
 	 *            Der ProxyServer der mit einem Client kommuniziert.
 	 */
-	private void storeClientConnections(ProxyServer proxy_srv) {
+	private void storeClientConnection(ProxyServer proxy_srv) {
 		activeMailClients.add(proxy_srv);
+		countClients++;
 	}
 
 	/**
@@ -115,9 +116,9 @@ public class POP3Proxy extends Thread {
 	 * 
 	 * @param r
 	 */
-	public static void deleteMe(ProxyServer r) {
-		activeMailClients.remove(r);
-		countClients = countClients - 1;
+	public static void removeClientConnection(ProxyServer proxy_srv) {
+		activeMailClients.remove(proxy_srv);
+		countClients--;
 
 	}
 	
@@ -128,13 +129,4 @@ public class POP3Proxy extends Thread {
 	public static List<POP3Account> getKnownAccounts(){
 		return knownAccounts;
 	}
-	
-	public static void addAccount(POP3Account a){
-		knownAccounts.add(a);
-	}
-	
-	public static void removeAccount(POP3Account a){
-		knownAccounts.remove(a);
-	}
-
 }

@@ -27,7 +27,7 @@ public class ProxyServer extends Thread {
 	private Command cObj;
 	private boolean confirmed;
 	private static String USER, PASS;
-	private POP3Account ownAccount;
+	private List<POP3Account> ownAccount;
 	private List<Email> mailList;
 	private static final String LINE_SEPARATOR_PATTERN =
               "\r\n|[\n\r\u2028\u2029\u0085]";
@@ -40,8 +40,8 @@ public class ProxyServer extends Thread {
 		this.connection = c;
 		this.cObj = new Command();
 		this.confirmed = false;
-		this.ownAccount = null;
-		this.mailList = null;	
+		this.ownAccount = new ArrayList<POP3Account>();
+		this.mailList = new ArrayList<Email>();	
 	}
 
 	/**
@@ -76,11 +76,6 @@ public class ProxyServer extends Thread {
 		        	//Unter Ubuntu funktioniert Thunderbird 100%ig
 		        	clientRequest = readFromClient.findInLine(".{0,254}");
 		        	readFromClient.skip(LINE_SEPARATOR_PATTERN);			
-		        	
-		        	//geht auch, allerdings ohne Pruefung, ob empfangene Zeile max 256 Bytes gross ist
-		        	//clientRequest = readFromClient.nextLine();
-		        	
-					System.out.println("clienRequest: " + clientRequest);
 					
 					handleClientRequest(clientRequest, writeToClient);					
 					}
@@ -92,7 +87,7 @@ public class ProxyServer extends Thread {
 				}
 			}
 
-		POP3Proxy.deleteMe(this);
+		POP3Proxy.removeClientConnection(this);
 		try {
 			if(readFromClient != null){
 				readFromClient.close();
@@ -142,8 +137,6 @@ public class ProxyServer extends Thread {
 				default:
 					//kein defualt noetig, da die nicht validen Befehle bereits vorher
 					//abgefangen werden
-					/*writeToClient.println("-ERR authentication failed");
-					closeConnection();*/
 					break;
 				}		
 			}
@@ -222,7 +215,10 @@ public class ProxyServer extends Thread {
 			closeConnection();
 		}
 		else{
-			this.mailList = this.ownAccount.getMails();
+			for(POP3Account item : this.ownAccount){
+				this.mailList.addAll(item.getMails());
+			}
+			
 			if(this.mailList != null){
 				String[] statResult = doStat().split(" ");
 				writeToClient.println("+OK mailbox \"" + USER + "\" has " + statResult[1]
@@ -232,6 +228,7 @@ public class ProxyServer extends Thread {
 				writeToClient.println("-ERR coulnd't read mails");
 				closeConnection();
 			}
+			
 		}
 	}
 	
@@ -245,10 +242,12 @@ public class ProxyServer extends Thread {
 	private boolean checkAccount(String user, String pass){
 		for(POP3Account item : POP3Proxy.getKnownAccounts()){
 			if(item.getUser().equals(user) && item.getPass().equals(pass)){
-				this.ownAccount = new POP3Account(item);
+				this.ownAccount.add( new POP3Account(item));
 				this.confirmed = true;
-				return true;
 			}
+		}
+		if(this.ownAccount != null && this.ownAccount.size() != 0){
+			return true;
 		}
 		return false;
 	}
@@ -404,8 +403,11 @@ public class ProxyServer extends Thread {
 				counter--;
 			}
 		}
-		this.ownAccount.removeMailList(mailsToRemove);
-
+		
+		for(POP3Account item : this.ownAccount){
+			item.removeMailList(mailsToRemove);
+		}
+		
 		if(counter == 0){
 			return "+OK dewey POP3 server signing off (maildrop empty)";
 		}

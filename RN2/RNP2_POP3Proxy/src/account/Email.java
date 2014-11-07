@@ -19,8 +19,6 @@ public class Email {
 		this.checked = false;
 		this.uidl = uidl;
 	}
-	
-	
 
 	public String getText() {
 		return text;

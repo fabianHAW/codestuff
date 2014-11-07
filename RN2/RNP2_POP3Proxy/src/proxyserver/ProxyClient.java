@@ -4,16 +4,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/*
 import javax.net.ssl.HandshakeCompletedEvent;
 import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-
+*/
 import proxyserver.exceptions.InvalidNumberException;
 import proxyserver.exceptions.InvalidPasswordException;
 import proxyserver.exceptions.InvalidUserException;
@@ -22,13 +24,13 @@ import account.POP3Account;
 
 /**
  * Ein ProxyClient-Thread der die Kommunikation mit dem POP3MailServer steuert
+ * SSLSocket Connection wurde auskommentier fuer die Tests in der Uni, da dort keine SSL Sockets implementiert sind
  * @author Fabian Reiber und Francis Opoku
  *
  */
 
 public class ProxyClient extends Thread{
 
-//	private Socket connection;
 	/**
 	 * TIMEINTERVAL in ms
 	 */
@@ -47,16 +49,12 @@ public class ProxyClient extends Thread{
 			Thread.sleep(2000);
 			fetchMails(POP3Proxy.getKnownAccounts());
 		} catch (InvalidUserException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidPasswordException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidNumberException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -69,16 +67,12 @@ public class ProxyClient extends Thread{
 			Thread.sleep(2000);
 			fetchMails(POP3Proxy.getKnownAccounts());
 		} catch (InvalidUserException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidPasswordException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidNumberException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -92,7 +86,6 @@ public class ProxyClient extends Thread{
 		try {
 			Thread.sleep(TIMEINTERVAL);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			System.out.println("ProxyClient.run(): Sleep interrupted.");
 			e.printStackTrace();
 		}
@@ -113,21 +106,19 @@ public class ProxyClient extends Thread{
 				System.out
 						.println("ProxyClient.run: fetchMails throws InvalidNumberException.");
 				e.printStackTrace();
+				}
 			}
 		}
-		}//loop(every 30secs) do fuer jeden account holen
-			//loop(i to accountList.length) authentifizieren und mails holen
-				//loop(j to numberOfMail) alle vorhandenen Mails vom Server holen und speichern
 	}
 	
 	public void fetchMails(List<POP3Account> accounts) throws InvalidUserException, InvalidPasswordException, InvalidNumberException{
-		SSLSocketFactory sslSocketFactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
+		//SSLSocketFactory sslSocketFactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
 		for(POP3Account a : accounts){
 			try {
 				//Socket zu Mailserver einrichten
-				SSLSocket connectionToMailserver= (SSLSocket)sslSocketFactory.createSocket(a.getAddress(), a.getPort());
-			
-				connectionToMailserver.setUseClientMode(true);
+			//	SSLSocket connectionToMailserver= (SSLSocket)sslSocketFactory.createSocket(a.getAddress(), a.getPort());
+				Socket connectionToMailserver = new Socket(a.getAddress(), a.getPort());
+			/*	connectionToMailserver.setUseClientMode(true);
 				connectionToMailserver.setEnabledProtocols(connectionToMailserver.getSupportedProtocols());
 				
 				String[] suites = connectionToMailserver.getSupportedCipherSuites();
@@ -143,10 +134,9 @@ public class ProxyClient extends Thread{
 							}
 				});
 				connectionToMailserver.setKeepAlive(true);
-				connectionToMailserver.startHandshake();
+				connectionToMailserver.startHandshake();*/
 				//connectionToMailserver.setKeepAlive(true);
 				//System.out.println("getKeepAlive " + connectionToMailserver.getKeepAlive());
-				
 				//reader, writer zum Mailserver
 				PrintWriter writer = new PrintWriter(new OutputStreamWriter(
 						connectionToMailserver.getOutputStream(), StandardCharsets.UTF_8.name()), true);
@@ -168,11 +158,10 @@ public class ProxyClient extends Thread{
 		}
 	}
 	
-	public List<Email> getMails(SSLSocket connection, Scanner reader, PrintWriter writer, POP3Account account) throws InvalidUserException, InvalidPasswordException, InvalidNumberException{
+	public List<Email> getMails(Socket connection, Scanner reader, PrintWriter writer, POP3Account account) throws InvalidUserException, InvalidPasswordException, InvalidNumberException{
 		List<Email> mails = new ArrayList<Email>();
 		List<String> tmpResponseOfListCommand = new ArrayList<String>();
 		String response;
-		
 		//User Authentifikation
 		response = reader.nextLine(); //+OK von Verbindungsaufbau auslesen
 		writer.println(commands.user(account.getUser()));
@@ -210,13 +199,13 @@ public class ProxyClient extends Thread{
 			tmpNr = Integer.parseInt(splitMessage[0]);
 			
 			
-			//UIDL anfordern / TODO: Errorhandling - noMail?
+			//UIDL anfordern
 			writer.println(commands.uidl(tmpNr));
 			response = reader.nextLine();
 			splitMessage = response.split(" ", 3);
 			uidl = splitMessage[2];
 			
-			//Mail anfordern / TODO: Errorhandling - noMail?
+			//Mail anfordern
 			writer.println(commands.retr(tmpNr));
 			response = reader.nextLine(); //Erste Antwort uberspringen (+OK n octets)
 			response = " ";
@@ -226,7 +215,6 @@ public class ProxyClient extends Thread{
 				tmpResponse = reader.nextLine();
 				response += tmpResponse + "\r\n";
 			}
-			System.out.println(response);
 			Email mail = new Email(response, bytesize, uidl);
 
 			//Empfangene Mail loeschen.
@@ -247,7 +235,6 @@ public class ProxyClient extends Thread{
 		a.addMails(mails);
 	}
 	
-	//ggf. raus? da nur server adden kann?!
 	/**
 	 * hinzufuegen eines neuen Accounts in die Liste
 	 * @param a POP3Account
