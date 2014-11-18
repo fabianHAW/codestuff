@@ -21,4 +21,5 @@
 <fullyQualifiedTypeName name="account.Collectionaccount"/>
 <fullyQualifiedTypeName name="account.POP3Account"/>
 <fullyQualifiedTypeName name="java.util.concurrent.Semaphore"/>
+<fullyQualifiedTypeName name="client.FileCopyClient"/>
 </qualifiedTypeNameHistroy>

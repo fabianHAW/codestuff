@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.1">
+  <zoom_level>9</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>0</x>
+      <y>0</y>
+      <w>423</w>
+      <h>468</h>
+    </coordinates>
+    <panel_attributes>fc_adt::FCpacket
+--
+-data: byte[]
+-dataLen: int
+-seqNumber: long
+-seqNumberBytes = new byte[8]: byte[]
+-timer: FC_Timer
+-validACK = false: boolean
+-timestamp = -1: long
+--
++FCpacket(long seqNum, byte[] packetData, int packetLen): ctor
++FCpacket(byte[] packetData, int packetLen): ctor
++setTimestamp(long time): void
++setTimer(FC_Timer t): void
++getData(): byte[]
++getLen(): int
++getSeqNum(): long
++getSeqNumBytes(): byte[]
++getSeqNumBytesAndData(): byte[]
++getTimestamp(): long
++getTimer(): FC_Timer
++isValidACK(): boolean
++setValidACK(boolean validACK): void
++compareTo(FCpacket partner): int
++hashCode(): int
++equals(Object obj): boolean
+-reduce(byte[] ba, int offset, int len): byte[]
+-concatenate(byte[] ba1, byte[] ba2): byte[]
+-makeLong(byte[] buf, int i, int length): long
+-writeBytes(long source, byte[] dest, int i, int length): void
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>891</x>
+      <y>27</y>
+      <w>342</w>
+      <h>432</h>
+    </coordinates>
+    <panel_attributes>server::FileCopyServer
+--
++TEST_OUTPUT_MODE = false: boolean
++SERVER_PORT = 23000: int
++UDP_PACKET_SIZE = 1008: int
++CONNECTION_TIMEOUT = 3000: int
++DELAY = 10: long
++windowSize = 128: int
++destPath = "": String
++errorRate = 10000: long
+-clientAdress = null: InetAddress
+-clientPort = -1: int
+-serverSocket: DatagramSocket
+-receiveData: byte[]
+-recBuf: LinkedList&lt;FCpacket&gt;
+-outToFile: FileOutputStream
++rcvbase: long
+-recPacketCounter: long
+--
++FileCopyServer(): ctor
++runFileCopyServer(): void
+-sendAck(FCpacket fcRcvPacket): void
+-insertPacketintoBuffer(FCpacket insertPacket): void
+-deliverBufferPackets(): void
+-writePacket(FCpacket deliverPacket): void
+-setParameters(FCpacket controlPacket): boolean
+-testOut(String out): void
++main(String[] argv): void
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>495</x>
+      <y>612</y>
+      <w>810</w>
+      <h>324</h>
+    </coordinates>
+    <panel_attributes>client::FileCopyClient
+--
++TEST_OUTPUT_MODE = false: boolean
++SERVER_PORT = 23000: int
++UDP_PACKET_SIZE = 1008: int
++servername: String
++sourcePath: String
++destPath: String
++windowSize: int
++serverErrorRate: long
+-timeoutValue = 100000000L: long
+--
++FileCopyClient(String serverArg, String sourcePathArg, String destPathArg, String windowSizeArg, String errorRateArg): ctor
++runFileCopyClient(): void
++startTimer(FCpacket packet): void
++cancelTimer(FCpacket packet): void
++timeoutTask(long seqNum): void
++computeTimeoutValue(long sampleRTT): void
++makeControlPacket(): FCpacket
++testOut(String out): void
++main(String argv[]): void
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>18</x>
+      <y>594</y>
+      <w>414</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>fc_adt::FC_Timer
+--
+-myFCC: FileCopyClient
+-delay: long
+-seqNum: long
+-isCancelled: boolean
+--
++FC_Timer(long timeout, FileCopyClient fc, long seqNum): ctor
++run(): void
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1044</x>
+      <y>450</y>
+      <w>108</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+connect to ^
+
+
+
+*</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>216</x>
+      <y>729</y>
+      <w>297</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=1
+responsible for &gt;</panel_attributes>
+    <additional_attributes>310.0;130.0;10.0;130.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>189</x>
+      <y>459</y>
+      <w>72</w>
+      <h>153</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=1
+using v</panel_attributes>
+    <additional_attributes>10.0;150.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>414</x>
+      <y>234</y>
+      <w>495</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=*
+m2=1
+&lt; using</panel_attributes>
+    <additional_attributes>10.0;20.0;530.0;20.0</additional_attributes>
+  </element>
+</diagram>
