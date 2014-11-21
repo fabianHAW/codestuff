@@ -1,0 +1,6 @@
+todo:
+-sequenzd. recbuf -> sendbuf
+initializerecbuf -> getFile und in receiveackclient ändern
+if(recBuf.size() != windowSize) löschen
+deleteackedpackets -> movesendbase
+timeouttask raus

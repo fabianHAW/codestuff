@@ -105,6 +105,7 @@ public class FileCopyServer {
             if (seqNum == 0) {
               if (setParameters(fcReceivePacket)) {
                 // open destination file
+            	  //speichert die datei ab
                 outToFile = new FileOutputStream(destPath);
               } else {
                 // Wrong parameter packet --> End!

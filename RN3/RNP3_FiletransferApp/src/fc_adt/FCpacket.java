@@ -18,8 +18,17 @@ public class FCpacket implements Comparable<FCpacket> {
   private FC_Timer timer;
   private boolean validACK = false;
   private long timestamp = -1; // Can be used to store the send time
+  private long timeout = 0; //#Zusatz von uns
 
-  /**
+  public long getTimeout() {
+	return timeout;
+}
+
+public void setTimeout(long timeout) {
+	this.timeout = timeout;
+}
+
+/**
    * Constructor for sending FCpackets. The first <packetLen> bytes of the
    * packetData byte array are copied and a new data byte array is generated.
    */

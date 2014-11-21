@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<item value="2" key="TypeHierarchyViewPart.hierarchyview"/>
-	<item value="false" key="TypeHierarchyViewPart.qualifiednames"/>
 	<item value="3" key="TypeHierarchyViewPart.orientation"/>
+	<item value="false" key="TypeHierarchyViewPart.qualifiednames"/>
 	<item value="false" key="TypeHierarchyViewPart.linkeditors"/>
 	<section name="OptionalMessageDialog.hide.">
 		<item value="true" key="org.eclipse.jdt.ui.typecomment.deprecated"/>
@@ -21,26 +21,40 @@
 	<section name="DialogBounds_GenerateToStringDialog">
 		<item value="501" key="DIALOG_WIDTH"/>
 		<item value="28" key="DIALOG_Y_ORIGIN"/>
-		<item value="390" key="DIALOG_X_ORIGIN"/>
 		<item value="684" key="DIALOG_HEIGHT"/>
+		<item value="390" key="DIALOG_X_ORIGIN"/>
 		<item value="1|DejaVu Sans|10.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="DialogBounds_GetterSetterTreeSelectionDialog">
 		<item value="537" key="DIALOG_WIDTH"/>
 		<item value="28" key="DIALOG_Y_ORIGIN"/>
-		<item value="372" key="DIALOG_X_ORIGIN"/>
 		<item value="693" key="DIALOG_HEIGHT"/>
+		<item value="372" key="DIALOG_X_ORIGIN"/>
 		<item value="1|DejaVu Sans|10.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
-	<section name="quick_assist_proposal_size">
+	<section name="org.eclipse.ltk.ui.refactoring.settings">
+	</section>
+	<section name="RenameInformationPopup">
 	</section>
 	<section name="NewClassWizardPage">
 		<item value="false" key="create_constructor"/>
 		<item value="true" key="create_unimplemented"/>
 	</section>
-	<section name="RenameInformationPopup">
+	<section name="quick_assist_proposal_size">
 	</section>
-	<section name="org.eclipse.ltk.ui.refactoring.settings">
+	<section name="SourceActionDialog.methods">
+		<item value="false" key="SkipNull"/>
+		<item value="10" key="LimitValue"/>
+		<item value="1" key="VisibilityModifier"/>
+		<item value="false" key="Comments"/>
+		<item value="0" key="ToStringTemplateSelected"/>
+		<item value="0" key="StringStyle"/>
+		<item value="false" key="LimitElements"/>
+		<item value="false" key="InstanceOf"/>
+		<item value="false" key="SynchronizedModifier"/>
+		<item value="false" key="Blocks"/>
+		<item value="false" key="FinalModifier"/>
+		<item value="true" key="IgnoreDefault"/>
 	</section>
 	<section name="org.eclipse.jdt.internal.ui.text.QuickOutline">
 		<item value="false" key="GoIntoTopLevelTypeAction.isChecked"/>
@@ -48,20 +62,6 @@
 		<item value="352" key="org.eclipse.jdt.internal.ui.text.JavaOutlineInformationControlDIALOG_WIDTH"/>
 		<item value="347" key="org.eclipse.jdt.internal.ui.text.JavaOutlineInformationControlDIALOG_HEIGHT"/>
 		<item value="false" key="org.eclipse.jdt.internal.ui.text.JavaOutlineInformationControlDIALOG_USE_PERSISTED_LOCATION"/>
-	</section>
-	<section name="SourceActionDialog.methods">
-		<item value="false" key="SkipNull"/>
-		<item value="10" key="LimitValue"/>
-		<item value="0" key="StringStyle"/>
-		<item value="0" key="ToStringTemplateSelected"/>
-		<item value="false" key="Comments"/>
-		<item value="1" key="VisibilityModifier"/>
-		<item value="false" key="LimitElements"/>
-		<item value="false" key="InstanceOf"/>
-		<item value="false" key="SynchronizedModifier"/>
-		<item value="false" key="Blocks"/>
-		<item value="true" key="IgnoreDefault"/>
-		<item value="false" key="FinalModifier"/>
 	</section>
 	<section name="AddGetterSetterDialog">
 		<item value="false" key="RemoveFinal"/>
@@ -73,8 +73,8 @@
 	<section name="DialogBounds_GenerateHashCodeEqualsDialog">
 		<item value="503" key="DIALOG_WIDTH"/>
 		<item value="28" key="DIALOG_Y_ORIGIN"/>
-		<item value="389" key="DIALOG_X_ORIGIN"/>
 		<item value="566" key="DIALOG_HEIGHT"/>
+		<item value="389" key="DIALOG_X_ORIGIN"/>
 		<item value="1|DejaVu Sans|10.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 </section>
