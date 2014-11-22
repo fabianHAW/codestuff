@@ -1,5 +1,7 @@
 package fc_adt;
 
+import java.util.Arrays;
+
 /* FCpacket.java
  Version 1.0
  Praktikum Rechnernetze HAW Hamburg
@@ -52,7 +54,14 @@ public void setTimeout(long timeout) {
     seqNumber = makeLong(seqNumberBytes, 0, 8);
   }
 
-  /**
+	  @Override
+	public String toString() {
+		return "FCpacket [data=" + Arrays.toString(data) + ", dataLen=" + dataLen
+				+ ", seqNumber=" + seqNumber + ", seqNumberBytes="
+				+ Arrays.toString(seqNumberBytes) + ", validACK=" + validACK + "]";
+	}
+
+/**
    * Save a timestamp for the FCpacket
    */
   public void setTimestamp(long time) {

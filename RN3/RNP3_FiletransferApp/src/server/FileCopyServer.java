@@ -7,9 +7,8 @@ package server;
  Autor: M. Huebner
  */
 import java.io.*;
-
 import java.net.*;
-
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -18,7 +17,7 @@ import fc_adt.*;
 
 public class FileCopyServer {
   // -------- Constants
-  public final static boolean TEST_OUTPUT_MODE = false;
+  public final static boolean TEST_OUTPUT_MODE = true;
   public final static int SERVER_PORT = 23000;
   public final static int UDP_PACKET_SIZE = 1008;
   public final static int CONNECTION_TIMEOUT = 3000; // milliseconds
@@ -68,6 +67,9 @@ public class FileCopyServer {
         udpReceivePacket = new DatagramPacket(receiveData, UDP_PACKET_SIZE);
         // Wait for data packet
         serverSocket.receive(udpReceivePacket);
+        
+        System.out.println("got the packet");
+        
         receivedIPAddress = udpReceivePacket.getAddress();
         receivedPort = udpReceivePacket.getPort();
 
@@ -91,6 +93,7 @@ public class FileCopyServer {
                                          udpReceivePacket.getLength());
 
           long seqNum = fcReceivePacket.getSeqNum();
+          
           recPacketCounter++;
 
           // Test on simulated error (packet checksum simulation)
@@ -101,12 +104,13 @@ public class FileCopyServer {
                     " correctly received! Expected for order delivery (rcvbase): " +
                     rcvbase);
 
+            System.out.println("seqnum: " + seqNum);
             // Handle first packet --> read and set parameters
             if (seqNum == 0) {
               if (setParameters(fcReceivePacket)) {
                 // open destination file
             	  //speichert die datei ab
-                outToFile = new FileOutputStream(destPath);
+            	  outToFile = new FileOutputStream(destPath);
               } else {
                 // Wrong parameter packet --> End!
                 break;
@@ -227,7 +231,7 @@ public class FileCopyServer {
 
     // Extract parameters
     parameterArray = parameters.split(";");
-
+    
     if (parameterArray.length == 3) {
       // Adjust parameters
       destPath = parameterArray[0];
