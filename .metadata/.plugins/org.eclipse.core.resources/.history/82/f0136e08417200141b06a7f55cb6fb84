@@ -17,7 +17,7 @@ import fc_adt.*;
 public class FileCopyClient extends Thread {
 
 	// -------- Constants
-	public final static boolean TEST_OUTPUT_MODE = true;
+	public final static boolean TEST_OUTPUT_MODE = false;
 
 	public final int SERVER_PORT = 23000;
 	public final int CLIENTCOPY_PORT = 23001;
@@ -372,15 +372,10 @@ public class FileCopyClient extends Thread {
 					System.out.println("received acked of packet: " + receivedFCpacket.getSeqNum());
 					
 					if (receivedFCpacket != null) {
-						int indexOfContainedPacket = sendBuf.indexOf(receivedFCpacket);
-						//OLD: if (sendBuf.contains(receivedFCpacket)) {
-						if (indexOfContainedPacket != -1) {
-							ackReceivedPacket(sendBuf.get(indexOfContainedPacket));
-							//System.out.println("packet is inside of senbuffer");
-							
+						if (sendBuf.contains(receivedFCpacket)) {
+							ackReceivedPacket(receivedFCpacket);
+							System.out.println("packet is inside of senbuffer");
 							timeoutValue = expRTT + 4*jitter;
-							
-//							System.out.println("sendbase after ack is set of received packet: " + sendbase);
 							
 							if (sendbase == receivedFCpacket.getSeqNum()) {
 								try {
@@ -422,10 +417,9 @@ public class FileCopyClient extends Thread {
 			int counter = 1;
 			System.out.println("inside movesendbase");
 			
-			//sendBuf.get(sendbase).setValidACK(true);
+			sendBuf.get(sendbase).setValidACK(true);
 			sendbase++;
 			if(sendbase < sendBuf.size()){
-				System.out.println(sendBuf.get(sendbase).toString());
 				while(sendBuf.get(sendbase).isValidACK()){
 					sendbase++;	
 					counter++;

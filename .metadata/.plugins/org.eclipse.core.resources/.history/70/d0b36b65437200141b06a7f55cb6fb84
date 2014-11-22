@@ -380,7 +380,7 @@ public class FileCopyClient extends Thread {
 							
 							timeoutValue = expRTT + 4*jitter;
 							
-//							System.out.println("sendbase after ack is set of received packet: " + sendbase);
+							System.out.println("sendbase after ack is set of received packet: " + sendbase);
 							
 							if (sendbase == receivedFCpacket.getSeqNum()) {
 								try {

@@ -56,8 +56,7 @@ public void setTimeout(long timeout) {
 
 	  @Override
 	public String toString() {
-		  //data=" + Arrays.toString(data) + ", 
-		return "FCpacket [dataLen=" + dataLen
+		return "FCpacket [data=" + Arrays.toString(data) + ", dataLen=" + dataLen
 				+ ", seqNumber=" + seqNumber + ", seqNumberBytes="
 				+ Arrays.toString(seqNumberBytes) + ", validACK=" + validACK + "]";
 	}

@@ -373,15 +373,13 @@ public class FileCopyClient extends Thread {
 					
 					if (receivedFCpacket != null) {
 						int indexOfContainedPacket = sendBuf.indexOf(receivedFCpacket);
-						//OLD: if (sendBuf.contains(receivedFCpacket)) {
+						//if (sendBuf.contains(receivedFCpacket)) {
 						if (indexOfContainedPacket != -1) {
-							ackReceivedPacket(sendBuf.get(indexOfContainedPacket));
+							
+							ackReceivedPacket(receivedFCpacket);
 							//System.out.println("packet is inside of senbuffer");
-							
 							timeoutValue = expRTT + 4*jitter;
-							
-//							System.out.println("sendbase after ack is set of received packet: " + sendbase);
-							
+							System.out.println("sendbase after ack is set of received packet: " + sendbase);
 							if (sendbase == receivedFCpacket.getSeqNum()) {
 								try {
 									accessBuffer.acquire();
