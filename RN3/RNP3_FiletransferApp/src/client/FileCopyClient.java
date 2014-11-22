@@ -8,6 +8,8 @@ package client;
 
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -17,7 +19,7 @@ import fc_adt.*;
 public class FileCopyClient extends Thread {
 
 	// -------- Constants
-	public final static boolean TEST_OUTPUT_MODE = true;
+	public final static boolean TEST_OUTPUT_MODE = false;
 
 	public final int SERVER_PORT = 23000;
 	public final int CLIENTCOPY_PORT = 23001;
@@ -48,6 +50,12 @@ public class FileCopyClient extends Thread {
 	private ReceiveAckClient raCl;
 
 	private FileInputStream readFileInput;
+	byte [] fileData;
+	//bereits gelesene Datenpakete aus der Datei
+	private int justReaded = 0;
+	//insgesamt zu lesende Datenpakete aus der Datei
+	private int needsToRead = 0;
+	//Flag um zu signalisieren, ob letztes Datenpaket bereits gelesen wurde
 	private boolean eofReached = false;
 	
 
@@ -56,7 +64,9 @@ public class FileCopyClient extends Thread {
 	private Semaphore accessBuffer;
 	private int sendbase = 0;
 	private int nextSeqNum = 1;
-	private int skipPos = 0;
+	
+	//OLD, wurde im alten READFILE(n) verwendet 
+	//private int skipPos = 0;
 
 	// ... ToDo
 
@@ -89,86 +99,62 @@ public class FileCopyClient extends Thread {
 		}
 	}
 
-	public void runFileCopyClient() {
-
+	public void runFileCopyClient() {		
 		FCpacket controlPacket = makeControlPacket();
 		
-		try {
-			String s = new String(controlPacket.getSeqNumBytesAndData(),"UTF-8");
-			System.out.println("controlpacket: " + s);
-		} catch (UnsupportedEncodingException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-
-		System.out.println("controlpacketsize: " + controlPacket.getLen());
+		//*****TESTAUSGABE START******
+		/*System.out.println("controlpacketsize: " + controlPacket.getLen());
 		System.out.println("controlpacketsize with seqnum: "
 				+ controlPacket.getSeqNumBytesAndData().length);
 		System.out.println("udp_packetsize: " + UDP_PACKET_SIZE);
 		System.out.println("seqnum of controlpacket: " + controlPacket.getSeqNum());
+		*///*****TESTAUSGABE STOP******
 		
 		DatagramPacket udpControlPacket;
 		try {
-
 			//+8 Bytes, wegen der Sequenznummer -> werden diese nicht mit drauf gerechnet
 			//werden auf der Serverseite die uebergebenen Parameter nicht korrekt erkannt
 			udpControlPacket = new DatagramPacket(controlPacket.getSeqNumBytesAndData(),
 					controlPacket.getLen() + 8, InetAddress.getByName(this.servername), SERVER_PORT);
 			
-			/*FCpacket f = new FCpacket(udpControlPacket.getData(), udpControlPacket.getLength());
-			try {
-				System.out.println("f: " + new String(f.getData(), "UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
-			
 		} catch (UnknownHostException e1) {
 			System.out.println("couldn't get inetadresse by name");
+			e1.printStackTrace();
 			udpControlPacket = null;
 			this.connectionEstablished = false;
-			e1.printStackTrace();
 		}
 		
 		this.sendBuf.add(controlPacket);
+		
 		//da bereits controlPacket erstellst wurde, ein Paket weniger
-		readFile(this.windowSize - 1);
-
-		/*for(FCpacket item : this.sendBuf){
-			System.out.println("item.getseq: " + item.getSeqNum());
-			System.out.println("item.getdata: " + item.getData());
-			System.out.println("item.getlen: " + item.getLen());
-		}*/
+		//readFile(this.windowSize - 1);
+		readFile();
 		
 		try {
 			if(udpControlPacket != null){
 				this.raCl = new ReceiveAckClient();
 				this.raCl.start();
 				
-				System.out.println("port: " + udpControlPacket.getPort());
-				System.out.println("adress: " + udpControlPacket.getAddress());
-				
 				controlPacket.setTimestamp(System.nanoTime());
 				this.client.send(udpControlPacket);
 	
 				controlPacket.setTimeout(this.expRTT + 4 * this.jitter);
-				//startTimer(controlPacket);
+				startTimer(controlPacket);
 				
 				//computeTimeoutValue(System.nanoTime() - controlPacket.getTimestamp());
 				this.connectionEstablished = true;
 			}
 		} catch (IOException e) {
-			//System.out.println("couldn't write first packet");
-			//this.connectionEstablished = false;
-			//e.printStackTrace();
+			System.out.println("couldn't write first packet");
+			e.printStackTrace();
 		
 		}
 		
 		while (this.connectionEstablished && this.sendbase < this.sendBuf.size()) {
-			//System.out.println("sendbase: " + this.sendbase);
 			//durch die Liste wird bei 0 angefangen zu zaehlen, d.h. exklusive windowsize - 1
 			if(this.nextSeqNum < this.sendbase + this.windowSize 
 					&& this.nextSeqNum < this.sendBuf.size()){
+
 				try {
 					this.accessBuffer.acquire();
 					sendNextSeqNumPacket();
@@ -180,13 +166,90 @@ public class FileCopyClient extends Thread {
 			}			
 		}
 
-
-		//this.raCl.setInterrupt(true);
+		try {
+			this.readFileInput.close();
+		} catch (IOException e) {
+			System.out.println("couldn't close fileinputstream");
+			e.printStackTrace();
+		}
 		ReceiveAckClient.currentThread().interrupt();
 		this.client.close();
 
+		int checkCounter = 0;
+		for(FCpacket item : this.sendBuf){
+			if(item.isValidACK()){
+				checkCounter++;
+			}
+		}
+		
+		//plus 1, da controlpacket ebenfalls in dem Sendepuffer enthalten
+		if(checkCounter == this.justReaded + 1){
+			System.out.println("successful sent!");
+		}
+		else{
+			System.out.println("something went wrong! not all packets sent right!");
+		}
+		
+		//********TESTAUSGABE OB ALLE PAKETE "GEACKED" WURDEN
+		/*for(FCpacket item : sendBuf){
+			System.out.println(item.toString());
+		}*/
+		
+	}
+	
+	private void readFile(){
+		try {
+			this.fileData = Files.readAllBytes(Paths.get(sourcePath));
+			//anzahl der Pakete die insgesamt in den Sendepuffer geschrieben werden muessen
+			if(this.fileData.length < UDP_PACKET_SIZE - 8){
+				this.needsToRead = 1;
+			}
+			else{
+				this.needsToRead = this.fileData.length / (UDP_PACKET_SIZE - 8);
+			}
+			//System.out.println("datalength: " + this.fileData.length);
+		} catch (IOException e) {
+			System.out.println("can't read all bytes from sourcepath");
+			e.printStackTrace();
+		}
+		
+		storePacketsInSendBuffer(windowSize - 1);
 	}
 
+	private void storePacketsInSendBuffer(int n){
+		int fileByteSize = UDP_PACKET_SIZE - 8;
+		byte[] packetTmp;
+		for(int i = 0; i < n; i++){
+			if(this.needsToRead == 1 || this.justReaded == this.needsToRead){
+				int packetLength = this.fileData.length % fileByteSize;
+				packetTmp = new byte[packetLength];
+				//*******TESTAUSGABE START***********
+			/*	System.out.println("justreaded: " + this.justReaded);
+				System.out.println("filebytesize: " + fileByteSize);
+				System.out.println("packetlength: " + packetLength);
+				*///*******TESTAUSGABE ENDE***********
+				
+				System.arraycopy(this.fileData, this.justReaded * fileByteSize, packetTmp, 0, packetLength);
+				this.sendBuf.add(new FCpacket(this.justReaded + 1, packetTmp , packetLength));
+				this.eofReached = true;
+				//ist nach dem letzte paket um 1 groesser als needsToRead
+				this.justReaded++;
+				break;
+			}
+			else{
+				packetTmp = new byte[fileByteSize];
+				System.arraycopy(this.fileData, this.justReaded * fileByteSize, packetTmp, 0, fileByteSize);
+				this.sendBuf.add(new FCpacket(this.justReaded + 1, packetTmp , fileByteSize));
+				//ist nach dem letzte paket um 1 groesser als needsToRead
+				this.justReaded++;
+			}
+			
+		}
+	//	System.out.println("justreaded: " + this.justReaded);
+		//System.out.println("needstoread: " + this.needsToRead);
+	}
+	
+	/* OLD READFILE -> hat nicht die gesamte Datei gelesen
 	private void readFile(int n) {
 		//return, wenn Ende der Datei bereits erreicht wurde
 		if(eofReached){
@@ -203,7 +266,9 @@ public class FileCopyClient extends Thread {
 				this.readFileInput.skip(skipPos * fileByteSize);
 				skipPos++;
 				//-1, wenn Dateiende erreicht
-				if(this.readFileInput.read(filePart, 0, fileByteSize) != -1){
+				int returnval = this.readFileInput.read(filePart, 0, fileByteSize);
+				System.out.println("returnval of readfile: " + returnval);
+				if(returnval != -1){
 					this.sendBuf.add(new FCpacket(skipPos, filePart, fileByteSize));
 				}
 				else{
@@ -226,17 +291,19 @@ public class FileCopyClient extends Thread {
 		/*System.out.println("length of first packet in sendbuf: " + this.sendBuf.get(1).getLen());
 		System.out.println("seqnum of first packet in sendbuf: " + this.sendBuf.get(1).getSeqNum());
 		System.out.println("data of first packet in sendbuf: " + this.sendBuf.get(1).getData());
-		*/
-		}
+		*//*
+		}*/
 
 	private void sendNextSeqNumPacket() {
 		FCpacket nextPacket = this.sendBuf.get(this.nextSeqNum);
 		try {
+			/*DatagramPacket udpNextPacket = new DatagramPacket(nextPacket.getSeqNumBytesAndData(),
+					UDP_PACKET_SIZE, InetAddress.getByName(this.servername), SERVER_PORT);*/
 			DatagramPacket udpNextPacket = new DatagramPacket(nextPacket.getSeqNumBytesAndData(),
-					UDP_PACKET_SIZE, InetAddress.getByName(this.servername), SERVER_PORT);
+					nextPacket.getLen() + 8, InetAddress.getByName(this.servername), SERVER_PORT);
 			nextPacket.setTimestamp(System.nanoTime());
 			nextPacket.setTimeout(this.expRTT + 4 * this.jitter);
-			//startTimer(nextPacket);
+			startTimer(nextPacket);
 			this.client.send(udpNextPacket);
 			this.nextSeqNum++;
 		} catch (IOException e) {
@@ -251,8 +318,8 @@ public class FileCopyClient extends Thread {
 	 */
 	public void startTimer(FCpacket packet) {
 		/* Create, save and start timer for the given FCpacket */
-		//FC_Timer timer = new FC_Timer(timeoutValue, this, packet.getSeqNum());
-		FC_Timer timer = new FC_Timer(packet.getTimeout(), this, packet.getSeqNum());
+		FC_Timer timer = new FC_Timer(timeoutValue, this, packet.getSeqNum());
+		//FC_Timer timer = new FC_Timer(packet.getTimeout(), this, packet.getSeqNum());
 		packet.setTimer(timer);
 		timer.start();
 	}
@@ -280,15 +347,18 @@ public class FileCopyClient extends Thread {
 	public void timeoutTask(long seqNum) {
 		FCpacket p = this.sendBuf.get((int)seqNum);
 		//computeTimeoutValue(sampleRTT);
-		try {
-			p.setTimestamp(System.nanoTime());
-		//	this.timeoutValue = 2 * this.timeoutValue;
-			//startTimerOnRetransmit(p); 
-			this.client.send(new DatagramPacket(p.getSeqNumBytesAndData(), UDP_PACKET_SIZE, 
-					InetAddress.getByName(this.servername), SERVER_PORT));
-		} catch (IOException e) {
-			System.out.println("couldn't send datagram to server");
-			e.printStackTrace();
+		if(!this.client.isClosed()){
+			try {
+				p.setTimestamp(System.nanoTime());
+			//	this.timeoutValue = 2 * this.timeoutValue;
+				startTimer(p);
+				//startTimerOnRetransmit(p); 
+				this.client.send(new DatagramPacket(p.getSeqNumBytesAndData(), p.getLen() + 8, 
+						InetAddress.getByName(this.servername), SERVER_PORT));
+			} catch (IOException e) {
+				System.out.println("couldn't send datagram to server");
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -306,6 +376,7 @@ public class FileCopyClient extends Thread {
 		//this.timeoutValue = 2 * this.timeoutValue;
 	}
 	
+	//ist nur auskommentiert...
 	private void chooseObservedPacket(){
 		FCpacket oPacket = this.sendBuf.get((int)observedPacket);
 		for(int i = sendbase; i < sendBuf.size(); i++){
@@ -369,29 +440,34 @@ public class FileCopyClient extends Thread {
 					client.receive(udpPacket);
 					receivedFCpacket = new FCpacket(udpPacket.getData(),
 							udpPacket.getLength());
-					System.out.println("received acked of packet: " + receivedFCpacket.getSeqNum());
+					testOut("received ack of packet: " + receivedFCpacket.getSeqNum());
 					
 					if (receivedFCpacket != null) {
-						int indexOfContainedPacket = sendBuf.indexOf(receivedFCpacket);
-						//OLD: if (sendBuf.contains(receivedFCpacket)) {
-						if (indexOfContainedPacket != -1) {
+						try {
+							accessBuffer.acquire();
+							int indexOfContainedPacket = sendBuf.indexOf(receivedFCpacket);
+							if (indexOfContainedPacket != -1) {
+							
 							ackReceivedPacket(sendBuf.get(indexOfContainedPacket));
 							//System.out.println("packet is inside of senbuffer");
+							//System.out.println("sendbase: " + sendbase);
 							
-							timeoutValue = expRTT + 4*jitter;
+							//timeoutValue = expRTT + 4*jitter;
 							
 //							System.out.println("sendbase after ack is set of received packet: " + sendbase);
 							
 							if (sendbase == receivedFCpacket.getSeqNum()) {
-								try {
-									accessBuffer.acquire();
 									int counter = moveSendbase();
-									readFile(counter);
-									//getMorePackets();
-									accessBuffer.release();
-								} catch (InterruptedException e) {
-									System.out.println("can't acquire semaphore");
-									e.printStackTrace();
+									//readFile(counter);
+									if(!eofReached){
+										storePacketsInSendBuffer(counter);
+										}
+									}
+							}
+							accessBuffer.release();
+							} catch (InterruptedException e) {
+								System.out.println("couldn't acquire semaphore");
+								e.printStackTrace();
 								}
 							}
 							
@@ -400,45 +476,33 @@ public class FileCopyClient extends Thread {
 								//computeTimeoutValue(sampleRTT);
 								//expRTT = (expRTT + sampleRTT) / sendbase;	
 								//chooseObservedPacket();
-							}
-						}
-					}
-				
-				} catch (IOException e) {
-					System.out.println("receive client was interrupted");
-					this.isInterrupted = true;
-					//e.printStackTrace();
+								}
+							} catch (IOException e) {
+								System.out.println("receive client was interrupted");
+								this.isInterrupted = true;
+								//e.printStackTrace();
+								}
 				}
-				
 			}
-		}
 
 		private void ackReceivedPacket(FCpacket receivedPacket) {
 			receivedPacket.setValidACK(true);
-			//cancelTimer(receivedPacket);
+			cancelTimer(receivedPacket);
 		}
 
 		private int moveSendbase() {
-			int counter = 1;
-			System.out.println("inside movesendbase");
-			
-			//sendBuf.get(sendbase).setValidACK(true);
-			sendbase++;
-			if(sendbase < sendBuf.size()){
-				System.out.println(sendBuf.get(sendbase).toString());
-				while(sendBuf.get(sendbase).isValidACK()){
+			int counter = 0;
+			//sendbase++;
+			//if(sendbase < sendBuf.size()){
+				//System.out.println(sendBuf.get(sendbase).toString());
+				do{
 					sendbase++;	
 					counter++;
-				}
-			}
-			
-			/*for(int i = sendbase; i <= seqNum; i++){
-				//if(sendBuf.get(i).isValidACK()){
-				sendBuf.get(i).setValidACK(true);
-					//sendbase++;
-				counter++;
-				//}
-			}*/
+					if(sendbase == sendBuf.size()){
+						break;
+					}
+				}while(sendBuf.get(sendbase).isValidACK());
+			//}
 			return counter;
 		}
 	}

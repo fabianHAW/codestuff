@@ -8,7 +8,6 @@ package server;
  */
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -68,8 +67,6 @@ public class FileCopyServer {
         // Wait for data packet
         serverSocket.receive(udpReceivePacket);
         
-        System.out.println("got the packet");
-        
         receivedIPAddress = udpReceivePacket.getAddress();
         receivedPort = udpReceivePacket.getPort();
 
@@ -104,7 +101,6 @@ public class FileCopyServer {
                     " correctly received! Expected for order delivery (rcvbase): " +
                     rcvbase);
 
-            System.out.println("seqnum: " + seqNum);
             // Handle first packet --> read and set parameters
             if (seqNum == 0) {
               if (setParameters(fcReceivePacket)) {
