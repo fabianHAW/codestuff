@@ -368,10 +368,8 @@ public class FileCopyClient extends Thread {
 
 		} else if (!packet.isRetransmit()) {
 			this.RTT = System.nanoTime() - packet.getTimestamp();
-			
 			//************ADD NEXT RTT************
 			this.midRTTForAllAcks += this.RTT;
-			
 			computeTimeoutValue();
 		}
 

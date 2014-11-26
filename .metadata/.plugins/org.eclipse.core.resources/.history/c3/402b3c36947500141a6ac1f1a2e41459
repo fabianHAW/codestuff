@@ -46,7 +46,7 @@ public class FileCopyClient extends Thread {
 	private long timeoutValue = 3000000000L;
 	private static long MAXTIMEOUTVALUE = 60000000000L;
 
-	// Round-Trip-Time
+	// Rund-Trip-Time
 	private long RTT;
 	// Smoothed RTT (geschaetzte RTT)
 	private long SRTT;
@@ -368,10 +368,6 @@ public class FileCopyClient extends Thread {
 
 		} else if (!packet.isRetransmit()) {
 			this.RTT = System.nanoTime() - packet.getTimestamp();
-			
-			//************ADD NEXT RTT************
-			this.midRTTForAllAcks += this.RTT;
-			
 			computeTimeoutValue();
 		}
 
