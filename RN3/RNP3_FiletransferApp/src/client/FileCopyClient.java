@@ -150,7 +150,7 @@ public class FileCopyClient extends Thread {
 		
 		}
 		
-		while (this.connectionEstablished && this.sendbase < this.sendBuf.size()) {
+		while (this.connectionEstablished && this.sendbase < needsToRead) {
 			//durch die Liste wird bei 0 angefangen zu zaehlen, d.h. exklusive windowsize - 1
 			if(this.nextSeqNum < this.sendbase + this.windowSize 
 					&& this.nextSeqNum < this.sendBuf.size()){
@@ -205,7 +205,9 @@ public class FileCopyClient extends Thread {
 				this.needsToRead = 1;
 			}
 			else{
-				this.needsToRead = this.fileData.length / (UDP_PACKET_SIZE - 8);
+				//Pruefen ob round tatsächlich aufrundet
+				this.needsToRead = Math.round(this.fileData.length / (UDP_PACKET_SIZE - 8));
+				//Math.round
 			}
 			//System.out.println("datalength: " + this.fileData.length);
 		} catch (IOException e) {
@@ -321,6 +323,7 @@ public class FileCopyClient extends Thread {
 		FC_Timer timer = new FC_Timer(timeoutValue, this, packet.getSeqNum());
 		//FC_Timer timer = new FC_Timer(packet.getTimeout(), this, packet.getSeqNum());
 		packet.setTimer(timer);
+		//packet.setTimeout(computeTimeoutValue(sampleRTT)); EVTL. HIER TimeOutValue aufrunden
 		timer.start();
 	}
 	
