@@ -44,7 +44,7 @@ public class FileCopyClient extends Thread {
 	// private long timeoutValue = 100000000L;
 	// laut RFC2988 ist timeout initial auf 3s zu setzen
 	private long timeoutValue = 3000000000L;
-	private static long MAXTIMEOUTVALUE = 60000000000L;
+	private long MAXTIMEOUTVALUE = 60000000000L;
 
 	// Rund-Trip-Time
 	private long RTT;
@@ -330,8 +330,8 @@ public class FileCopyClient extends Thread {
 	public void startTimerOnRetransmit(FCpacket packet) {
 		/* Create, save and start timer for the given FCpacket */
 		long newTimeout = 2 * this.timeoutValue;
-		if(newTimeout > MAXTIMEOUTVALUE){
-			newTimeout = MAXTIMEOUTVALUE;
+		if(newTimeout > this.MAXTIMEOUTVALUE){
+			newTimeout = this.MAXTIMEOUTVALUE;
 		}
 		FC_Timer timer = new FC_Timer(newTimeout, this,
 				packet.getSeqNum());
