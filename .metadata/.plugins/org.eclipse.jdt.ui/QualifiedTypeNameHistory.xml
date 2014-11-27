@@ -20,7 +20,6 @@
 <fullyQualifiedTypeName name="account.Collectionaccount"/>
 <fullyQualifiedTypeName name="account.POP3Account"/>
 <fullyQualifiedTypeName name="java.util.concurrent.Semaphore"/>
-<fullyQualifiedTypeName name="client.FileCopyClient"/>
 <fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="java.util.Collections"/>
 <fullyQualifiedTypeName name="java.net.InetAddress"/>
@@ -29,4 +28,9 @@
 <fullyQualifiedTypeName name="java.nio.file.Path"/>
 <fullyQualifiedTypeName name="java.nio.file.Paths"/>
 <fullyQualifiedTypeName name="fc_adt.FCpacket"/>
+<fullyQualifiedTypeName name="javax.sound.sampled.ReverbType"/>
+<fullyQualifiedTypeName name="client.FileCopyClient.ReceiveAckClient"/>
+<fullyQualifiedTypeName name="client.FileCopyClient"/>
+<fullyQualifiedTypeName name="java.io.BufferedWriter"/>
+<fullyQualifiedTypeName name="java.io.FileWriter"/>
 </qualifiedTypeNameHistroy>

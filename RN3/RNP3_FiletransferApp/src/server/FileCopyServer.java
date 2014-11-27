@@ -10,13 +10,12 @@ import java.io.*;
 import java.net.*;
 import java.util.Collections;
 import java.util.LinkedList;
-
 import fc_adt.*;
 
 
 public class FileCopyServer {
   // -------- Constants
-  public final static boolean TEST_OUTPUT_MODE = true;
+  public final static boolean TEST_OUTPUT_MODE = false;
   public final static int SERVER_PORT = 23000;
   public final static int UDP_PACKET_SIZE = 1008;
   public final static int CONNECTION_TIMEOUT = 3000; // milliseconds

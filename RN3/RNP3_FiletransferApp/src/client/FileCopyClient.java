@@ -47,12 +47,12 @@ public class FileCopyClient extends Thread {
 	private static long MAXTIMEOUTVALUE = 60000000000L;
 
 	// Round-Trip-Time
-	private long RTT;
+	private long RTT = 0;
 	// Smoothed RTT (geschaetzte RTT)
 	private long SRTT;
 	// RTT_Varianz
 	private long RTTVAR;
-	//Timer-Genauigkeit -> Wert? -> erstmal etwas hoeher gesetzt
+	//Timer-Genauigkeit -> Wert? -> erstmal etwas hoeher gesetzt 1s
 	private long measurementPrecision = 1000000000L;
 
 	private DatagramSocket client;
@@ -79,7 +79,9 @@ public class FileCopyClient extends Thread {
 	private long totalTransmissionTime;
 	private int totalTimerInterrupts = 0;
 	private int totalReceivedAcks = 0;
-	private long midRTTForAllAcks;
+	//Fuer alle verlustfrei gesendeten Pakete
+	private long midRTTForAllGoodAcks;
+	private long midRTTForAllAcks = 0;
 	
 	// Constructor
 	public FileCopyClient(String serverArg, String sourcePathArg,
@@ -92,7 +94,7 @@ public class FileCopyClient extends Thread {
 
 		try {
 			this.client = new DatagramSocket(CLIENTCOPY_PORT,
-					InetAddress.getByName(this.servername));
+					InetAddress.getLocalHost());
 			this.readFileInput = new FileInputStream(this.sourcePath);
 			this.sendBuf = new LinkedList<FCpacket>();
 			this.accessBuffer = new Semaphore(1);
@@ -114,7 +116,7 @@ public class FileCopyClient extends Thread {
 		this.totalTransmissionTime = System.nanoTime();
 		
 		FCpacket controlPacket = makeControlPacket();
-
+		
 		DatagramPacket udpControlPacket;
 		try {
 			// +8 Bytes, wegen der Sequenznummer -> werden diese nicht mit drauf
@@ -192,15 +194,15 @@ public class FileCopyClient extends Thread {
 		/**
 		 * Pruefung, ob auch alle Pakete "geacked" wurden
 		 */
-		int checkCounter = 0;
+		/*int checkCounter = 0;
 		for (FCpacket item : this.sendBuf) {
 			if (item.isValidACK()) {
 				checkCounter++;
 			}
-		}
-
+		}*/
+		
 		// plus 1, da controlpacket ebenfalls in dem Sendepuffer enthalten
-		if (checkCounter == this.justReaded + 1) {
+		if (this.totalReceivedAcks == this.justReaded + 1) {
 			System.out.println("successful sent!");
 		} else {
 			System.out
@@ -212,14 +214,17 @@ public class FileCopyClient extends Thread {
 		this.totalTransmissionTime = System.nanoTime() - this.totalTransmissionTime;
 
 		//************TOTAL MID VALUE OF RTT FOR ALL ACKS************
+		this.midRTTForAllGoodAcks /= this.totalReceivedAcks;
 		this.midRTTForAllAcks /= this.totalReceivedAcks;
 
 		System.out.println("TIME IN SEC: " + this.totalTransmissionTime / Math.pow(10, 9));
 		System.out.println("TIMERINTERRUPTS: " + this.totalTimerInterrupts);
 		System.out.println("RECEIVEDACKS: " + this.totalReceivedAcks);
-		System.out.println("MIDRTT IN MS: " + this.midRTTForAllAcks / Math.pow(10, 6));
+		System.out.println("MIDRTT FOR GOOD ACKS IN MS: " + this.midRTTForAllGoodAcks / Math.pow(10, 6));
+		System.out.println("MIDRTT FOR ALL ACKS IN MS: " + this.midRTTForAllAcks / Math.pow(10, 6));
 		
 		writeLogFile();
+		writeCsvFile();
 		
 	}
 
@@ -337,7 +342,7 @@ public class FileCopyClient extends Thread {
 				packet.getSeqNum());
 		packet.setTimer(timer);
 		// Timestamp setzen wurde hier hinein verlagert
-		packet.setTimestamp(System.nanoTime());
+		//packet.setTimestamp(System.nanoTime());
 		timer.start();
 	}
 
@@ -355,10 +360,13 @@ public class FileCopyClient extends Thread {
 		}
 		
 		// Nachdem die erste RTT gemessen wurde, werden die Werte gesetzt
-		if (packet.getSeqNum() == 0) {
+		if (this.RTT == 0) {
 			this.RTT = System.nanoTime() - packet.getTimestamp();
 			
 			//************ADD NEXT RTT************
+			this.midRTTForAllGoodAcks += this.RTT;
+
+			//************ADD NEXT RTT FOR ALL ACKS************
 			this.midRTTForAllAcks += this.RTT;
 			
 			this.SRTT = this.RTT;
@@ -370,11 +378,16 @@ public class FileCopyClient extends Thread {
 			this.RTT = System.nanoTime() - packet.getTimestamp();
 			
 			//************ADD NEXT RTT************
+			this.midRTTForAllGoodAcks += this.RTT;
+			//************ADD NEXT RTT FOR ALL ACKS************
 			this.midRTTForAllAcks += this.RTT;
 			
 			computeTimeoutValue();
 		}
-
+		else{
+			//************ADD NEXT RTT FOR ALL ACKS************
+			this.midRTTForAllAcks += System.nanoTime() - packet.getTimestamp();
+		}
 	}
 
 	/**
@@ -389,7 +402,6 @@ public class FileCopyClient extends Thread {
 			try {
 				this.accessBuffer.acquire();
 				FCpacket p = this.sendBuf.get((int) seqNum);
-				this.accessBuffer.release();
 				
 				p.setRetransmit(true);
 				startTimerOnRetransmit(p);
@@ -397,6 +409,7 @@ public class FileCopyClient extends Thread {
 				this.client.send(new DatagramPacket(p.getSeqNumBytesAndData(),
 						p.getLen() + 8, InetAddress.getByName(this.servername),
 						SERVER_PORT));
+				this.accessBuffer.release();
 				
 				//************COUNTING TIMER INTERRUPTS************
 				this.totalTimerInterrupts++;
@@ -477,8 +490,30 @@ public class FileCopyClient extends Thread {
 			writer.println("TIME IN SEC: " + this.totalTransmissionTime / Math.pow(10, 9));
 			writer.println("TIMERINTERRUPTS: " + this.totalTimerInterrupts);
 			writer.println("RECEIVEDACKS: " + this.totalReceivedAcks);
-			writer.println("MIDRTT IN MS: " + this.midRTTForAllAcks / Math.pow(10, 6));
+			writer.println("MIDRTT FOR GOOD ACKS IN MS: " + this.midRTTForAllGoodAcks / Math.pow(10, 6));
+			writer.println("MIDRTT FOR ALL ACKS IN MS: " + this.midRTTForAllAcks / Math.pow(10, 6));
 			writer.print("***************************\n");
+			
+			writer.close();
+		} catch (IOException e) {
+			System.out.println("can't write logfile");
+			e.printStackTrace();
+		}
+	}
+	
+	private void writeCsvFile(){
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(new BufferedWriter(new FileWriter("logfile.csv", true)));
+//			writer.println("WINDOWSIZE;ERRORRATE;TIME IN SEC;TIMERINTERRUPTS;RECEIVEDACKS;MIDRTT FOR GOOD ACKS IN MS;MIDRTT FOR ALL ACKS IN MS");
+			writer.print(this.windowSize);
+			writer.print(";" + this.serverErrorRate);
+			writer.print(";" + this.totalTransmissionTime / Math.pow(10, 9));
+			writer.print(";" + this.totalTimerInterrupts);
+			writer.print(";" + this.totalReceivedAcks);
+			writer.print(";" + this.midRTTForAllGoodAcks / Math.pow(10, 6));
+			writer.println(";" + this.midRTTForAllAcks / Math.pow(10, 6));
+		
 			
 			writer.close();
 		} catch (IOException e) {
