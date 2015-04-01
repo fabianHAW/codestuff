@@ -4,15 +4,15 @@
 start(Timer) ->
 	io:format("Server started"),
 	
-	loop(Timer).
+	loop(Timer, 1).
 	
     
-loop(Timer) ->
+loop(Timer, INNR) ->
 	receive 
 		{Pid, getmsgid} ->
 			io:format("Client ~p will Nachrichtennr", [Pid]),
-			lifetimeTimer:resetTimer(Timer),
-			loop();
+			Pid ! {nid, INNR},
+			loop(lifetimeTimer:resetTimer(Timer), INNR + 1);
 		{dropmessage, [INNR, Msg, TSclientout]} ->
 			io:format("Client sendet Nachricht"),
 			lifetimeTimer:resetTimer(Timer),
