@@ -19,7 +19,7 @@ getClientNNR([[]], _ClientID) ->
 getClientNNR([[Pid, _NNr, _LastVisit] | Rest], ClientID) when Pid /= ClientID ->
 	getClientNNR(Rest, ClientID);
 getClientNNR([[_Pid, NNr, _LastVisit] | _Rest], _ClientID)  ->
-	NNr.
+	NNr + 1.
 	
 %ToDo: Loggen	
 updateClient([[]],ClientID, _NNr,_Datei) ->
