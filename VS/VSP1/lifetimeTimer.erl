@@ -28,10 +28,10 @@ init(Datei) ->
 createServer() ->
 	{ok, ConfigListe} = file:consult("server.cfg"),
     {ok, Lifetime} = get_config_value(latency, ConfigListe),
-    timer:start(), 
-    SrvPid = test,
-    {ok, Timer} = timer:send_after(Lifetime*1000, SrvPid, {srvtimeout}),
-	SrvPid = spawn(server, start, [Timer]).
+    {ok, Servername} = get_config_value(servername, ConfigListe),
+    timer:start(),
+    {ok, Timer} = timer:send_after(Lifetime*1000, Servername, {srvtimeout}),
+	spawn(server, start, [Timer]).
     
 
 % Liefert einen neu gesetzten Timer.

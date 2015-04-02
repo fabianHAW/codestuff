@@ -6,7 +6,7 @@ start(Timer) ->
 	io:format("Server started"),
 	{Clientlifetime, Servername, HBQname, HBQnode} = readCfg(),
 	erlang:register(Servername, self()),
-	CMEM = initHBQCMEM(Clientlifetime, Servername, HBQname, HBQnode),
+	CMEM = initHBQCMEM(Clientlifetime, Servername, to_atom(HBQname), HBQnode),
 	loop(Timer, 1, HBQname, HBQnode, CMEM).
 
 %Steuernde Werte aus server.cfg lesen.
@@ -19,11 +19,11 @@ readCfg() ->
     {Clientlifetime, Servername, HBQname, HBQnode}.
 
 initHBQCMEM(Clientlifetime, Servername, HBQname, HBQnode) ->
-	HBQname ! {request, initHBQ},
+	HBQname ! {self(), {request, initHBQ}},
 	CMEM = cmem:initCMEM(Clientlifetime, erlang:node()),
 	receive
 		{reply, ok} ->
-			werkzeug:logging(erlang:node() ++ ".log", "Server: HBQ konnte initialisiert werden.")
+			werkzeug:logging(werkzeug:to_String(erlang:node()) ++ ".log", "Server: HBQ konnte initialisiert werden.")
 	end,
 	CMEM.
 
@@ -49,7 +49,8 @@ loop(Timer, INNR, HBQname, HBQnode, CMEM) ->
 	end
 .
 		
-
+to_atom(Term) ->
+	binary_to_atom(term_to_binary(Term), utf8).
     
    
 

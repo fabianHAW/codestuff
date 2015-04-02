@@ -4,6 +4,12 @@
 -export([start/0]).
 
 start() ->
+	{ok, ConfigListe} = file:consult("server.cfg"),
+	{ok, HBQname} = get_config_value(hbqname, ConfigListe),
+	
+	io:format("~p ~n",[erlang:register(HBQname, self())]),
+	io:format("~p ~n", [registered()]),
+	werkzeug:logging(werkzeug:to_String(erlang:node()) ++ ".log", "HBQ>>> server.cfg geöffnet..."),			
 	loop().
 	
 loop() ->
@@ -11,8 +17,6 @@ loop() ->
 		{Pid, {request, initHBQ}} ->
 			{ok, ConfigListe} = file:consult("server.cfg"),
 			{ok, DLQlimit} = get_config_value(dlqlimit, ConfigListe),
-			{ok, HBQnode} = get_config_value(hbqnode, ConfigListe),
-			werkzeug:logging(erlang:node() ++ ".log", "HBQ>>> server.cfg geöffnet..."),
 			loop(Pid, {0,[[]]}, DLQlimit, init)
 	end
 .
