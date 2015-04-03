@@ -6,19 +6,22 @@
 %return ist 2-Tupel mit 1. Element Size und 2. Element leere DLQ-Liste
 initDLQ(Size, Datei) ->
 	logging(Datei, lists:flatten(io_lib:format("DLQ >> initialisiert mit Kapazitaet: ~p~n", [Size]))),
-	{Size, []}.
+%laut Entwurf wird aber noch ein Atom queue vor dem eigentlichen ADT gesetzt
+	{queue, {Size, []}}.
 	%{Size, [[2,test,1,2,3],[3,hallo,1,2,3],[4,hallo,1,2,3], [6,hallo,1,2,3]]}.
 	
 %Liefert die Nachrichtennummer, die als naechstes gespeichert werden kann
 %ist die Liste leer, wird 1 zurueck gegeben
 expectedNr({_Size, []}) ->
-	1;
+%laut Entwurf wird aber noch ein Atom reply vor dem eigentlichen ADT gesetzt
+	{reply, 1};
 expectedNr({_Size, [Head | Tail]}) ->
 	expectedNr(Head, Tail).
 %Hilfsmethode die die DLQ  rekursiv durchlaeuft bis sie am Ende
 %der Liste angekommen ist. Gibt dann die NNr + 1 zurueck.
 expectedNr([NNr, _Msg, _TSclientout, _TShbqin, _TSdlqin], []) ->
-	NNr + 1;
+%laut Entwurf wird aber noch ein Atom reply vor dem eigentlichen ADT gesetzt
+	{reply, NNr + 1};
 expectedNr(_HeadOld, [Head | Tail]) ->
 	expectedNr(Head, Tail).
 	
@@ -37,7 +40,8 @@ push2DLQ(List, TSdlqin, Size, Length, [[NNr, _Msg, _TSclientout, _TShbqin, _TSdl
 	push2DLQ(List, TSdlqin, Size, Length - 1, Tail, Datei);
 push2DLQ(List, TSdlqin, Size, _Length, Queue, _Datei) ->
 	ListNew = List ++ [TSdlqin],
-	{Size, Queue ++ [ListNew]}.
+%laut Entwurf wird aber noch ein Atom queue vor dem eigentlichen ADT gesetzt
+	{queue, {Size, Queue ++ [ListNew]}}.
 	
 %liefert eine Nachricht an den Client aus und gibt der HBQ die gesendete Nachrichtennummer zurueck
 %hier wurde das Ende der zur Verfuegung stehenden Nachrichten erreicht und dem
@@ -45,12 +49,14 @@ push2DLQ(List, TSdlqin, Size, _Length, Queue, _Datei) ->
 deliverMSG(MSGNr, ClientPID, {_Size, [[NNr, Msg, TSclientout, TShbqin, TSdlqin] | []]}, Datei) when MSGNr =< NNr ->
 	ClientPID ! {reply, [NNr, Msg, TSclientout, TShbqin, TSdlqin] ++ [erlang:now()], true},
 	logging(Datei, lists:flatten(io_lib:format("DLQ >> Nachricht ~p an Client ~p ausgeliefert~n", [NNr, ClientPID]))),
-	NNr;
+%laut Entwurf wird aber noch ein Atom reply vor dem eigentlichen ADT gesetzt
+	{reply, NNr};
 %es gibt noch weitere Nachrichten die dem Client auf Anfrage zugestellt werden koennen, Terminated = false
 deliverMSG(MSGNr, ClientPID, {_Size, [[NNr, Msg, TSclientout, TShbqin, TSdlqin] | _Tail]}, Datei) when MSGNr =< NNr ->
 	ClientPID ! {reply, [NNr, Msg, TSclientout, TShbqin, TSdlqin] ++ [erlang:now()], false},
 	logging(Datei, lists:flatten(io_lib:format("DLQ >> Nachricht ~p an Client ~p ausgeliefert~n", [NNr, ClientPID]))),
-	NNr;
+%laut Entwurf wird aber noch ein Atom reply vor dem eigentlichen ADT gesetzt
+	{reply, NNr};
 %rekursiver Durchlauf durch die Liste
 deliverMSG(MSGNr, ClientPID, {Size, [[_NNr, _Msg, _TSclientout, _TShbqin, _TSdlqin] | Tail]}, Datei) ->
 	deliverMSG(MSGNr, ClientPID, {Size, Tail}, Datei).

@@ -8,7 +8,6 @@
 -define(TEAM, 01).
 -define(LOGFILE, lists:flatten(io_lib:format("client_~p~p.log", [?TEAM, node()]))).
 
-
 loop(Servername, Servernode, Sendinterval) ->
 	%Rolle des Redakteur-Clients
 	SendintervalNew = loopEditor(Servername, Servernode, Sendinterval),
@@ -36,7 +35,7 @@ loopEditor(Servername, Servernode, Sendinterval, Counter) when Counter < 5 ->
 	Timestamp = timeMilliSecond(),
 	MsgNew = Msg ++ Timestamp,
 	%5. generierte Nachricht senden
-	Servername ! {dropmessage, [Number, MsgNew, Timestamp]},
+	{Servername, Servernode} ! {dropmessage, [Number, MsgNew, Timestamp]},
 	logging(?LOGFILE, lists:flatten(io_lib:format("~p gesendet~n", [MsgNew]))),
 	loopEditor(Servername, Servernode, Sendinterval, Counter + 1);
 %6. wurden alle 5 Nachrichten gesendet, wird Zeitabstand neu berechnet
@@ -46,7 +45,6 @@ loopEditor(Servername, _Servernode, Sendinterval, _Counter) ->
 	SendintervalNew = changeSendInterval(Sendinterval),
 	%8. neue Nachrichten Nummer besorgen
 	ForgetNumber = getMSGNum(Servername),
-	io:format("forget to send msg~n", []),
 	logging(?LOGFILE, lists:flatten(io_lib:format("~pte_Nachricht um " ++ timeMilliSecond() ++ " vergessen zu senden~n", [ForgetNumber]))),
 	logging(?LOGFILE, lists:flatten(io_lib:format("neues Sendeintervall: ~p Sekunden (~p)~n", [SendintervalNew, Sendinterval]))),
 	SendintervalNew.
@@ -56,7 +54,7 @@ loopEditor(Servername, _Servernode, Sendinterval, _Counter) ->
 loopReader(Servername, Servernode, NumberList, false) ->
 	io:format("in loopReader~n", []),
 	%10. Nachrichten abfragen
-	Servername ! {self(), getmessages},
+	{Servername, Servernode} ! {self(), getmessages},
 	receive
 		%11. auf Nachricht warten
 		{reply, [NNr, Msg, _TSclientout, _TShbqin, _TSdlqin, _TSdlqout], Terminated} ->
@@ -64,7 +62,6 @@ loopReader(Servername, Servernode, NumberList, false) ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("~p received new message; C In: " ++  timeMilliSecond() ++ "~n", [Msg]))),
 			loopReader(Servername, Servernode, NumberList ++ NNr, Terminated);
 		{interrupt, timeout} ->
-			io:format("reader-client interrupted~n", []),
 			logging(?LOGFILE, "reader-client interruted: timeout " ++ timeMilliSecond() ++ "~n"),
 			exit(self(), "reader-client interrupted: timeout~n");
 		Any ->
@@ -74,12 +71,16 @@ loopReader(Servername, Servernode, NumberList, false) ->
 %besorgt sich vom Server die naechste Nachrichtennummer
 %wurde etwas unbekanntes vom Server empfangen wird -1 als Fehlermeldung zurueck gegeben
 getMSGNum(Servername) ->
-	Servername ! {self(), getmsgid},
+	{Servername, Servernode} ! {self(), getmsgid},
 	%2/9 auf neue Nachrichten Nummer warten
 	receive
 		{nid, Number} ->
 			io:format("got new number~n" ,[]),
 			Number;
+		{interrupt, timeout} ->
+			logging(?LOGFILE, "reader-client interruted: timeout " ++ timeMilliSecond() ++ "~n"),
+			exit(self(), "reader-client interrupted: timeout~n"),
+			-1;
 		Any ->
 			io:format("an error occured, while waiting for new message number: ~p~n" ,[Any]),
 			-1			

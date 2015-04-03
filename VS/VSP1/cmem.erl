@@ -13,7 +13,7 @@ lastVisit([[Pid, _NNr, _LastVisit] | Rest], ClientID) when Pid /= ClientID ->
 	lastVisit(Rest, ClientID);
 lastVisit([[_Pid, _NNr, LastVisit] | _Rest], _ClientID)  ->
 	LastVisit.
-	
+
 getClientNNR([[]], _ClientID) ->
 	1;
 getClientNNR([[Pid, _NNr, _LastVisit] | Rest], ClientID) when Pid /= ClientID ->
