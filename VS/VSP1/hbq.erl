@@ -17,7 +17,7 @@ loop() ->
 		{Pid, {request, initHBQ}} ->
 			{ok, ConfigListe} = file:consult("server.cfg"),
 			{ok, DLQlimit} = get_config_value(dlqlimit, ConfigListe),
-			loop(Pid, {0,[[]]}, DLQlimit, init)
+			loop(Pid, {0,[]}, DLQlimit, init)
 	end
 .
 
@@ -46,11 +46,11 @@ loop(HBQ, DLQ, DLQlimit, running) ->
 	end
 .
 
-insertHBQ({Size, [[]]}, MSG) ->
-	[[]] ++ MSG;
+insertHBQ({Size, []}, MSG) ->
+	[MSG];
 insertHBQ({Size, [[NNRn, Msgn, TSclientoutn, TShbqinn] | Msgs]}, [NNr, Msg, TSclientout, TShbqin]) when NNRn < NNr->
-    [NNRn, Msgn, TSclientoutn, TShbqinn]  ++ insertHBQ({Size, Msgs}, [NNr, Msg, TSclientout, TShbqin]);
-insertHBQ({Size, [[NNRn, Msgn, TSclientoutn, TShbqinn] | Msgs]}, [NNr, Msg, TSclientout, TShbqin]) when NNRn > NNr->
+    [[NNRn, Msgn, TSclientoutn, TShbqinn]]  ++ insertHBQ({Size, Msgs}, [NNr, Msg, TSclientout, TShbqin]);
+insertHBQ({Size, [[NNRn, Msgn, TSclientoutn, TShbqinn] | Msgs]}, [NNr, Msg, TSclientout, TShbqin]) ->
 	[[NNr, Msg, TSclientout, TShbqin],[NNRn, Msgn, TSclientoutn, TShbqinn]] ++ Msgs.
 
 hbqdlqAlg({Size, [ Msg | Msgn]}, DLQ, _DLQlimit, ExpNr, NNr) when ExpNr == NNr -> %Keine Lücke
