@@ -23,7 +23,7 @@ loopEditor(Servername, Servernode, Sendinterval) ->
 	
 loopEditor(Servername, Servernode, Sendinterval, Counter) when Counter < 5 ->	
 	%1. neue Nachrichten Nummer besorgen
-	Number = getMSGNum(Servername),
+	Number = getMSGNum(Servername, Servernode),
 	%3.1. neue Nachricht generieren 
 	{ok, Client} = ?HOSTNAME, 
 	%Msg = lists:flatten(io_lib:format("~p-~p-client@" ++ Client ++ "-~p-~pte_Nachricht. C Out: ", [?GROUP, ?TEAM, self(), Number])),
@@ -40,11 +40,11 @@ loopEditor(Servername, Servernode, Sendinterval, Counter) when Counter < 5 ->
 	loopEditor(Servername, Servernode, Sendinterval, Counter + 1);
 %6. wurden alle 5 Nachrichten gesendet, wird Zeitabstand neu berechnet
 %ebenfalls wird neue Nachrichtennummer angefordert und diese geloggt aber nicht verschickt
-loopEditor(Servername, _Servernode, Sendinterval, _Counter) ->
+loopEditor(Servername, Servernode, Sendinterval, _Counter) ->
 	%7. Zeitabstand aendern
 	SendintervalNew = changeSendInterval(Sendinterval),
 	%8. neue Nachrichten Nummer besorgen
-	ForgetNumber = getMSGNum(Servername),
+	ForgetNumber = getMSGNum(Servername, Servernode),
 	logging(?LOGFILE, lists:flatten(io_lib:format("~pte_Nachricht um " ++ timeMilliSecond() ++ " vergessen zu senden~n", [ForgetNumber]))),
 	logging(?LOGFILE, lists:flatten(io_lib:format("neues Sendeintervall: ~p Sekunden (~p)~n", [SendintervalNew, Sendinterval]))),
 	SendintervalNew.
@@ -70,7 +70,7 @@ loopReader(Servername, Servernode, NumberList, false) ->
 
 %besorgt sich vom Server die naechste Nachrichtennummer
 %wurde etwas unbekanntes vom Server empfangen wird -1 als Fehlermeldung zurueck gegeben
-getMSGNum(Servername) ->
+getMSGNum(Servername, Servernode) ->
 	{Servername, Servernode} ! {self(), getmsgid},
 	%2/9 auf neue Nachrichten Nummer warten
 	receive
@@ -84,4 +84,11 @@ getMSGNum(Servername) ->
 		Any ->
 			io:format("an error occured, while waiting for new message number: ~p~n" ,[Any]),
 			-1			
-	end.
+	end,
+	Number
+	.
+	
+p(Text) ->
+	io:format(Text).
+p(Text, Params) ->
+	io:format(Text, Params).

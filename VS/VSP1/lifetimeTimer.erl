@@ -1,5 +1,5 @@
 -module(lifetimeTimer).
--import(werkzeug, [reset_time/3, get_config_value/2]).
+-import(werkzeug, [reset_timer/3, get_config_value/2]).
 -import(server, [start/1]).
 -import(client, [loop/0]).
 -export([createServer/0, createClient/0, resetTimer/1]).
@@ -37,7 +37,7 @@ createServer() ->
 % Liefert einen neu gesetzten Timer.
 resetTimer(Timer) ->
 	{ok, ConfigListe} = file:consult("server.cfg"),
-    {ok, Lifetime} = get_config_value(lifetime, ConfigListe),
-    werkzeug:reset_time(Timer, Lifetime, {srvtimeout}).
+    {ok, Lifetime} = get_config_value(latency, ConfigListe),
+    werkzeug:reset_timer(Timer, Lifetime, {srvtimeout}).
 
 
