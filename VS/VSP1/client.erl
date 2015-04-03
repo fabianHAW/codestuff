@@ -80,13 +80,12 @@ getMSGNum(Servername, Servernode) ->
 		{interrupt, timeout} ->
 			logging(?LOGFILE, "reader-client interruted: timeout " ++ timeMilliSecond() ++ "~n"),
 			exit(self(), "reader-client interrupted: timeout~n"),
-			-1;
+			Number = -1;
 		Any ->
 			io:format("an error occured, while waiting for new message number: ~p~n" ,[Any]),
-			-1			
+			Number = -1			
 	end,
-	Number
-	.
+	Number.
 	
 p(Text) ->
 	io:format(Text).
