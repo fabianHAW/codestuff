@@ -46,9 +46,9 @@ push2DLQ(List, TSdlqin, Size, _Length, Queue, _Datei) ->
 %liefert eine Nachricht an den Client aus und gibt der HBQ die gesendete Nachrichtennummer zurueck
 %hier wurde das Ende der zur Verfuegung stehenden Nachrichten erreicht und dem
 %Client signalisiert, dass es keine weiteren Nachrichten mehr gibt, Terminated = true
-%deliverMSG(MSGNr, ClientPID, {Size, []}, Datei) ->
-%	ClientPID ! {reply, "Dummy | " ++ [erlang:now()], false},
-%	logging(Datei, lists:flatten(io_lib:format("DLQ >> Dummy an Client ~p ausgeliefert~n", [ClientPID])));
+deliverMSG(MSGNr, ClientPID, {Size, []}, Datei) -> %Edit: Francis
+	ClientPID ! {reply, [MSGNr, "Dummy Nachricht ", 0, 0, 0] ++ [erlang:now()], true}, %Edit: Francis
+	logging(Datei, lists:flatten(io_lib:format("DLQ >> Dummy an Client ~p ausgeliefert~n", [ClientPID]))); %Edit: Francis
 deliverMSG(MSGNr, ClientPID, {_Size, [[NNr, Msg, TSclientout, TShbqin, TSdlqin] | []]}, Datei) when MSGNr =< NNr ->
 	ClientPID ! {reply, [NNr, Msg, TSclientout, TShbqin, TSdlqin] ++ [erlang:now()], true},
 	logging(Datei, lists:flatten(io_lib:format("DLQ >> Nachricht ~p an Client ~p ausgeliefert~n", [NNr, ClientPID]))),

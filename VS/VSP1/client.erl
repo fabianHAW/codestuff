@@ -60,9 +60,10 @@ loopReader(Servername, Servernode, NumberList) ->
 		{reply, [NNr, Msg, _TSclientout, _TShbqin, _TSdlqin, _TSdlqout], false} ->
 			%12. eigene Nachricht markieren
 			logging(?LOGFILE, lists:flatten(io_lib:format("~p received new message; C In: " ++  timeMilliSecond() ++ "~n", [Msg]))),
+			p("NumberList: ~p NNr: ~p ~n", [NumberList, NNr]),
 			loopReader(Servername, Servernode, NumberList ++ [NNr]);
 		{reply, [_NNr, Msg, _TSclientout, _TShbqin, _TSdlqin, _TSdlqout], true} ->
-			logging(?LOGFILE, lists:flatten(io_lib:format("~p received new message; C In: " ++  timeMilliSecond() ++ "~n", [Msg]))),
+			logging(?LOGFILE, lists:flatten(io_lib:format("~p received new message; C In: " ++  timeMilliSecond() ++ "~n", [Msg])));
 		{interrupt, timeout} ->
 			logging(?LOGFILE, "reader-client interruted: timeout " ++ timeMilliSecond() ++ "~n"),
 			exit(self(), "reader-client interrupted: timeout~n");
