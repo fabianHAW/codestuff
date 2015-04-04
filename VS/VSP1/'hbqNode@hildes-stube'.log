@@ -1,0 +1,34 @@
+HBQ>>> server.cfg geöffnet... ~nHBQ>>> initialisiert worden von <6648.58.0>. ~nDLQ >> initialisiert mit Kapazitaet: 42
+DLQ >> Nachricht 1 in DLQ eingefuegt
+DLQ >> Nachricht 2 in DLQ eingefuegt
+DLQ >> Nachricht 3 in DLQ eingefuegt
+DLQ >> Nachricht 4 in DLQ eingefuegt
+DLQ >> Nachricht 5 in DLQ eingefuegt
+DLQ >> Nachricht 6 in DLQ eingefuegt
+DLQ >> Nachricht 7 in DLQ eingefuegt
+DLQ >> Nachricht 8 in DLQ eingefuegt
+DLQ >> Nachricht 9 in DLQ eingefuegt
+DLQ >> Nachricht 1 an Client <6649.55.0> ausgeliefert
+DLQ >> Nachricht 2 an Client <6649.55.0> ausgeliefert
+DLQ >> Nachricht 3 an Client <6649.55.0> ausgeliefert
+DLQ >> Nachricht 4 an Client <6649.55.0> ausgeliefert
+DLQ >> Nachricht 5 an Client <6649.55.0> ausgeliefert
+DLQ >> Nachricht 6 an Client <6649.55.0> ausgeliefert
+DLQ >> Nachricht 7 an Client <6649.55.0> ausgeliefert
+DLQ >> Nachricht 8 an Client <6649.55.0> ausgeliefert
+DLQ >> Nachricht 9 an Client <6649.55.0> ausgeliefert
+DLQ >> Nachricht 10 in DLQ eingefuegt
+DLQ >> Nachricht 1 an Client <6650.41.0> ausgeliefert
+DLQ >> Nachricht 2 an Client <6650.41.0> ausgeliefert
+DLQ >> Nachricht 3 an Client <6650.41.0> ausgeliefert
+DLQ >> Nachricht 4 an Client <6650.41.0> ausgeliefert
+DLQ >> Nachricht 5 an Client <6650.41.0> ausgeliefert
+DLQ >> Nachricht 6 an Client <6650.41.0> ausgeliefert
+DLQ >> Nachricht 7 an Client <6650.41.0> ausgeliefert
+DLQ >> Nachricht 8 an Client <6650.41.0> ausgeliefert
+DLQ >> Nachricht 9 an Client <6650.41.0> ausgeliefert
+DLQ >> Nachricht 10 an Client <6650.41.0> ausgeliefert
+DLQ >> Dummy an Client <6649.55.0> ausgeliefert
+DLQ >> Dummy an Client <6650.41.0> ausgeliefert
+DLQ >> Dummy an Client <6649.55.0> ausgeliefert
+DLQ >> Dummy an Client <6650.41.0> ausgeliefert
