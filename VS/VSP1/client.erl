@@ -13,7 +13,7 @@ loop(Servername, Servernode, Sendinterval) ->
 	SendintervalNew = loopEditor(Servername, Servernode, Sendinterval),
 	logging(?LOGFILE, lists:flatten(io_lib:format("dropmessages..Done~n", []))),
 	%Rolle des Leser-Clients
-	loopReader(Servername, Servernode, [], false),
+	loopReader(Servername, Servernode, []),
 	logging(?LOGFILE, lists:flatten(io_lib:format("getmessages..Done~n", []))),
 	loop(Servername, Servernode, SendintervalNew).
 
@@ -51,16 +51,18 @@ loopEditor(Servername, Servernode, Sendinterval, _Counter) ->
 
 %13. Gibt es weitere Nachricht? -> dies wird hier mit dem Terminated-Flag
 %signalisiert, welches bei false anzeigt, dass es mind. eine weitere Nachrichricht gibt
-loopReader(Servername, Servernode, NumberList, false) ->
+loopReader(Servername, Servernode, NumberList) ->
 	io:format("in loopReader~n", []),
 	%10. Nachrichten abfragen
 	{Servername, Servernode} ! {self(), getmessages},
 	receive
 		%11. auf Nachricht warten
-		{reply, [NNr, Msg, _TSclientout, _TShbqin, _TSdlqin, _TSdlqout], Terminated} ->
+		{reply, [NNr, Msg, _TSclientout, _TShbqin, _TSdlqin, _TSdlqout], false} ->
 			%12. eigene Nachricht markieren
 			logging(?LOGFILE, lists:flatten(io_lib:format("~p received new message; C In: " ++  timeMilliSecond() ++ "~n", [Msg]))),
-			loopReader(Servername, Servernode, NumberList ++ NNr, Terminated);
+			loopReader(Servername, Servernode, NumberList ++ [NNr]);
+		{reply, [_NNr, Msg, _TSclientout, _TShbqin, _TSdlqin, _TSdlqout], true} ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("~p received new message; C In: " ++  timeMilliSecond() ++ "~n", [Msg]))),
 		{interrupt, timeout} ->
 			logging(?LOGFILE, "reader-client interruted: timeout " ++ timeMilliSecond() ++ "~n"),
 			exit(self(), "reader-client interrupted: timeout~n");

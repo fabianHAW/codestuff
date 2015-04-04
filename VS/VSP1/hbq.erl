@@ -31,11 +31,13 @@ loop(HBQ, DLQ, DLQlimit, running) ->
 		{Pid, {request,pushHBQ,[NNr,Msg,TSclientout]}} ->
 			{Size, _HBQnew} = HBQ,
 			HBQnn = insertHBQ(HBQ, [NNr, Msg, TSclientout, timeMilliSecond()]),
-			p("NNr: ~p",[NNr]),
+			p("NNr: ~p expNr: ~p~n",[NNr, dlq:expectedNr(DLQ)]),
 			{HBQn, DLQn} = hbqdlqAlg({Size + 1, HBQnn}, DLQ, DLQlimit, dlq:expectedNr(DLQ), NNr),
+			io:format("dlq: ~p~n", [DLQn]),
 			Pid ! {reply, ok},
 			loop(HBQn, DLQn, DLQlimit, running);
 		{Pid, {request,deliverMSG,NNr,ToClient}} ->
+			io:format("dlq: ~p~n", [DLQ]),
 			dlq:deliverMSG(NNr,ToClient,DLQ, ?LOGFILE),
 			loop(HBQ, DLQ, DLQlimit, running);
 		{Pid, {request,dellHBQ}} ->
@@ -53,12 +55,16 @@ insertHBQ({Size, [[NNRn, Msgn, TSclientoutn, TShbqinn] | Msgs]}, [NNr, Msg, TScl
 insertHBQ({Size, [[NNRn, Msgn, TSclientoutn, TShbqinn] | Msgs]}, [NNr, Msg, TSclientout, TShbqin]) ->
 	[[NNr, Msg, TSclientout, TShbqin],[NNRn, Msgn, TSclientoutn, TShbqinn]] ++ Msgs.
 
-hbqdlqAlg({Size, [ Msg | Msgn]}, DLQ, _DLQlimit, ExpNr, NNr) when ExpNr == NNr -> %Keine Lücke
+hbqdlqAlg({Size, [ Msg | Msgn]}, DLQ, _DLQlimit, {reply, ExpNr}, NNr) when ExpNr == NNr -> %Keine Lücke
+	io:format("1~n",[]),
 	{queue, DLQn} = push2DLQ(Msg,DLQ, ?LOGFILE),
+	io:format("DLQn~p~n",[DLQn]),
 	{{Size - 1, Msgn}, DLQn};
-hbqdlqAlg({Size, MSGs}, DLQ, DLQlimit, ExpNr, NNr) when (Size div 3)*2 < DLQlimit-> %HBQ.Size < 2/3 
+hbqdlqAlg({Size, MSGs}, DLQ, DLQlimit, {reply, ExpNr}, NNr) when (Size div 3)*2 < DLQlimit-> %HBQ.Size < 2/3 
+	io:format("2~n",[]),
 	{{Size, MSGs}, DLQ};
-hbqdlqAlg({Size, [[NNRn, Msg, TSclientout, TShbqin] | MSGs]}, DLQ, DLQlimit, ExpNr, NNr) -> %Fehlerbehandlung
+hbqdlqAlg({Size, [[NNRn, Msg, TSclientout, TShbqin] | MSGs]}, DLQ, DLQlimit, {reply, ExpNr}, NNr) -> %Fehlerbehandlung
+	io:format("3~n",[]),
 	{queue, DLQn} = push2DLQ([ExpNr,"Fehlernachricht fuer Nachrichten " 
 	++ ExpNr 
 	++ " bis " 
