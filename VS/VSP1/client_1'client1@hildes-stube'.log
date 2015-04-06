@@ -1,0 +1,58 @@
+"3-1-client@hildes-stube-<0.41.0>-1te_Nachricht. C Out: 06.04 14:12:17,607|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-3te_Nachricht. C Out: 06.04 14:12:20,610|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-5te_Nachricht. C Out: 06.04 14:12:23,612|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-7te_Nachricht. C Out: 06.04 14:12:26,620|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-9te_Nachricht. C Out: 06.04 14:12:29,626|" gesendet
+11te_Nachricht um 06.04 14:12:29,631| vergessen zu senden
+neues Sendeintervall: 2 Sekunden (3)
+dropmessages..Done
+"\"3-1-client@hildes-stube-<0.41.0>-1te_Nachricht. C Out: 06.04 14:12:17,607|\" TSdlqin: 06.04 14:12:17,608|" received new message; C In: 06.04 14:12:29,633|
+"\"3-1-client@hildes-stube-<0.41.0>-2te_Nachricht. C Out: 06.04 14:12:19,800|\" TSdlqin: 06.04 14:12:19,801|" received new message; C In: 06.04 14:12:29,636|
+"\"3-1-client@hildes-stube-<0.41.0>-3te_Nachricht. C Out: 06.04 14:12:20,610|\" TSdlqin: 06.04 14:12:20,610|" received new message; C In: 06.04 14:12:29,638|
+"\"3-1-client@hildes-stube-<0.41.0>-4te_Nachricht. C Out: 06.04 14:12:22,806|\" TSdlqin: 06.04 14:12:22,807|" received new message; C In: 06.04 14:12:29,639|
+"\"3-1-client@hildes-stube-<0.41.0>-5te_Nachricht. C Out: 06.04 14:12:23,612|\" TSdlqin: 06.04 14:12:23,614|" received new message; C In: 06.04 14:12:29,640|
+"\"3-1-client@hildes-stube-<0.41.0>-6te_Nachricht. C Out: 06.04 14:12:25,811|\" TSdlqin: 06.04 14:12:25,812|" received new message; C In: 06.04 14:12:29,641|
+"\"3-1-client@hildes-stube-<0.41.0>-7te_Nachricht. C Out: 06.04 14:12:26,620|\" TSdlqin: 06.04 14:12:26,622|" received new message; C In: 06.04 14:12:29,642|
+"\"3-1-client@hildes-stube-<0.41.0>-8te_Nachricht. C Out: 06.04 14:12:28,816|\" TSdlqin: 06.04 14:12:28,818|" received new message; C In: 06.04 14:12:29,643|
+"\"3-1-client@hildes-stube-<0.41.0>-9te_Nachricht. C Out: 06.04 14:12:29,626|\" TSdlqin: 06.04 14:12:29,629|" received last message; C In: 06.04 14:12:29,644|
+getmessages..Done
+"3-1-client@hildes-stube-<0.41.0>-12te_Nachricht. C Out: 06.04 14:12:31,646|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-13te_Nachricht. C Out: 06.04 14:12:33,651|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-16te_Nachricht. C Out: 06.04 14:12:35,656|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-18te_Nachricht. C Out: 06.04 14:12:37,662|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-20te_Nachricht. C Out: 06.04 14:12:39,670|" gesendet
+22te_Nachricht um 06.04 14:12:39,677| vergessen zu senden
+neues Sendeintervall: 2 Sekunden (2)
+dropmessages..Done
+"\"3-1-client@hildes-stube-<0.41.0>-12te_Nachricht. C Out: 06.04 14:12:31,646|\" TSdlqin: 06.04 14:12:37,664|" received new message; C In: 06.04 14:12:39,679|
+"\"3-1-client@hildes-stube-<0.41.0>-13te_Nachricht. C Out: 06.04 14:12:33,651|\" TSdlqin: 06.04 14:12:37,665|" received new message; C In: 06.04 14:12:39,682|
+"\"Fehlernachricht fuer Nachrichten 14 bis 14 generiert um 06.04 14:12:39,671|\" TSdlqin: 06.04 14:12:39,671|" received new message; C In: 06.04 14:12:39,689|
+"\"3-1-client@hildes-stube-<0.41.0>-15te_Nachricht. C Out: 06.04 14:12:33,841|\" TSdlqin: 06.04 14:12:39,671|" received new message; C In: 06.04 14:12:39,691|
+"\"3-1-client@hildes-stube-<0.41.0>-16te_Nachricht. C Out: 06.04 14:12:35,656|\" TSdlqin: 06.04 14:12:39,672|" received new message; C In: 06.04 14:12:39,694|
+"\"3-1-client@hildes-stube-<0.41.0>-17te_Nachricht. C Out: 06.04 14:12:35,847|\" TSdlqin: 06.04 14:12:39,672|" received new message; C In: 06.04 14:12:39,699|
+"\"3-1-client@hildes-stube-<0.41.0>-18te_Nachricht. C Out: 06.04 14:12:37,662|\" TSdlqin: 06.04 14:12:39,672|" received new message; C In: 06.04 14:12:39,705|
+"\"3-1-client@hildes-stube-<0.41.0>-19te_Nachricht. C Out: 06.04 14:12:37,849|\" TSdlqin: 06.04 14:12:39,672|" received new message; C In: 06.04 14:12:39,706|
+"\"3-1-client@hildes-stube-<0.41.0>-20te_Nachricht. C Out: 06.04 14:12:39,670|\" TSdlqin: 06.04 14:12:39,672|" received last message; C In: 06.04 14:12:39,708|
+getmessages..Done
+"3-1-client@hildes-stube-<0.41.0>-23te_Nachricht. C Out: 06.04 14:12:41,710|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-25te_Nachricht. C Out: 06.04 14:12:43,716|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-28te_Nachricht. C Out: 06.04 14:12:45,723|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-30te_Nachricht. C Out: 06.04 14:12:47,730|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-32te_Nachricht. C Out: 06.04 14:12:49,738|" gesendet
+34te_Nachricht um 06.04 14:12:49,745| vergessen zu senden
+neues Sendeintervall: 3 Sekunden (2)
+dropmessages..Done
+"\"3-1-client@hildes-stube-<0.41.0>-24te_Nachricht. C Out: 06.04 14:12:41,855|\" TSdlqin: 06.04 14:12:45,883|" received new message; C In: 06.04 14:12:49,750|
+"\"3-1-client@hildes-stube-<0.41.0>-25te_Nachricht. C Out: 06.04 14:12:43,716|\" TSdlqin: 06.04 14:12:45,883|" received new message; C In: 06.04 14:12:49,751|
+"\"Fehlernachricht fuer Nachrichten 26 bis 26 generiert um 06.04 14:12:49,740|\" TSdlqin: 06.04 14:12:49,740|" received new message; C In: 06.04 14:12:49,753|
+"\"3-1-client@hildes-stube-<0.41.0>-27te_Nachricht. C Out: 06.04 14:12:43,877|\" TSdlqin: 06.04 14:12:49,740|" received new message; C In: 06.04 14:12:49,754|
+"\"3-1-client@hildes-stube-<0.41.0>-28te_Nachricht. C Out: 06.04 14:12:45,723|\" TSdlqin: 06.04 14:12:49,740|" received new message; C In: 06.04 14:12:49,756|
+"\"3-1-client@hildes-stube-<0.41.0>-29te_Nachricht. C Out: 06.04 14:12:45,882|\" TSdlqin: 06.04 14:12:49,740|" received new message; C In: 06.04 14:12:49,757|
+"\"3-1-client@hildes-stube-<0.41.0>-30te_Nachricht. C Out: 06.04 14:12:47,730|\" TSdlqin: 06.04 14:12:49,741|" received new message; C In: 06.04 14:12:49,758|
+"\"3-1-client@hildes-stube-<0.41.0>-31te_Nachricht. C Out: 06.04 14:12:47,887|\" TSdlqin: 06.04 14:12:49,741|" received new message; C In: 06.04 14:12:49,760|
+"\"3-1-client@hildes-stube-<0.41.0>-32te_Nachricht. C Out: 06.04 14:12:49,738|\" TSdlqin: 06.04 14:12:49,741|" received last message; C In: 06.04 14:12:49,761|
+getmessages..Done
+"3-1-client@hildes-stube-<0.41.0>-35te_Nachricht. C Out: 06.04 14:12:52,766|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-39te_Nachricht. C Out: 06.04 14:12:55,775|" gesendet
+"3-1-client@hildes-stube-<0.41.0>-41te_Nachricht. C Out: 06.04 14:12:58,783|" gesendet
+reader-client interruted: timeout 06.04 14:12:58,783|

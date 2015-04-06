@@ -6,7 +6,7 @@
 -define(HOSTNAME, inet:gethostname()).
 -define(GROUP, 3).
 -define(TEAM, 01).
--define(LOGFILE, lists:flatten(io_lib:format("~p~p.log", [?TEAM, node()]))).
+-define(LOGFILE, lists:flatten(io_lib:format("client_~p~p.log", [?TEAM, node()]))).
 
 loop(Servername, Servernode, Sendinterval) ->
 	%Rolle des Redakteur-Clients
@@ -62,7 +62,7 @@ loopReader(Servername, Servernode, NumberList) ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("~p received new message; C In: " ++  timeMilliSecond() ++ "~n", [Msg]))),
 			loopReader(Servername, Servernode, NumberList ++ [NNr]);
 		{reply, [_NNr, Msg, _TSclientout, _TShbqin, _TSdlqin, _TSdlqout], true} ->
-			logging(?LOGFILE, lists:flatten(io_lib:format("~p received a dummy message; C In: " ++  timeMilliSecond() ++ "~n", [Msg])));
+			logging(?LOGFILE, lists:flatten(io_lib:format("~p received last message; C In: " ++  timeMilliSecond() ++ "~n", [Msg])));
 		{interrupt, timeout} ->
 			logging(?LOGFILE, "reader-client interruted: timeout " ++ timeMilliSecond() ++ "~n"),
 			exit(self(), "reader-client interrupted: timeout~n");

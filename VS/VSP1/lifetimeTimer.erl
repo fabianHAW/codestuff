@@ -10,7 +10,7 @@
 createClient() ->
 	{Lifetime, Servername, Servernode, Sendinterval} = init(?CLIENTCFG),
 	ClientPID = spawn(client, loop, [Servername, Servernode, Sendinterval]),
-	%Client kann nur im Reader-Modus interrupted werden
+	%Client kann nur im Reader-Modus oder während der Anforderung einer Nachrichtennummer interrupted werden
 	timer:send_after(Lifetime * 1000, ClientPID, {interrupt, timeout}).
 
 %Config-File auslesen und alle Parameter als Tupel zurueckgeben
@@ -29,7 +29,10 @@ createServer() ->
 	{ok, ConfigListe} = file:consult("server.cfg"),
     {ok, Lifetime} = get_config_value(latency, ConfigListe),
     {ok, Servername} = get_config_value(servername, ConfigListe),
-    timer:start(),
+    %-----neu beginn----
+    %muss nicht explizit gestartet werden, wird gestartet wenn nötig
+    %timer:start(),
+    
     {ok, Timer} = timer:send_after(Lifetime*1000, Servername, {srvtimeout}),
 	spawn(server, start, [Timer]).
     

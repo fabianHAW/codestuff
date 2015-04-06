@@ -1,5 +1,6 @@
 -module(server).
--import(werkzeug, [get_config_value/2]).
+-import(werkzeug, [get_config_value/2, logging/2]).
+-import(cmem, [initCMEM/2, getClientNNr/2, updateClient/4]).
 -export([start/1]).
 -define(LOGFILE, lists:flatten(io_lib:format("~p.log", [node()]))).
 
@@ -21,10 +22,10 @@ readCfg() ->
 
 initHBQCMEM(Clientlifetime, Servername, HBQname, HBQnode) ->
 	{HBQname, HBQnode} ! {self(), {request, initHBQ}},
-	CMEM = cmem:initCMEM(Clientlifetime, ?LOGFILE),
+	CMEM = initCMEM(Clientlifetime, ?LOGFILE),
 	receive
 		{reply, ok} ->
-			werkzeug:logging(?LOGFILE, "Server: HBQ konnte initialisiert werden. ~n")
+			logging(?LOGFILE, "Server: HBQ konnte initialisiert werden. ~n")
 	end,
 	p("1"),
 	CMEM.
@@ -46,21 +47,39 @@ loop(Timer, INNR, HBQname, HBQnode, CMEM) ->
 			io:format("Client ~p will Nachricht ~n", [Pid]),
 			%HBQ nach Nachricht fragen - in HBQ evtl. Dummy
 			p("~p ~p ~n", [CMEM, Pid]),
-			NNr = cmem:getClientNNr(CMEM, Pid),
-			CMEMNew = cmem:updateClient(CMEM, Pid, NNr, ?LOGFILE),				
+			NNr = getClientNNr(CMEM, Pid),
+			
+			%-----alt auskommentiert-----
+			%CMEMNew = cmem:updateClient(CMEM, Pid, NNr, ?LOGFILE),				
 			{HBQname, HBQnode} ! {self(), {request,deliverMSG,NNr,Pid}},
+			
+			%-----neu beginn-----
+			%auf Antwort der HBQ warten. Ist die SendNNr > 0, handelt es sich um eine tatsaechlich
+			%gesendete Nachricht. Da bei einer Dummy-Nachricht ein -1 zureuck kommt.
+			receive
+				{reply, SendNNr} when SendNNr > 0 ->
+					CMEMNew = updateClient(CMEM, Pid, SendNNr, ?LOGFILE);
+				{reply, SendNNr} ->
+					CMEMNew = CMEM
+			end,
+			%-----neu ende-----
+			
 			loop(lifetimeTimer:resetTimer(Timer), INNR, HBQname, HBQnode, CMEMNew);
 		{srvtimeout} ->
-			io:format("Server Timeout! ~n")
-	end
-.
+			%----neu beginn----
+			{HBQname, HBQnode} ! {self(), {request, dellHBQ}},
+			receive 
+				{reply, ok} ->
+					io:format("Server Timeout! ~n")
+			end
+			%-----neu ende-----
+	end.
 
 readReturnValHBQ() ->
 	receive
 		{reply, ok} ->
 			io:format("Nachricht erfolgreich in HBQ eingetragen ~n")
-	end
-.
+	end.
 
 p(Text) ->
 	io:format(Text).

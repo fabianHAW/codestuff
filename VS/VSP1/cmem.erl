@@ -7,6 +7,8 @@
 initCMEM(RemTime, Datei) ->
 	[RemTime, []].
 
+
+%wofuer ist diese Methode?
 lastVisit([RemTime, []], ClientID) ->
 	{nok, ClientID};
 lastVisit([RemTime, [[Pid, _NNr, _LastVisit] | Rest]], ClientID) when Pid /= ClientID ->
