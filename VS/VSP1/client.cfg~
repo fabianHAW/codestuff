@@ -1,5 +1,0 @@
-{clients, 5}.
-{lifetime, 42}.
-{servername, wk}.
-{servernode, 'server@hildes-stube'}.
-{sendeintervall, 3}.

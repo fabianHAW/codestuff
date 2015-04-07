@@ -1,5 +1,5 @@
 -module(server).
--import(werkzeug, [get_config_value/2, logging/2]).
+-import(werkzeug, [get_config_value/2, logging/2, timeMilliSecond/0]).
 -import(cmem, [initCMEM/2, getClientNNr/2, updateClient/4, dellExpired/2]).
 -import(lifetimeTimer, [resetTimer/1]).
 -export([start/1]).
@@ -13,6 +13,7 @@ start(Timer) ->
 	{Clientlifetime, Servername, HBQname, HBQnode} = readCfg(),
 	erlang:register(Servername, self()),
 	CMEM = initHBQCMEM(Clientlifetime, HBQname, HBQnode),
+	logging(?LOGFILE, lists:flatten(io_lib:format("Server: Startzeit ~p | mit PID ~p. ~n", [timeMilliSecond(), self()]))),
 	loop(Timer, 1, HBQname, HBQnode, CMEM).
 
 %Steuernde Werte aus server.cfg lesen.
@@ -22,6 +23,7 @@ readCfg() ->
    	{ok, Servername} = get_config_value(servername, ConfigListe),
     {ok, HBQname} = get_config_value(hbqname, ConfigListe),
     {ok, HBQnode} = get_config_value(hbqnode, ConfigListe),
+    logging(?LOGFILE, lists:flatten(io_lib:format("Server: server.cfg geoeffnet... ~n", []))),
     {Clientlifetime, Servername, HBQname, HBQnode}.
 
 initHBQCMEM(Clientlifetime, HBQname, HBQnode) ->
@@ -40,6 +42,7 @@ loop(Timer, INNR, HBQname, HBQnode, CMEM) ->
 		{Pid, getmsgid} ->
 			%3.) Nachrichtennummer senden.
 			Pid ! {nid, INNR},
+			logging(?LOGFILE, lists:flatten(io_lib:format("Server: Nachrichtennummer ~p an ~p gesendet. ~n", [INNR, Pid]))),
 			%4.) Timer aktualisieren & zurück zu 1.)
 			loop(resetTimer(Timer), INNR + 1, HBQname, HBQnode, CMEM);
 		%5.) Nachricht speichern.
@@ -50,7 +53,7 @@ loop(Timer, INNR, HBQname, HBQnode, CMEM) ->
 							
 			receive
 				{reply, ok} ->
-					logging(?LOGFILE, lists:flatten(io_lib:format("Nachricht erfolgreich in HBQ eingetragen ~n", [])))
+					logging(?LOGFILE, lists:flatten(io_lib:format("Server: Nachricht ~p in HBQ eingefuegt. ~n", [INNRn])))
 			end,
 			%4.) Timer aktualisieren & zurückzu 1.)
 			loop(resetTimer(Timer), INNR, HBQname, HBQnode, CMEM);
@@ -67,10 +70,10 @@ loop(Timer, INNR, HBQname, HBQnode, CMEM) ->
 				{reply, SendNNr} when SendNNr > 0 ->
 					%13.) Clientmanager aktualisieren.
 					CMEMNew = updateClient(CMEM, Pid, SendNNr, ?LOGFILE);
-				{reply, _SendNNr} ->
+				{reply, SendNNr} ->
 					CMEMNew = CMEM
 			end,
-
+			logging(?LOGFILE, lists:flatten(io_lib:format("Server: Nachricht ~p wurde zugestellt. ~n", [SendNNr]))),
 			%4.) Timer aktualisieren und zurück zu 1.)
 			loop(resetTimer(Timer), INNR, HBQname, HBQnode, CMEMNew);
 		{dellExpired, Servername} -> 
@@ -83,7 +86,7 @@ loop(Timer, INNR, HBQname, HBQnode, CMEM) ->
 			{HBQname, HBQnode} ! {self(), {request, dellHBQ}},
 			receive 
 				{reply, ok} ->
-					io:format("Server Timeout! ~n")
+					logging(?LOGFILE, lists:flatten(io_lib:format("Server: Downtime ~p | vom Nachrichtenserver ~p. ~n", [timeMilliSecond(), self()])))
 			end
 			
 	end.

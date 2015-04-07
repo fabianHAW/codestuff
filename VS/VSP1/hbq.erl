@@ -1,6 +1,6 @@
 -module(hbq).
 -import(werkzeug, [logging/2, timeMilliSecond/0, get_config_value/2, to_String/1, timeMilliSecond/0]).
--import(dlq, [push2DLQ/3, expectedNr/1, initDLQ/2, deliverMSG/4]).
+-import(dlq, [push2DLQ/3, expectedNr/1, initDLQ/2, deliverMSG/4, getSize/1]).
 -export([start/0, loop/0]).
 
 -define(SEVERCFG, "server.cfg").
@@ -38,6 +38,7 @@ loop(HBQ, DLQ, DLQlimit, running) ->
 			{Size, _HBQnew} = HBQ,
 			%Schritt 6 aus dem Aktivitätsdiagramm -> Zeitstempel hinzufuegen
 			HBQnn = insertHBQ(HBQ, [NNr, Msg, TSclientout, timeMilliSecond()]),
+			logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> Nachricht ~p in HBQ eingefuegt. ~n", [NNr]))),
 			%2.) Entsteht eine Lücke? Ja und Nein innerhalb der Funktion.
 			{HBQn, DLQn} = hbqdlqAlg({Size + 1, HBQnn}, DLQ, DLQlimit, expectedNr(DLQ), NNr),
 			Pid ! {reply, ok},
@@ -49,10 +50,12 @@ loop(HBQ, DLQ, DLQlimit, running) ->
 			loop(HBQ, DLQ, DLQlimit, running);
 		%Terminierungsanfrage der HBQ von Seiten des Servers.
 		{Pid, {request,dellHBQ}} ->
-			logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> terminiert von " ++ to_String(Pid) ++ ". ~n", []))),
+			{HBQsize, HBQn} = HBQ,
+			DLQsize = getSize(DLQ),
+			logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> Downtime: ~p| von HBQ und DLQ ~p; Anzahl Restnachrichten HBQ/DLQ:~p/~p (~p). ~n", [timeMilliSecond(), self(), HBQsize, DLQsize, (HBQsize + DLQsize)]))),
 			Pid ! {reply, ok};
 		Any ->
-			io:format("HBQ: Nonsense: ~p ~n ", [Any]),
+				logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> !!!UNDEFINIERTE NACHRICHT ERHALTEN!!!. ~n", []))),
 			loop(HBQ, DLQ, DLQlimit, running)
 	end.
 
@@ -81,11 +84,17 @@ hbqdlqAlg(HBQ, DLQ, _DLQlimit, {reply, ExpNr}, _NNr) ->
 	{queue, DLQn} = push2DLQ([ExpNr, lists:flatten(io_lib:format(
 	"Fehlernachricht fuer Nachrichten ~p bis ~p generiert um " ++ timeMilliSecond(), [ExpNr, NNRn - 1])),
 	TSclientout, erlang:now()], DLQ, ?LOGFILE),
-	errorHandling(HBQ, DLQn, NNRn).
+	{Size, HBQn} = HBQ,
+	errorHandling({Size, HBQn}, DLQn, NNRn, Size).
 	
 %6.) Nachrichten der HBQ in die DLQ übertragen bis eine neue Lücke entdeckt wurde.	
-errorHandling({Size, [[NNRn, Msgn, TSclientoutn, TShbqinn] | MSGs]}, DLQ, LastNNr) when (NNRn - LastNNr) =< 1 ->
+errorHandling({Size, [[NNRn, Msgn, TSclientoutn, TShbqinn] | MSGs]}, DLQ, LastNNr, SizeOld) when (NNRn - LastNNr) =< 1 ->
 	{queue, DLQn} = push2DLQ([NNRn, Msgn,TSclientoutn,TShbqinn],DLQ, ?LOGFILE),
-	errorHandling({Size - 1, MSGs},  DLQn, NNRn);
-errorHandling(HBQ, DLQ, _LastNNr) ->
-	{HBQ, DLQ}.
+	errorHandling({Size - 1, MSGs},  DLQn, NNRn, SizeOld);
+errorHandling({Size, HBQ}, DLQ, _LastNNr, _SizeOld) when Size == 0->
+logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> HBQ wurde komplett in die DLQ uebertragen. ~n", []))),
+	{{Size, HBQ}, DLQ};
+errorHandling({Size, HBQ}, DLQ, _LastNNr, SizeOld) ->
+	Diff = SizeOld - Size,
+logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> ~p von ~p Nachrichten in die DLQ uebertragen. ~n", [Diff, SizeOld]))),
+	{{Size, HBQ}, DLQ}.

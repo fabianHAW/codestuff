@@ -7,6 +7,7 @@
 
 %ToDo: Loggen.
 initCMEM(RemTime, Datei) ->
+	logging(Datei, lists:flatten(io_lib:format("CMEM>>> Initialisiert mit Lebenszeit ~p. ~n", [RemTime]))),
 	[RemTime, []].
 
 %10.) Ist Client neu?  Wenn Client nicht in Liste enthalten ist, dann 1. zurückgeben.
@@ -22,13 +23,16 @@ getClientNNr([_RemTime, [[_Pid, NNr, _LastVisit] | _Rest]], _ClientID) ->
 %Update des Clients.
 %RemTime = Clientlifetime.
 updateClient([RemTime, []], ClientID, _NNr, Datei) -> %Client neu & erster Client überhaupt.-> speichern.
+	logging(Datei, lists:flatten(io_lib:format("CMEM>>> Client ~p wird aktualisiert. ~n", [ClientID]))),
 	[RemTime, [[ClientID, 1, getUTC()]]];
 updateClient([RemTime, Clients], ClientID, NNr, Datei) -> % Client suchen.
+	logging(Datei, lists:flatten(io_lib:format("CMEM>>> Client ~p wird aktualisiert. ~n", [ClientID]))),
 	Result = updateClient(Clients, ClientID, NNr, Datei, search),
 	[RemTime] ++ [Result].
 
 %Hilfsfunktion zur Suche des Clients.
 updateClient([], ClientID, NNr, Datei, search) -> %Client neu -> speichern.
+	logging(Datei, lists:flatten(io_lib:format("CMEM>>> Client ~p im CMEM eingefuegt. ~n", [ClientID]))),
 	[[ClientID, NNr, getUTC()]];	
 updateClient([[Pid, _NNr2, _Timestamp] | Rest], ClientID, NNr, Datei, search) when Pid == ClientID-> %Client gefunden.
 	[[Pid, NNr, getUTC()]] ++ Rest;
@@ -44,7 +48,7 @@ deleteExpired(_RemTime, [], _Datei) ->
 deleteExpired(RemTime, [[ClientPid, NNr, LastVisit] | Rest], Datei) ->
 	case (getUTC() - LastVisit)/1000 > RemTime of
 		true ->
-			logging(Datei, lists:flatten(io_lib:format("CMEM: Client: ~p expired" ++ timeMilliSecond() ++ "~n", [ClientPid]))),
+			logging(Datei, lists:flatten(io_lib:format("CMEM>>> Client ~p geloescht. ~n", [ClientPid]))),
 			deleteExpired(RemTime, Rest, Datei);
 		false ->	
 			[[ClientPid, NNr, LastVisit]] ++ deleteExpired(RemTime, Rest, Datei)

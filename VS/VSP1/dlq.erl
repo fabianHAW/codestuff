@@ -1,5 +1,5 @@
 -module(dlq).
--export([initDLQ/2, expectedNr/1, push2DLQ/3, deliverMSG/4]).
+-export([initDLQ/2, expectedNr/1, push2DLQ/3, deliverMSG/4, getSize/1]).
 -import(werkzeug, [timeMilliSecond/0, logging/2]).
 
 %Die Nummern in den Kommentaren beziehen sich auf:
@@ -69,3 +69,6 @@ deliverMSG(MSGNr, ClientPID, {_Size, [[NNr, Msg, TSclientout, TShbqin, TSdlqin] 
 %rekursiver Durchlauf durch die Liste
 deliverMSG(MSGNr, ClientPID, {Size, [[_NNr, _Msg, _TSclientout, _TShbqin, _TSdlqin] | Tail]}, Datei) ->
 	deliverMSG(MSGNr, ClientPID, {Size, Tail}, Datei).
+	
+getSize({Size, DLQ}) ->
+	Size.
