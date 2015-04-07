@@ -1,2 +1,5 @@
 #workspace settings
 .metadata
+
+#beam-files (erlang)
+.beam
