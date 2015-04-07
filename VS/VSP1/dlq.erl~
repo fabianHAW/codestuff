@@ -64,7 +64,7 @@ deliverMSG(MSGNr, ClientPID, {_Size, [[NNr, Msg, TSclientout, TShbqin, TSdlqin] 
 deliverMSG(MSGNr, ClientPID, {_Size, [[NNr, Msg, TSclientout, TShbqin, TSdlqin] | _Tail]}, Datei) when MSGNr =< NNr ->
 	ClientPID ! {reply, [NNr, Msg, TSclientout, TShbqin, TSdlqin] ++ [erlang:now()], false},
 	logging(Datei, lists:flatten(io_lib:format("DLQ >> Nachricht ~p an Client ~p ausgeliefert~n", [NNr, ClientPID]))),
-%laut Entwurf wird noch ein Atom reply vor dem eigentlichen ADT gesetzt
+%laut Entwurf wird aber noch ein Atom reply vor dem eigentlichen ADT gesetzt
 	{reply, NNr};
 %rekursiver Durchlauf durch die Liste
 deliverMSG(MSGNr, ClientPID, {Size, [[_NNr, _Msg, _TSclientout, _TShbqin, _TSdlqin] | Tail]}, Datei) ->

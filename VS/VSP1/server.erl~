@@ -50,7 +50,7 @@ loop(Timer, INNR, HBQname, HBQnode, CMEM) ->
 							
 			receive
 				{reply, ok} ->
-					logging(?LOGFILE, lists:flatten(io_lib:format("Nachricht erfolgreich in HBQ eingetragen ~n", [])))
+					logging(?LOGFILE, "Nachricht erfolgreich in HBQ eingetragen ~n")
 			end,
 			%4.) Timer aktualisieren & zurückzu 1.)
 			loop(resetTimer(Timer), INNR, HBQname, HBQnode, CMEM);

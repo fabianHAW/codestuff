@@ -63,7 +63,6 @@ insertHBQ({Size, [[NNRn, Msgn, TSclientoutn, TShbqinn] | Msgs]}, [NNr, Msg, TScl
 %2.) Entsteht eine Lücke? Nein-Zweig.
 hbqdlqAlg({Size, [ Msg | Msgn]}, DLQ, _DLQlimit, {reply, ExpNr}, NNr) when ExpNr == NNr -> 
 	%3.) Nachricht in DLQ übertragen. Ja-Nein Entscheidung in DLQ realisiert.
-	%Schritte 7. - 8. im DLQ-Modul.
 	{queue, DLQn} = push2DLQ(Msg,DLQ, ?LOGFILE),
 	{{Size - 1, Msgn}, DLQn};
 %2.) Entsteht eine Lücke? Ja-Zweig.

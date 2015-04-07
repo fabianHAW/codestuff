@@ -1,0 +1,43 @@
+"3-1-client@lab35-<0.165.0>-3te_Nachricht. C Out: 07.04 11:52:26,244|" gesendet
+"3-1-client@lab35-<0.165.0>-5te_Nachricht. C Out: 07.04 11:52:29,247|" gesendet
+"3-1-client@lab35-<0.165.0>-7te_Nachricht. C Out: 07.04 11:52:32,250|" gesendet
+"3-1-client@lab35-<0.165.0>-9te_Nachricht. C Out: 07.04 11:52:35,253|" gesendet
+"3-1-client@lab35-<0.165.0>-12te_Nachricht. C Out: 07.04 11:52:38,256|" gesendet
+"3-1-client@lab35-<0.165.0>-14te_Nachricht. C Out: 07.04 11:52:41,259|" gesendet
+17te_Nachricht um 07.04 11:52:41,261| vergessen zu senden
+neues Sendeintervall: 2 Sekunden (3)
+dropmessages..Done
+"\"3-1-client@lab35-<0.42.0>-1te_Nachricht. C Out: 07.04 11:52:22,249|\" TSdlqin: 07.04 11:52:22,251|" received new message; C In: 07.04 11:52:41,262|
+"\"3-1-client@lab35-<0.42.0>-2te_Nachricht. C Out: 07.04 11:52:25,251|\" TSdlqin: 07.04 11:52:25,253|" received new message; C In: 07.04 11:52:41,267|
+"\"3-1-client@lab35-<0.165.0>-3te_Nachricht. C Out: 07.04 11:52:26,244|\" TSdlqin: 07.04 11:52:26,246|" received new message; C In: 07.04 11:52:41,268|
+"\"3-1-client@lab35-<0.42.0>-4te_Nachricht. C Out: 07.04 11:52:28,258|\" TSdlqin: 07.04 11:52:28,260|" received new message; C In: 07.04 11:52:41,269|
+"\"3-1-client@lab35-<0.165.0>-5te_Nachricht. C Out: 07.04 11:52:29,247|\" TSdlqin: 07.04 11:52:29,249|" received new message; C In: 07.04 11:52:41,270|
+"\"3-1-client@lab35-<0.42.0>-6te_Nachricht. C Out: 07.04 11:52:31,264|\" TSdlqin: 07.04 11:52:31,266|" received new message; C In: 07.04 11:52:41,271|
+"\"3-1-client@lab35-<0.165.0>-7te_Nachricht. C Out: 07.04 11:52:32,250|\" TSdlqin: 07.04 11:52:32,252|" received new message; C In: 07.04 11:52:41,271|
+"\"3-1-client@lab35-<0.42.0>-8te_Nachricht. C Out: 07.04 11:52:34,268|\" TSdlqin: 07.04 11:52:34,270|" received new message; C In: 07.04 11:52:41,273|
+"\"3-1-client@lab35-<0.165.0>-9te_Nachricht. C Out: 07.04 11:52:35,253|\" TSdlqin: 07.04 11:52:35,255|" received last message; C In: 07.04 11:52:41,274|
+getmessages..Done
+"3-1-client@lab35-<0.165.0>-18te_Nachricht. C Out: 07.04 11:52:43,276|" gesendet
+"3-1-client@lab35-<0.165.0>-20te_Nachricht. C Out: 07.04 11:52:45,278|" gesendet
+"3-1-client@lab35-<0.165.0>-23te_Nachricht. C Out: 07.04 11:52:47,281|" gesendet
+"3-1-client@lab35-<0.165.0>-24te_Nachricht. C Out: 07.04 11:52:49,284|" gesendet
+"3-1-client@lab35-<0.165.0>-26te_Nachricht. C Out: 07.04 11:52:51,288|" gesendet
+"3-1-client@lab35-<0.165.0>-28te_Nachricht. C Out: 07.04 11:52:53,291|" gesendet
+29te_Nachricht um 07.04 11:52:53,293| vergessen zu senden
+neues Sendeintervall: 3 Sekunden (2)
+dropmessages..Done
+"\"3-1-client@lab35-<0.165.0>-18te_Nachricht. C Out: 07.04 11:52:43,276|\" TSdlqin: 07.04 11:52:49,286|" received new message; C In: 07.04 11:52:53,294|
+"\"3-1-client@lab35-<0.42.0>-19te_Nachricht. C Out: 07.04 11:52:44,294|\" TSdlqin: 07.04 11:52:49,286|" received new message; C In: 07.04 11:52:53,297|
+"\"3-1-client@lab35-<0.165.0>-20te_Nachricht. C Out: 07.04 11:52:45,278|\" TSdlqin: 07.04 11:52:49,286|" received new message; C In: 07.04 11:52:53,297|
+"\"Fehlernachricht fuer Nachrichten 21 bis 21 generiert um 07.04 11:52:53,293|\" TSdlqin: 07.04 11:52:53,293|" received new message; C In: 07.04 11:52:53,298|
+"\"3-1-client@lab35-<0.42.0>-22te_Nachricht. C Out: 07.04 11:52:47,307|\" TSdlqin: 07.04 11:52:53,293|" received new message; C In: 07.04 11:52:53,299|
+"\"3-1-client@lab35-<0.165.0>-23te_Nachricht. C Out: 07.04 11:52:47,281|\" TSdlqin: 07.04 11:52:53,293|" received new message; C In: 07.04 11:52:53,301|
+"\"3-1-client@lab35-<0.165.0>-24te_Nachricht. C Out: 07.04 11:52:49,284|\" TSdlqin: 07.04 11:52:53,293|" received new message; C In: 07.04 11:52:53,301|
+"\"3-1-client@lab35-<0.42.0>-25te_Nachricht. C Out: 07.04 11:52:50,309|\" TSdlqin: 07.04 11:52:53,293|" received new message; C In: 07.04 11:52:53,303|
+"\"3-1-client@lab35-<0.165.0>-26te_Nachricht. C Out: 07.04 11:52:51,288|\" TSdlqin: 07.04 11:52:53,293|" received last message; C In: 07.04 11:52:53,304|
+getmessages..Done
+"3-1-client@lab35-<0.165.0>-30te_Nachricht. C Out: 07.04 11:52:56,306|" gesendet
+"3-1-client@lab35-<0.165.0>-32te_Nachricht. C Out: 07.04 11:52:59,309|" gesendet
+"3-1-client@lab35-<0.165.0>-34te_Nachricht. C Out: 07.04 11:53:02,312|" gesendet
+"3-1-client@lab35-<0.165.0>-37te_Nachricht. C Out: 07.04 11:53:05,316|" gesendet
+reader-client interruted: timeout 07.04 11:53:05,316|

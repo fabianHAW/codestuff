@@ -59,6 +59,7 @@ changeRole(Servername, Servernode, Sendinterval) ->
 	SendintervalNew.
 
 loopReader(Servername, Servernode, NumberList) ->
+	io:format("in loopReader~n", []),
 	%10. Nachrichten abfragen
 	{Servername, Servernode} ! {self(), getmessages},
 	receive
@@ -84,6 +85,7 @@ getMSGNum(Servername, Servernode) ->
 	%2/9 auf neue Nachrichten Nummer warten
 	receive
 		{nid, Number} ->
+			io:format("got new number~n" ,[]),
 			Number;
 		{interrupt, timeout} ->
 			logging(?LOGFILE, "reader-client interruted: timeout " ++ timeMilliSecond()),

@@ -34,7 +34,7 @@ createServer() ->
     %timer:start(),
     
     {ok, Timer} = timer:send_after(Lifetime*1000, Servername, {srvtimeout}),
-	timer:send_after(1000*1000, Servername, {dellExpired, Servername}),
+	timer:send_after(1000*1000, Servername, {dellExpired}),
 	spawn(server, start, [Timer]).
     
 
