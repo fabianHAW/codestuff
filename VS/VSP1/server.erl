@@ -1,6 +1,6 @@
 -module(server).
 -import(werkzeug, [get_config_value/2, logging/2]).
--import(cmem, [initCMEM/2, getClientNNr/2, updateClient/4, dellExpired/1]).
+-import(cmem, [initCMEM/2, getClientNNr/2, updateClient/4, dellExpired/2]).
 -import(lifetimeTimer, [resetTimer/1]).
 -export([start/1]).
 -define(LOGFILE, lists:flatten(io_lib:format("~p.log", [node()]))).
@@ -12,19 +12,19 @@
 start(Timer) ->
 	{Clientlifetime, Servername, HBQname, HBQnode} = readCfg(),
 	erlang:register(Servername, self()),
-	CMEM = initHBQCMEM(Clientlifetime, Servername, HBQname, HBQnode),
+	CMEM = initHBQCMEM(Clientlifetime, HBQname, HBQnode),
 	loop(Timer, 1, HBQname, HBQnode, CMEM).
 
 %Steuernde Werte aus server.cfg lesen.
 readCfg() ->
 	{ok, ConfigListe} = file:consult("server.cfg"),
    	{ok, Clientlifetime} = get_config_value(clientlifetime, ConfigListe),
-    	{ok, Servername} = get_config_value(servername, ConfigListe),
-    	{ok, HBQname} = get_config_value(hbqname, ConfigListe),
-    	{ok, HBQnode} = get_config_value(hbqnode, ConfigListe),
-    	{Clientlifetime, Servername, HBQname, HBQnode}.
+   	{ok, Servername} = get_config_value(servername, ConfigListe),
+    {ok, HBQname} = get_config_value(hbqname, ConfigListe),
+    {ok, HBQnode} = get_config_value(hbqnode, ConfigListe),
+    {Clientlifetime, Servername, HBQname, HBQnode}.
 
-initHBQCMEM(Clientlifetime, Servername, HBQname, HBQnode) ->
+initHBQCMEM(Clientlifetime, HBQname, HBQnode) ->
 	{HBQname, HBQnode} ! {self(), {request, initHBQ}},
 	CMEM = initCMEM(Clientlifetime, ?LOGFILE),
 	receive
@@ -74,13 +74,12 @@ loop(Timer, INNR, HBQname, HBQnode, CMEM) ->
 			%4.) Timer aktualisieren und zurück zu 1.)
 			loop(resetTimer(Timer), INNR, HBQname, HBQnode, CMEMNew);
 		{dellExpired, Servername} -> 
-			CMEMnew = dellExpired(CMEM),
+			CMEMnew = dellExpired(CMEM, ?LOGFILE),
 			%dellExpired des CMEM soll alle 1 Sekunden ausgeführt werden (beliebig gewählt).
 			timer:send_after(1000*1000, Servername, {dellExpired, Servername}),
 			loop(resetTimer(Timer), INNR, HBQname, HBQnode, CMEMnew);
 		%16.) Lebenszeit abgelaufen -> Terminieren.
 		{srvtimeout} ->
-			
 			{HBQname, HBQnode} ! {self(), {request, dellHBQ}},
 			receive 
 				{reply, ok} ->

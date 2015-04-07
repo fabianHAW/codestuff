@@ -2,6 +2,8 @@
 -import(werkzeug, [logging/2, timeMilliSecond/0, get_config_value/2, to_String/1, timeMilliSecond/0]).
 -import(dlq, [push2DLQ/3, expectedNr/1, initDLQ/2, deliverMSG/4]).
 -export([start/0, loop/0]).
+
+-define(SEVERCFG, "server.cfg").
 -define(LOGFILE, lists:flatten(io_lib:format("~p.log", [node()]))).
 
 %Die Nummern in den Kommentaren beziehen sich auf:
@@ -9,16 +11,16 @@
 
 %HBQ ist eigener Prozss. Dies ist der Einstiegspunkt.
 start() ->
-	{ok, ConfigListe} = file:consult("server.cfg"),
+	{ok, ConfigListe} = file:consult(?SEVERCFG),
 	{ok, HBQname} = get_config_value(hbqname, ConfigListe),
 	HBQPID = spawn(hbq, loop, []),
 	erlang:register(HBQname, HBQPID),
-	logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> server.cfg geöffnet...~n", []))).		
+	logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> ~p geöffnet...~n", [?SEVERCFG]))).		
 	
 loop() ->
 	receive 
 		{Pid, {request, initHBQ}} ->
-			{ok, ConfigListe} = file:consult("server.cfg"),
+			{ok, ConfigListe} = file:consult(?SEVERCFG),
 			{ok, DLQlimit} = get_config_value(dlqlimit, ConfigListe),
 			loop(Pid, {0,[]}, DLQlimit, init)
 	end.
@@ -28,7 +30,7 @@ loop(Pid, MSGs, DLQlimit, init) ->
 	{queue, DLQ} = initDLQ(DLQlimit, ?LOGFILE),
 	Pid ! {reply, ok},
 	loop(MSGs, DLQ, DLQlimit, running);
-%
+
 loop(HBQ, DLQ, DLQlimit, running) ->
 	receive
 		%1.) Nachricht angekommen. Nachricht in HBQ eintragen.
@@ -47,17 +49,18 @@ loop(HBQ, DLQ, DLQlimit, running) ->
 			loop(HBQ, DLQ, DLQlimit, running);
 		%Terminierungsanfrage der HBQ von Seiten des Servers.
 		{Pid, {request,dellHBQ}} ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> terminiert von " ++ to_String(Pid) ++ ". ~n", []))),
 			Pid ! {reply, ok};
 		Any ->
 			io:format("HBQ: Nonsense: ~p ~n ", [Any]),
 			loop(HBQ, DLQ, DLQlimit, running)
 	end.
 
-insertHBQ({Size, []}, MSG) ->
+insertHBQ({_Size, []}, MSG) ->
 	[MSG];
 insertHBQ({Size, [[NNRn, Msgn, TSclientoutn, TShbqinn] | Msgs]}, [NNr, Msg, TSclientout, TShbqin]) when NNRn < NNr->
     [[NNRn, Msgn, TSclientoutn, TShbqinn]]  ++ insertHBQ({Size, Msgs}, [NNr, Msg, TSclientout, TShbqin]);
-insertHBQ({Size, [[NNRn, Msgn, TSclientoutn, TShbqinn] | Msgs]}, [NNr, Msg, TSclientout, TShbqin]) ->
+insertHBQ({_Size, [[NNRn, Msgn, TSclientoutn, TShbqinn] | Msgs]}, [NNr, Msg, TSclientout, TShbqin]) ->
 	[[NNr, Msg, TSclientout, TShbqin],[NNRn, Msgn, TSclientoutn, TShbqinn]] ++ Msgs.
 
 %2.) Entsteht eine Lücke? Nein-Zweig.
@@ -68,22 +71,21 @@ hbqdlqAlg({Size, [ Msg | Msgn]}, DLQ, _DLQlimit, {reply, ExpNr}, NNr) when ExpNr
 	{{Size - 1, Msgn}, DLQn};
 %2.) Entsteht eine Lücke? Ja-Zweig.
 %4.) Ist die Größe der HBQ kleiner als 2/3 der DLQ-Größe. Ja-Zweig.
-hbqdlqAlg({Size, MSGs}, DLQ, DLQlimit, {reply, ExpNr}, NNr) when Size < (2 * (DLQlimit div 3)) -> 
+hbqdlqAlg({Size, MSGs}, DLQ, DLQlimit, {reply, _ExpNr}, _NNr) when Size < (2 * (DLQlimit div 3)) -> 
 	{{Size, MSGs}, DLQ};
 
 %4.) Ist die Größe der HBQ kleiner als 2/3 der DLQ-Größe. Nein-Zweig.
-hbqdlqAlg(HBQ, DLQ, DLQlimit, {reply, ExpNr}, NNr) -> 
-	{Size, [[NNRn, Msg, TSclientout, TShbqin] | MSGs]} = HBQ,
+hbqdlqAlg(HBQ, DLQ, _DLQlimit, {reply, ExpNr}, _NNr) -> 
+	{_Size, [[NNRn, _Msg, TSclientout, _TShbqin] | _MSGs]} = HBQ,
 	%5.) Lücke mit Fehlernachricht schließen.
 	{queue, DLQn} = push2DLQ([ExpNr, lists:flatten(io_lib:format(
 	"Fehlernachricht fuer Nachrichten ~p bis ~p generiert um " ++ timeMilliSecond(), [ExpNr, NNRn - 1])),
 	TSclientout, erlang:now()], DLQ, ?LOGFILE),
-
 	errorHandling(HBQ, DLQn, NNRn).
 	
 %6.) Nachrichten der HBQ in die DLQ übertragen bis eine neue Lücke entdeckt wurde.	
 errorHandling({Size, [[NNRn, Msgn, TSclientoutn, TShbqinn] | MSGs]}, DLQ, LastNNr) when (NNRn - LastNNr) =< 1 ->
 	{queue, DLQn} = push2DLQ([NNRn, Msgn,TSclientoutn,TShbqinn],DLQ, ?LOGFILE),
 	errorHandling({Size - 1, MSGs},  DLQn, NNRn);
-errorHandling(HBQ, DLQ, LastNNr) ->
+errorHandling(HBQ, DLQ, _LastNNr) ->
 	{HBQ, DLQ}.

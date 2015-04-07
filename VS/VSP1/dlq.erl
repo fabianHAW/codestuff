@@ -34,12 +34,12 @@ push2DLQ([NNr, Msg, TSclientout, TShbqin], {Size, Queue}, Datei) ->
 	TSdlqin = erlang:now(),
 	MSGTimestamp = timeMilliSecond(),
 	MsgNew = lists:flatten(io_lib:format("~p TSdlqin: " ++ MSGTimestamp, [Msg])),
-	logging(Datei, lists:flatten(io_lib:format("DLQ >> Nachricht ~p in DLQ eingefuegt~n", [NNr]))),
+	logging(Datei, lists:flatten(io_lib:format("DLQ >> Nachricht ~p in DLQ eingefuegt um: "  ++ timeMilliSecond() ++ "~n", [NNr]))),
 	push2DLQ([NNr, MsgNew, TSclientout, TShbqin], TSdlqin, Size, length(Queue), Queue, Datei).
 %7.) DLQ voll? -> Ja-Zweig
 %Wurde die maximale Groesse der DLQ erreicht, wird das aelteste Element (vorne) geleoscht
 push2DLQ(List, TSdlqin, Size, Length, [[NNr, _Msg, _TSclientout, _TShbqin, _TSdlqinOld] | Tail], Datei) when Length == Size -> 
-	logging(Datei, lists:flatten(io_lib:format("DLQ >> Nachricht ~p aus DLQ geloescht~n", [NNr]))),
+	logging(Datei, lists:flatten(io_lib:format("DLQ >> Nachricht ~p aus DLQ geloescht um: " ++ timeMilliSecond() ++ "~n", [NNr]))),
 	%8.) aelteste Nachricht in DLQ entfernen
 	push2DLQ(List, TSdlqin, Size, Length - 1, Tail, Datei);
 %7.) DLQ voll? -> Nein-Zweig
@@ -53,17 +53,17 @@ push2DLQ(List, TSdlqin, Size, _Length, Queue, _Datei) ->
 %Client signalisiert, dass es keine weiteren Nachrichten mehr gibt, Terminated = true
 deliverMSG(MSGNr, ClientPID, {_Size, []}, Datei) -> 
 	ClientPID ! {reply, [MSGNr, "Dummy Nachricht", 0, 0, 0] ++ [erlang:now()], true},
-	logging(Datei, lists:flatten(io_lib:format("DLQ >> Dummy an Client ~p ausgeliefert~n", [ClientPID]))),
+	logging(Datei, lists:flatten(io_lib:format("DLQ >> Dummy an Client ~p ausgeliefert um: " ++ timeMilliSecond() ++ "~n", [ClientPID]))),
 	{reply, -1};
 deliverMSG(MSGNr, ClientPID, {_Size, [[NNr, Msg, TSclientout, TShbqin, TSdlqin] | []]}, Datei) when MSGNr =< NNr ->
 	ClientPID ! {reply, [NNr, Msg, TSclientout, TShbqin, TSdlqin] ++ [erlang:now()], true},
-	logging(Datei, lists:flatten(io_lib:format("DLQ >> Nachricht ~p an Client ~p ausgeliefert~n", [NNr, ClientPID]))),
+	logging(Datei, lists:flatten(io_lib:format("DLQ >> Nachricht ~p an Client ~p ausgeliefert um: " ++ timeMilliSecond() ++ "~n", [NNr, ClientPID]))),
 %laut Entwurf wird aber noch ein Atom reply vor dem eigentlichen ADT gesetzt
 	{reply, NNr};
 %es gibt noch weitere Nachrichten die dem Client auf Anfrage zugestellt werden koennen, Terminated = false
 deliverMSG(MSGNr, ClientPID, {_Size, [[NNr, Msg, TSclientout, TShbqin, TSdlqin] | _Tail]}, Datei) when MSGNr =< NNr ->
 	ClientPID ! {reply, [NNr, Msg, TSclientout, TShbqin, TSdlqin] ++ [erlang:now()], false},
-	logging(Datei, lists:flatten(io_lib:format("DLQ >> Nachricht ~p an Client ~p ausgeliefert~n", [NNr, ClientPID]))),
+	logging(Datei, lists:flatten(io_lib:format("DLQ >> Nachricht ~p an Client ~p ausgeliefert um: " ++ timeMilliSecond() ++ "~n", [NNr, ClientPID]))),
 %laut Entwurf wird noch ein Atom reply vor dem eigentlichen ADT gesetzt
 	{reply, NNr};
 %rekursiver Durchlauf durch die Liste

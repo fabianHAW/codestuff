@@ -5,6 +5,7 @@
 -export([createServer/0, createClient/0, resetTimer/1]).
 
 -define(CLIENTCFG, "client.cfg").
+-define(SEVERCFG, "server.cfg").
 
 %Erzeugt den Server-Prozess und den Lifetime Timer.
 createClient() ->
@@ -26,13 +27,9 @@ init(Datei) ->
 
 % Erzeugt den Server-Prozess und den Lifetime Timer.
 createServer() ->
-	{ok, ConfigListe} = file:consult("server.cfg"),
+	{ok, ConfigListe} = file:consult(?SEVERCFG),
     {ok, Lifetime} = get_config_value(latency, ConfigListe),
-    {ok, Servername} = get_config_value(servername, ConfigListe),
-    %-----neu beginn----
-    %muss nicht explizit gestartet werden, wird gestartet wenn nötig
-    %timer:start(),
-    
+    {ok, Servername} = get_config_value(servername, ConfigListe),    
     {ok, Timer} = timer:send_after(Lifetime*1000, Servername, {srvtimeout}),
 	timer:send_after(1000*1000, Servername, {dellExpired, Servername}),
 	spawn(server, start, [Timer]).
@@ -40,7 +37,7 @@ createServer() ->
 
 % Liefert einen neu gesetzten Timer.
 resetTimer(Timer) ->
-	{ok, ConfigListe} = file:consult("server.cfg"),
+	{ok, ConfigListe} = file:consult(?SEVERCFG),
     {ok, Lifetime} = get_config_value(latency, ConfigListe),
     werkzeug:reset_timer(Timer, Lifetime, {srvtimeout}).
 
