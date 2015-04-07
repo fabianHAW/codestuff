@@ -2,4 +2,4 @@
 .metadata
 
 #beam-files (erlang)
-.beam
+*.beam
