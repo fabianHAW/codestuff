@@ -50,13 +50,14 @@ loop(HBQ, DLQ, DLQlimit, running) ->
 			loop(HBQ, DLQ, DLQlimit, running);
 		%Terminierungsanfrage der HBQ von Seiten des Servers.
 		{Pid, {request,dellHBQ}} ->
-			{HBQsize, HBQn} = HBQ,
+			{HBQsize, _HBQn} = HBQ,
+			%keine oeffentliche Schnittstelle -> kritisch!
 			DLQsize = getSize(DLQ),
 			logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> Downtime: ~p| von HBQ und DLQ ~p; Anzahl Restnachrichten HBQ/DLQ:~p/~p (~p). ~n", [timeMilliSecond(), self(), HBQsize, DLQsize, (HBQsize + DLQsize)]))),
 			Pid ! {reply, ok};
-		Any ->
+		_Any ->
 				logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> !!!UNDEFINIERTE NACHRICHT ERHALTEN!!!. ~n", []))),
-			loop(HBQ, DLQ, DLQlimit, running)
+				loop(HBQ, DLQ, DLQlimit, running)
 	end.
 
 insertHBQ({_Size, []}, MSG) ->

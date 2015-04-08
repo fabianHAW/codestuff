@@ -1,0 +1,391 @@
+Server: server.cfg geoeffnet... 
+CMEM>>> Initialisiert mit Lebenszeit 4. 
+Server: HBQ konnte initialisiert werden. 
+Server: Startzeit "08.04 09:58:59,938|" | mit PID <0.62.0>. 
+Server: Nachrichtennummer 1 an <7091.101.0> gesendet. 
+Server: Nachrichtennummer 2 an <7091.113.0> gesendet. 
+Server: Nachrichtennummer 3 an <7091.114.0> gesendet. 
+Server: Nachricht 1 in HBQ eingefuegt. 
+Server: Nachrichtennummer 4 an <7091.101.0> gesendet. 
+Server: Nachricht 2 in HBQ eingefuegt. 
+Server: Nachrichtennummer 5 an <7091.113.0> gesendet. 
+Server: Nachricht 3 in HBQ eingefuegt. 
+Server: Nachrichtennummer 6 an <7091.114.0> gesendet. 
+Server: Nachricht 4 in HBQ eingefuegt. 
+Server: Nachrichtennummer 7 an <7091.101.0> gesendet. 
+Server: Nachricht 5 in HBQ eingefuegt. 
+Server: Nachrichtennummer 8 an <7091.113.0> gesendet. 
+Server: Nachricht 6 in HBQ eingefuegt. 
+Server: Nachrichtennummer 9 an <7091.114.0> gesendet. 
+Server: Nachricht 7 in HBQ eingefuegt. 
+Server: Nachrichtennummer 10 an <7091.101.0> gesendet. 
+Server: Nachricht 8 in HBQ eingefuegt. 
+Server: Nachrichtennummer 11 an <7091.113.0> gesendet. 
+Server: Nachricht 9 in HBQ eingefuegt. 
+Server: Nachrichtennummer 12 an <7091.114.0> gesendet. 
+Server: Nachricht 10 in HBQ eingefuegt. 
+Server: Nachrichtennummer 13 an <7091.101.0> gesendet. 
+Server: Nachricht 11 in HBQ eingefuegt. 
+Server: Nachrichtennummer 14 an <7091.113.0> gesendet. 
+Server: Nachricht 12 in HBQ eingefuegt. 
+Server: Nachrichtennummer 15 an <7091.114.0> gesendet. 
+Server: Nachricht 13 in HBQ eingefuegt. 
+Server: Nachrichtennummer 16 an <7091.101.0> gesendet. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 1 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 2 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 3 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 4 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 5 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 6 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 7 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 8 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 9 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 10 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 11 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 12 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 13 wurde zugestellt. 
+Server: Nachrichtennummer 17 an <7091.101.0> gesendet. 
+Server: Nachricht 14 in HBQ eingefuegt. 
+Server: Nachrichtennummer 18 an <7091.113.0> gesendet. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+CMEM>>> Client <7091.113.0> im CMEM eingefuegt. 
+Server: Nachricht 1 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 2 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 3 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 4 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 5 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 6 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 7 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 8 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 9 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 10 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 11 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 12 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 13 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 14 wurde zugestellt. 
+Server: Nachrichtennummer 19 an <7091.113.0> gesendet. 
+Server: Nachricht 15 in HBQ eingefuegt. 
+Server: Nachrichtennummer 20 an <7091.114.0> gesendet. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+CMEM>>> Client <7091.114.0> im CMEM eingefuegt. 
+Server: Nachricht 1 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 2 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 3 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 4 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 5 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 6 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 7 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 8 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 9 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 10 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 11 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 12 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 13 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 14 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 15 wurde zugestellt. 
+Server: Nachrichtennummer 21 an <7091.114.0> gesendet. 
+Server: Nachricht 17 in HBQ eingefuegt. 
+Server: Nachrichtennummer 22 an <7091.101.0> gesendet. 
+Server: Nachricht 19 in HBQ eingefuegt. 
+Server: Nachrichtennummer 23 an <7091.113.0> gesendet. 
+Server: Nachricht 21 in HBQ eingefuegt. 
+Server: Nachrichtennummer 24 an <7091.114.0> gesendet. 
+Server: Nachricht 22 in HBQ eingefuegt. 
+Server: Nachrichtennummer 25 an <7091.101.0> gesendet. 
+Server: Nachricht 23 in HBQ eingefuegt. 
+Server: Nachrichtennummer 26 an <7091.113.0> gesendet. 
+Server: Nachricht 24 in HBQ eingefuegt. 
+Server: Nachrichtennummer 27 an <7091.114.0> gesendet. 
+Server: Nachricht 25 in HBQ eingefuegt. 
+Server: Nachrichtennummer 28 an <7091.101.0> gesendet. 
+Server: Nachricht 26 in HBQ eingefuegt. 
+Server: Nachrichtennummer 29 an <7091.113.0> gesendet. 
+Server: Nachricht 27 in HBQ eingefuegt. 
+Server: Nachrichtennummer 30 an <7091.114.0> gesendet. 
+Server: Nachricht 28 in HBQ eingefuegt. 
+Server: Nachrichtennummer 31 an <7091.101.0> gesendet. 
+Server: Nachricht 29 in HBQ eingefuegt. 
+Server: Nachrichtennummer 32 an <7091.113.0> gesendet. 
+Server: Nachricht 30 in HBQ eingefuegt. 
+Server: Nachrichtennummer 33 an <7091.114.0> gesendet. 
+Server: Nachricht 31 in HBQ eingefuegt. 
+Server: Nachrichtennummer 34 an <7091.101.0> gesendet. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 17 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 18 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 19 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 20 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 21 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 22 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 23 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 24 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 25 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 26 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 27 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 28 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 29 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 30 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 31 wurde zugestellt. 
+Server: Nachrichtennummer 35 an <7091.101.0> gesendet. 
+Server: Nachricht 32 in HBQ eingefuegt. 
+Server: Nachrichtennummer 36 an <7091.113.0> gesendet. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 18 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 19 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 20 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 21 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 22 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 23 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 24 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 25 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 26 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 27 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 28 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 29 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 30 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 31 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 32 wurde zugestellt. 
+Server: Nachrichtennummer 37 an <7091.113.0> gesendet. 
+Server: Nachricht 33 in HBQ eingefuegt. 
+Server: Nachrichtennummer 38 an <7091.114.0> gesendet. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 19 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 20 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 21 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 22 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 23 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 24 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 25 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 26 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 27 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 28 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 29 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 30 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 31 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 32 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 33 wurde zugestellt. 
+Server: Nachrichtennummer 39 an <7091.114.0> gesendet. 
+Server: Nachricht 35 in HBQ eingefuegt. 
+Server: Nachrichtennummer 40 an <7091.101.0> gesendet. 
+Server: Nachricht 37 in HBQ eingefuegt. 
+Server: Nachrichtennummer 41 an <7091.113.0> gesendet. 
+Server: Nachricht 39 in HBQ eingefuegt. 
+Server: Nachrichtennummer 42 an <7091.114.0> gesendet. 
+Server: Nachricht 40 in HBQ eingefuegt. 
+Server: Nachrichtennummer 43 an <7091.101.0> gesendet. 
+Server: Nachricht 41 in HBQ eingefuegt. 
+Server: Nachrichtennummer 44 an <7091.113.0> gesendet. 
+Server: Nachricht 42 in HBQ eingefuegt. 
+Server: Nachrichtennummer 45 an <7091.114.0> gesendet. 
+Server: Nachricht 43 in HBQ eingefuegt. 
+Server: Nachrichtennummer 46 an <7091.101.0> gesendet. 
+Server: Nachricht 44 in HBQ eingefuegt. 
+Server: Nachrichtennummer 47 an <7091.113.0> gesendet. 
+Server: Nachricht 45 in HBQ eingefuegt. 
+Server: Nachrichtennummer 48 an <7091.114.0> gesendet. 
+Server: Nachricht 46 in HBQ eingefuegt. 
+Server: Nachrichtennummer 49 an <7091.101.0> gesendet. 
+Server: Nachricht 47 in HBQ eingefuegt. 
+Server: Nachrichtennummer 50 an <7091.113.0> gesendet. 
+Server: Nachricht 48 in HBQ eingefuegt. 
+Server: Nachrichtennummer 51 an <7091.114.0> gesendet. 
+Server: Nachricht 49 in HBQ eingefuegt. 
+Server: Nachrichtennummer 52 an <7091.101.0> gesendet. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 35 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 36 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 37 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 38 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 39 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 40 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 41 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 42 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 43 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 44 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 45 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 46 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 47 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 48 wurde zugestellt. 
+CMEM>>> Client <7091.101.0> wird aktualisiert. 
+Server: Nachricht 49 wurde zugestellt. 
+Server: Nachrichtennummer 53 an <7091.101.0> gesendet. 
+Server: Nachricht 50 in HBQ eingefuegt. 
+Server: Nachrichtennummer 54 an <7091.113.0> gesendet. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 36 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 37 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 38 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 39 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 40 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 41 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 42 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 43 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 44 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 45 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 46 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 47 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 48 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 49 wurde zugestellt. 
+CMEM>>> Client <7091.113.0> wird aktualisiert. 
+Server: Nachricht 50 wurde zugestellt. 
+Server: Nachrichtennummer 55 an <7091.113.0> gesendet. 
+Server: Nachricht 51 in HBQ eingefuegt. 
+Server: Nachrichtennummer 56 an <7091.114.0> gesendet. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 37 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 38 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 39 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 40 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 41 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 42 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 43 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 44 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 45 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 46 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 47 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 48 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 49 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 50 wurde zugestellt. 
+CMEM>>> Client <7091.114.0> wird aktualisiert. 
+Server: Nachricht 51 wurde zugestellt. 
+Server: Nachrichtennummer 57 an <7091.114.0> gesendet. 
+Server: Nachricht 53 in HBQ eingefuegt. 
+Server: Nachrichtennummer 58 an <7091.101.0> gesendet. 
+Server: Nachricht 55 in HBQ eingefuegt. 
+Server: Nachrichtennummer 59 an <7091.113.0> gesendet. 
+Server: Nachricht 57 in HBQ eingefuegt. 
+Server: Nachrichtennummer 60 an <7091.114.0> gesendet. 
+Server: Nachricht 58 in HBQ eingefuegt. 
+Server: Nachrichtennummer 61 an <7091.101.0> gesendet. 
+Server: Nachricht 59 in HBQ eingefuegt. 
+Server: Nachrichtennummer 62 an <7091.113.0> gesendet. 
+Server: Nachricht 60 in HBQ eingefuegt. 
+Server: Nachrichtennummer 63 an <7091.114.0> gesendet. 
+Server: Nachricht 61 in HBQ eingefuegt. 
+Server: Nachrichtennummer 64 an <7091.101.0> gesendet. 
+Server: Nachricht 62 in HBQ eingefuegt. 
+Server: Nachrichtennummer 65 an <7091.113.0> gesendet. 
+Server: Nachricht 63 in HBQ eingefuegt. 
+Server: Nachrichtennummer 66 an <7091.114.0> gesendet. 
+Server: Downtime "08.04 10:00:34,786|" | vom Nachrichtenserver <0.62.0>. 

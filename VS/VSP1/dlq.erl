@@ -70,5 +70,5 @@ deliverMSG(MSGNr, ClientPID, {_Size, [[NNr, Msg, TSclientout, TShbqin, TSdlqin] 
 deliverMSG(MSGNr, ClientPID, {Size, [[_NNr, _Msg, _TSclientout, _TShbqin, _TSdlqin] | Tail]}, Datei) ->
 	deliverMSG(MSGNr, ClientPID, {Size, Tail}, Datei).
 	
-getSize({Size, DLQ}) ->
+getSize({Size, _DLQ}) ->
 	Size.

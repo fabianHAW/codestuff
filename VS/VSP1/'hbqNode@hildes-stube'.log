@@ -1,0 +1,283 @@
+HBQ>>> "server.cfg" geöffnet...
+HBQ>>> initialisiert worden von <7044.62.0>. 
+DLQ >> initialisiert mit Kapazitaet: 15
+HBQ>>> Nachricht 1 in HBQ eingefuegt. 
+DLQ >> Nachricht 1 in DLQ eingefuegt um: 08.04 09:59:09,629|
+HBQ>>> Nachricht 2 in HBQ eingefuegt. 
+DLQ >> Nachricht 2 in DLQ eingefuegt um: 08.04 09:59:10,612|
+HBQ>>> Nachricht 3 in HBQ eingefuegt. 
+DLQ >> Nachricht 3 in DLQ eingefuegt um: 08.04 09:59:11,618|
+HBQ>>> Nachricht 4 in HBQ eingefuegt. 
+DLQ >> Nachricht 4 in DLQ eingefuegt um: 08.04 09:59:12,637|
+HBQ>>> Nachricht 5 in HBQ eingefuegt. 
+DLQ >> Nachricht 5 in DLQ eingefuegt um: 08.04 09:59:13,616|
+HBQ>>> Nachricht 6 in HBQ eingefuegt. 
+DLQ >> Nachricht 6 in DLQ eingefuegt um: 08.04 09:59:14,626|
+HBQ>>> Nachricht 7 in HBQ eingefuegt. 
+DLQ >> Nachricht 7 in DLQ eingefuegt um: 08.04 09:59:15,643|
+HBQ>>> Nachricht 8 in HBQ eingefuegt. 
+DLQ >> Nachricht 8 in DLQ eingefuegt um: 08.04 09:59:16,624|
+HBQ>>> Nachricht 9 in HBQ eingefuegt. 
+DLQ >> Nachricht 9 in DLQ eingefuegt um: 08.04 09:59:17,632|
+HBQ>>> Nachricht 10 in HBQ eingefuegt. 
+DLQ >> Nachricht 10 in DLQ eingefuegt um: 08.04 09:59:18,650|
+HBQ>>> Nachricht 11 in HBQ eingefuegt. 
+DLQ >> Nachricht 11 in DLQ eingefuegt um: 08.04 09:59:19,631|
+HBQ>>> Nachricht 12 in HBQ eingefuegt. 
+DLQ >> Nachricht 12 in DLQ eingefuegt um: 08.04 09:59:20,640|
+HBQ>>> Nachricht 13 in HBQ eingefuegt. 
+DLQ >> Nachricht 13 in DLQ eingefuegt um: 08.04 09:59:21,656|
+DLQ >> Nachricht 1 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,663|
+DLQ >> Nachricht 2 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,666|
+DLQ >> Nachricht 3 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,669|
+DLQ >> Nachricht 4 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,671|
+DLQ >> Nachricht 5 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,671|
+DLQ >> Nachricht 6 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,672|
+DLQ >> Nachricht 7 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,676|
+DLQ >> Nachricht 8 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,678|
+DLQ >> Nachricht 9 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,679|
+DLQ >> Nachricht 10 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,680|
+DLQ >> Nachricht 11 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,682|
+DLQ >> Nachricht 12 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,683|
+DLQ >> Nachricht 13 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:21,684|
+HBQ>>> Nachricht 14 in HBQ eingefuegt. 
+DLQ >> Nachricht 14 in DLQ eingefuegt um: 08.04 09:59:22,637|
+DLQ >> Nachricht 1 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,642|
+DLQ >> Nachricht 2 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,643|
+DLQ >> Nachricht 3 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,644|
+DLQ >> Nachricht 4 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,645|
+DLQ >> Nachricht 5 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,646|
+DLQ >> Nachricht 6 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,647|
+DLQ >> Nachricht 7 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,648|
+DLQ >> Nachricht 8 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,649|
+DLQ >> Nachricht 9 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,650|
+DLQ >> Nachricht 10 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,651|
+DLQ >> Nachricht 11 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,652|
+DLQ >> Nachricht 12 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,653|
+DLQ >> Nachricht 13 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,654|
+DLQ >> Nachricht 14 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:22,655|
+HBQ>>> Nachricht 15 in HBQ eingefuegt. 
+DLQ >> Nachricht 15 in DLQ eingefuegt um: 08.04 09:59:23,645|
+DLQ >> Nachricht 1 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,650|
+DLQ >> Nachricht 2 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,651|
+DLQ >> Nachricht 3 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,653|
+DLQ >> Nachricht 4 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,654|
+DLQ >> Nachricht 5 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,655|
+DLQ >> Nachricht 6 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,656|
+DLQ >> Nachricht 7 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,657|
+DLQ >> Nachricht 8 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,658|
+DLQ >> Nachricht 9 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,659|
+DLQ >> Nachricht 10 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,660|
+DLQ >> Nachricht 11 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,661|
+DLQ >> Nachricht 12 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,662|
+DLQ >> Nachricht 13 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,663|
+DLQ >> Nachricht 14 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,664|
+DLQ >> Nachricht 15 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:23,665|
+HBQ>>> Nachricht 17 in HBQ eingefuegt. 
+HBQ>>> Nachricht 19 in HBQ eingefuegt. 
+HBQ>>> Nachricht 21 in HBQ eingefuegt. 
+HBQ>>> Nachricht 22 in HBQ eingefuegt. 
+HBQ>>> Nachricht 23 in HBQ eingefuegt. 
+HBQ>>> Nachricht 24 in HBQ eingefuegt. 
+HBQ>>> Nachricht 25 in HBQ eingefuegt. 
+HBQ>>> Nachricht 26 in HBQ eingefuegt. 
+HBQ>>> Nachricht 27 in HBQ eingefuegt. 
+HBQ>>> Nachricht 28 in HBQ eingefuegt. 
+DLQ >> Nachricht 16 in DLQ eingefuegt um: 08.04 09:59:29,707|
+DLQ >> Nachricht 1 aus DLQ geloescht um: 08.04 09:59:29,708|
+DLQ >> Nachricht 17 in DLQ eingefuegt um: 08.04 09:59:29,708|
+DLQ >> Nachricht 2 aus DLQ geloescht um: 08.04 09:59:29,708|
+HBQ>>> 1 von 10 Nachrichten in die DLQ uebertragen. 
+HBQ>>> Nachricht 29 in HBQ eingefuegt. 
+DLQ >> Nachricht 18 in DLQ eingefuegt um: 08.04 09:59:30,667|
+DLQ >> Nachricht 3 aus DLQ geloescht um: 08.04 09:59:30,667|
+DLQ >> Nachricht 19 in DLQ eingefuegt um: 08.04 09:59:30,667|
+DLQ >> Nachricht 4 aus DLQ geloescht um: 08.04 09:59:30,668|
+HBQ>>> 1 von 10 Nachrichten in die DLQ uebertragen. 
+HBQ>>> Nachricht 30 in HBQ eingefuegt. 
+DLQ >> Nachricht 20 in DLQ eingefuegt um: 08.04 09:59:31,678|
+DLQ >> Nachricht 5 aus DLQ geloescht um: 08.04 09:59:31,678|
+DLQ >> Nachricht 21 in DLQ eingefuegt um: 08.04 09:59:31,678|
+DLQ >> Nachricht 6 aus DLQ geloescht um: 08.04 09:59:31,678|
+DLQ >> Nachricht 22 in DLQ eingefuegt um: 08.04 09:59:31,679|
+DLQ >> Nachricht 7 aus DLQ geloescht um: 08.04 09:59:31,679|
+DLQ >> Nachricht 23 in DLQ eingefuegt um: 08.04 09:59:31,679|
+DLQ >> Nachricht 8 aus DLQ geloescht um: 08.04 09:59:31,679|
+DLQ >> Nachricht 24 in DLQ eingefuegt um: 08.04 09:59:31,679|
+DLQ >> Nachricht 9 aus DLQ geloescht um: 08.04 09:59:31,679|
+DLQ >> Nachricht 25 in DLQ eingefuegt um: 08.04 09:59:31,680|
+DLQ >> Nachricht 10 aus DLQ geloescht um: 08.04 09:59:31,680|
+DLQ >> Nachricht 26 in DLQ eingefuegt um: 08.04 09:59:31,680|
+DLQ >> Nachricht 11 aus DLQ geloescht um: 08.04 09:59:31,680|
+DLQ >> Nachricht 27 in DLQ eingefuegt um: 08.04 09:59:31,680|
+DLQ >> Nachricht 12 aus DLQ geloescht um: 08.04 09:59:31,680|
+DLQ >> Nachricht 28 in DLQ eingefuegt um: 08.04 09:59:31,680|
+DLQ >> Nachricht 13 aus DLQ geloescht um: 08.04 09:59:31,680|
+DLQ >> Nachricht 29 in DLQ eingefuegt um: 08.04 09:59:31,681|
+DLQ >> Nachricht 14 aus DLQ geloescht um: 08.04 09:59:31,681|
+DLQ >> Nachricht 30 in DLQ eingefuegt um: 08.04 09:59:31,681|
+DLQ >> Nachricht 15 aus DLQ geloescht um: 08.04 09:59:31,681|
+HBQ>>> HBQ wurde komplett in die DLQ uebertragen. 
+HBQ>>> Nachricht 31 in HBQ eingefuegt. 
+DLQ >> Nachricht 31 in DLQ eingefuegt um: 08.04 09:59:31,716|
+DLQ >> Nachricht 16 aus DLQ geloescht um: 08.04 09:59:31,716|
+DLQ >> Nachricht 17 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,717|
+DLQ >> Nachricht 18 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,718|
+DLQ >> Nachricht 19 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,719|
+DLQ >> Nachricht 20 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,726|
+DLQ >> Nachricht 21 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,727|
+DLQ >> Nachricht 22 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,730|
+DLQ >> Nachricht 23 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,731|
+DLQ >> Nachricht 24 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,733|
+DLQ >> Nachricht 25 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,737|
+DLQ >> Nachricht 26 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,746|
+DLQ >> Nachricht 27 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,747|
+DLQ >> Nachricht 28 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,748|
+DLQ >> Nachricht 29 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,749|
+DLQ >> Nachricht 30 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,750|
+DLQ >> Nachricht 31 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:31,751|
+HBQ>>> Nachricht 32 in HBQ eingefuegt. 
+DLQ >> Nachricht 32 in DLQ eingefuegt um: 08.04 09:59:32,675|
+DLQ >> Nachricht 17 aus DLQ geloescht um: 08.04 09:59:32,675|
+DLQ >> Nachricht 18 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,680|
+DLQ >> Nachricht 19 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,683|
+DLQ >> Nachricht 20 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,686|
+DLQ >> Nachricht 21 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,689|
+DLQ >> Nachricht 22 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,690|
+DLQ >> Nachricht 23 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,691|
+DLQ >> Nachricht 24 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,692|
+DLQ >> Nachricht 25 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,693|
+DLQ >> Nachricht 26 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,694|
+DLQ >> Nachricht 27 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,695|
+DLQ >> Nachricht 28 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,695|
+DLQ >> Nachricht 29 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,698|
+DLQ >> Nachricht 30 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,701|
+DLQ >> Nachricht 31 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,702|
+DLQ >> Nachricht 32 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:32,703|
+HBQ>>> Nachricht 33 in HBQ eingefuegt. 
+DLQ >> Nachricht 33 in DLQ eingefuegt um: 08.04 09:59:33,686|
+DLQ >> Nachricht 18 aus DLQ geloescht um: 08.04 09:59:33,686|
+DLQ >> Nachricht 19 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,688|
+DLQ >> Nachricht 20 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,688|
+DLQ >> Nachricht 21 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,689|
+DLQ >> Nachricht 22 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,690|
+DLQ >> Nachricht 23 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,691|
+DLQ >> Nachricht 24 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,693|
+DLQ >> Nachricht 25 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,694|
+DLQ >> Nachricht 26 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,695|
+DLQ >> Nachricht 27 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,696|
+DLQ >> Nachricht 28 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,697|
+DLQ >> Nachricht 29 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,698|
+DLQ >> Nachricht 30 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,699|
+DLQ >> Nachricht 31 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,704|
+DLQ >> Nachricht 32 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,708|
+DLQ >> Nachricht 33 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:33,709|
+HBQ>>> Nachricht 35 in HBQ eingefuegt. 
+HBQ>>> Nachricht 37 in HBQ eingefuegt. 
+HBQ>>> Nachricht 39 in HBQ eingefuegt. 
+HBQ>>> Nachricht 40 in HBQ eingefuegt. 
+HBQ>>> Nachricht 41 in HBQ eingefuegt. 
+HBQ>>> Nachricht 42 in HBQ eingefuegt. 
+HBQ>>> Nachricht 43 in HBQ eingefuegt. 
+HBQ>>> Nachricht 44 in HBQ eingefuegt. 
+HBQ>>> Nachricht 45 in HBQ eingefuegt. 
+HBQ>>> Nachricht 46 in HBQ eingefuegt. 
+DLQ >> Nachricht 34 in DLQ eingefuegt um: 08.04 09:59:39,763|
+DLQ >> Nachricht 19 aus DLQ geloescht um: 08.04 09:59:39,763|
+DLQ >> Nachricht 35 in DLQ eingefuegt um: 08.04 09:59:39,763|
+DLQ >> Nachricht 20 aus DLQ geloescht um: 08.04 09:59:39,763|
+HBQ>>> 1 von 10 Nachrichten in die DLQ uebertragen. 
+HBQ>>> Nachricht 47 in HBQ eingefuegt. 
+DLQ >> Nachricht 36 in DLQ eingefuegt um: 08.04 09:59:40,720|
+DLQ >> Nachricht 21 aus DLQ geloescht um: 08.04 09:59:40,720|
+DLQ >> Nachricht 37 in DLQ eingefuegt um: 08.04 09:59:40,720|
+DLQ >> Nachricht 22 aus DLQ geloescht um: 08.04 09:59:40,720|
+HBQ>>> 1 von 10 Nachrichten in die DLQ uebertragen. 
+HBQ>>> Nachricht 48 in HBQ eingefuegt. 
+DLQ >> Nachricht 38 in DLQ eingefuegt um: 08.04 09:59:41,737|
+DLQ >> Nachricht 23 aus DLQ geloescht um: 08.04 09:59:41,738|
+DLQ >> Nachricht 39 in DLQ eingefuegt um: 08.04 09:59:41,738|
+DLQ >> Nachricht 24 aus DLQ geloescht um: 08.04 09:59:41,738|
+DLQ >> Nachricht 40 in DLQ eingefuegt um: 08.04 09:59:41,738|
+DLQ >> Nachricht 25 aus DLQ geloescht um: 08.04 09:59:41,738|
+DLQ >> Nachricht 41 in DLQ eingefuegt um: 08.04 09:59:41,738|
+DLQ >> Nachricht 26 aus DLQ geloescht um: 08.04 09:59:41,738|
+DLQ >> Nachricht 42 in DLQ eingefuegt um: 08.04 09:59:41,739|
+DLQ >> Nachricht 27 aus DLQ geloescht um: 08.04 09:59:41,739|
+DLQ >> Nachricht 43 in DLQ eingefuegt um: 08.04 09:59:41,739|
+DLQ >> Nachricht 28 aus DLQ geloescht um: 08.04 09:59:41,739|
+DLQ >> Nachricht 44 in DLQ eingefuegt um: 08.04 09:59:41,739|
+DLQ >> Nachricht 29 aus DLQ geloescht um: 08.04 09:59:41,739|
+DLQ >> Nachricht 45 in DLQ eingefuegt um: 08.04 09:59:41,740|
+DLQ >> Nachricht 30 aus DLQ geloescht um: 08.04 09:59:41,740|
+DLQ >> Nachricht 46 in DLQ eingefuegt um: 08.04 09:59:41,740|
+DLQ >> Nachricht 31 aus DLQ geloescht um: 08.04 09:59:41,740|
+DLQ >> Nachricht 47 in DLQ eingefuegt um: 08.04 09:59:41,740|
+DLQ >> Nachricht 32 aus DLQ geloescht um: 08.04 09:59:41,740|
+DLQ >> Nachricht 48 in DLQ eingefuegt um: 08.04 09:59:41,740|
+DLQ >> Nachricht 33 aus DLQ geloescht um: 08.04 09:59:41,740|
+HBQ>>> HBQ wurde komplett in die DLQ uebertragen. 
+HBQ>>> Nachricht 49 in HBQ eingefuegt. 
+DLQ >> Nachricht 49 in DLQ eingefuegt um: 08.04 09:59:41,774|
+DLQ >> Nachricht 34 aus DLQ geloescht um: 08.04 09:59:41,774|
+DLQ >> Nachricht 35 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,776|
+DLQ >> Nachricht 36 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,777|
+DLQ >> Nachricht 37 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,778|
+DLQ >> Nachricht 38 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,779|
+DLQ >> Nachricht 39 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,785|
+DLQ >> Nachricht 40 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,785|
+DLQ >> Nachricht 41 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,786|
+DLQ >> Nachricht 42 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,787|
+DLQ >> Nachricht 43 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,788|
+DLQ >> Nachricht 44 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,794|
+DLQ >> Nachricht 45 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,795|
+DLQ >> Nachricht 46 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,798|
+DLQ >> Nachricht 47 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,799|
+DLQ >> Nachricht 48 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,800|
+DLQ >> Nachricht 49 an Client <7045.101.0> ausgeliefert um: 08.04 09:59:41,802|
+HBQ>>> Nachricht 50 in HBQ eingefuegt. 
+DLQ >> Nachricht 50 in DLQ eingefuegt um: 08.04 09:59:42,727|
+DLQ >> Nachricht 35 aus DLQ geloescht um: 08.04 09:59:42,727|
+DLQ >> Nachricht 36 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,733|
+DLQ >> Nachricht 37 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,735|
+DLQ >> Nachricht 38 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,739|
+DLQ >> Nachricht 39 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,742|
+DLQ >> Nachricht 40 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,745|
+DLQ >> Nachricht 41 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,748|
+DLQ >> Nachricht 42 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,750|
+DLQ >> Nachricht 43 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,758|
+DLQ >> Nachricht 44 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,761|
+DLQ >> Nachricht 45 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,769|
+DLQ >> Nachricht 46 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,771|
+DLQ >> Nachricht 47 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,772|
+DLQ >> Nachricht 48 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,781|
+DLQ >> Nachricht 49 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,783|
+DLQ >> Nachricht 50 an Client <7045.113.0> ausgeliefert um: 08.04 09:59:42,784|
+HBQ>>> Nachricht 51 in HBQ eingefuegt. 
+DLQ >> Nachricht 51 in DLQ eingefuegt um: 08.04 09:59:43,748|
+DLQ >> Nachricht 36 aus DLQ geloescht um: 08.04 09:59:43,748|
+DLQ >> Nachricht 37 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,751|
+DLQ >> Nachricht 38 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,752|
+DLQ >> Nachricht 39 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,753|
+DLQ >> Nachricht 40 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,754|
+DLQ >> Nachricht 41 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,755|
+DLQ >> Nachricht 42 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,756|
+DLQ >> Nachricht 43 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,757|
+DLQ >> Nachricht 44 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,758|
+DLQ >> Nachricht 45 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,759|
+DLQ >> Nachricht 46 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,760|
+DLQ >> Nachricht 47 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,761|
+DLQ >> Nachricht 48 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,765|
+DLQ >> Nachricht 49 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,766|
+DLQ >> Nachricht 50 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,767|
+DLQ >> Nachricht 51 an Client <7045.114.0> ausgeliefert um: 08.04 09:59:43,767|
+HBQ>>> Nachricht 53 in HBQ eingefuegt. 
+HBQ>>> Nachricht 55 in HBQ eingefuegt. 
+HBQ>>> Nachricht 57 in HBQ eingefuegt. 
+HBQ>>> Nachricht 58 in HBQ eingefuegt. 
+HBQ>>> Nachricht 59 in HBQ eingefuegt. 
+HBQ>>> Nachricht 60 in HBQ eingefuegt. 
+HBQ>>> Nachricht 61 in HBQ eingefuegt. 
+HBQ>>> Nachricht 62 in HBQ eingefuegt. 
+HBQ>>> Nachricht 63 in HBQ eingefuegt. 
+HBQ>>> Downtime: "08.04 10:00:34,785|"| von HBQ und DLQ <0.61.0>; Anzahl Restnachrichten HBQ/DLQ:9/15 (24). 

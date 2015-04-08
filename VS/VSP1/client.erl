@@ -24,7 +24,6 @@ loop(Servername, Servernode, Sendinterval) ->
 loopEditor(Servername, Servernode, Sendinterval) ->
 	loopEditor(Servername, Servernode, Sendinterval, 0).
 
-
 loopEditor(Servername, Servernode, Sendinterval, Counter) ->	
 	%1. neue Nachrichten Nummer besorgen
 	Number = getMSGNum(Servername, Servernode),
@@ -71,7 +70,7 @@ loopReader(Servername, Servernode, NumberList) ->
 		{reply, [_NNr, Msg, _TSclientout, _TShbqin, _TSdlqin, _TSdlqout], true} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("~p received last message; C In: " ++  timeMilliSecond() ++ "~n", [Msg])));
 		{interrupt, timeout} ->
-			logging(?LOGFILE, "reader-client interruted: timeout " ++ timeMilliSecond() ++ "~n"),
+			logging(?LOGFILE, lists:flatten(io_lib:format("reader-client interruted: ~p timeout " ++ timeMilliSecond() ++ "~n", [self()]))),
 			exit(self(), "reader-client interrupted: timeout~n");
 		Any ->
 			io:format("reader-client received anything else: ~p~n", [Any])
@@ -86,7 +85,7 @@ getMSGNum(Servername, Servernode) ->
 		{nid, Number} ->
 			Number;
 		{interrupt, timeout} ->
-			logging(?LOGFILE, "reader-client interruted: timeout " ++ timeMilliSecond()),
+			logging(?LOGFILE, lists:flatten(io_lib:format("reader-client interruted: ~p timeout " ++ timeMilliSecond() ++ "~n", [self()]))),
 			exit(self(), "reader-client interrupted: timeout~n"),
 			Number = -1;
 		Any ->

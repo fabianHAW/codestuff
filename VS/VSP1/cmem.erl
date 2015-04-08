@@ -34,11 +34,10 @@ updateClient([RemTime, Clients], ClientID, NNr, Datei) -> % Client suchen.
 updateClient([], ClientID, NNr, Datei, search) -> %Client neu -> speichern.
 	logging(Datei, lists:flatten(io_lib:format("CMEM>>> Client ~p im CMEM eingefuegt. ~n", [ClientID]))),
 	[[ClientID, NNr, getUTC()]];	
-updateClient([[Pid, _NNr2, _Timestamp] | Rest], ClientID, NNr, Datei, search) when Pid == ClientID-> %Client gefunden.
+updateClient([[Pid, _NNr2, _Timestamp] | Rest], ClientID, NNr, _Datei, search) when Pid == ClientID-> %Client gefunden.
 	[[Pid, NNr, getUTC()]] ++ Rest;
 updateClient([[Pid, NNr2, Timestamp] | Rest], ClientID, NNr, Datei, search) -> %Client noch nicht gefunden -> weitersuchen.
 	[[Pid, NNr2, Timestamp]] ++ updateClient(Rest, ClientID, NNr, Datei, search).
-	%[[Pid, NNr, getUTC()]] ++ updateClient(Rest, ClientID, NNr, Datei, search).
 
 %Wird vom Server aufgerufen, entfernt Clients aus CMEM die sich eine gewisse Zeit (RemTime) nicht gemeldet haben.
 deleteExpired([RemTime, Cmem], Datei) ->
