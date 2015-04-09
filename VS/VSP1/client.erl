@@ -1,7 +1,7 @@
 -module(client).
 -import(werkzeug, [get_config_value/2, timeMilliSecond/0, logging/2]).
 -import(messageSendTimer, [changeSendInterval/1]).
--export([loop/3]).
+-export([loop/4]).
 
 -define(HOSTNAME, inet:gethostname()).
 -define(GROUP, 3).
@@ -12,21 +12,19 @@
 %Das Diagramm "Client-Komponente"
 
 %Einstiegstpunkt des Clients, welcher im lifetimeTimer aufgerufen wird
-loop(Servername, Servernode, Sendinterval) ->
+loop(Servername, Servernode, Sendinterval, Numberlist) ->
 	%Rolle des Redakteur-Clients
-	SendintervalNew = loopEditor(Servername, Servernode, Sendinterval),
+	{SendintervalNew, NumberlistNew} = loopEditor(Servername, Servernode, Sendinterval, 0, Numberlist),
 	logging(?LOGFILE, lists:flatten(io_lib:format("dropmessages..Done~n", []))),
 	%Rolle des Leser-Clients
-	loopReader(Servername, Servernode, []),
+	loopReader(Servername, Servernode, NumberlistNew),
 	logging(?LOGFILE, lists:flatten(io_lib:format("getmessages..Done~n", []))),
-	loop(Servername, Servernode, SendintervalNew).
+	loop(Servername, Servernode, SendintervalNew, NumberlistNew).
 
-loopEditor(Servername, Servernode, Sendinterval) ->
-	loopEditor(Servername, Servernode, Sendinterval, 0).
-
-loopEditor(Servername, Servernode, Sendinterval, Counter) ->	
+loopEditor(Servername, Servernode, Sendinterval, Counter, Numberlist) ->	
 	%1. neue Nachrichten Nummer besorgen
 	Number = getMSGNum(Servername, Servernode),
+	NumberlistNew = Numberlist ++ [Number],
 	%3.1. neue Nachricht generieren 
 	{ok, Client} = ?HOSTNAME, 
 	Msg = lists:flatten(io_lib:format("~p-~p-client@~s-~p-~pte_Nachricht. C Out: ", [?GROUP, ?TEAM, Client, self(), Number])),
@@ -42,22 +40,22 @@ loopEditor(Servername, Servernode, Sendinterval, Counter) ->
 	%6. wurden alle 5 Nachrichten gesendet, wird die Rolle gewechselt 
 	case Counter < 4 of
 		true ->
-			loopEditor(Servername, Servernode, Sendinterval, Counter + 1);
+			loopEditor(Servername, Servernode, Sendinterval, Counter + 1, NumberlistNew);
 		false ->
-			changeRole(Servername, Servernode, Sendinterval)
+			changeRole(Servername, Servernode, Sendinterval, NumberlistNew)
 	end.
 
 %Zeitabstand neu berechnen, sowie neue Nachrichtennummer anfordern, Nachricht generieren und diese loggen aber nicht verschickt
-changeRole(Servername, Servernode, Sendinterval) ->
+changeRole(Servername, Servernode, Sendinterval, Numberlist) ->
 	%7. Zeitabstand aendern
 	SendintervalNew = changeSendInterval(Sendinterval),
 	%8. neue Nachrichten Nummer besorgen
 	ForgetNumber = getMSGNum(Servername, Servernode),
 	logging(?LOGFILE, lists:flatten(io_lib:format("~pte_Nachricht um " ++ timeMilliSecond() ++ " vergessen zu senden~n", [ForgetNumber]))),
 	logging(?LOGFILE, lists:flatten(io_lib:format("neues Sendeintervall: ~p Sekunden (~p)~n", [SendintervalNew, Sendinterval]))),
-	SendintervalNew.
+	{SendintervalNew, Numberlist}.
 
-loopReader(Servername, Servernode, NumberList) ->
+loopReader(Servername, Servernode, Numberlist) ->
 	%10. Nachrichten abfragen
 	{Servername, Servernode} ! {self(), getmessages},
 	receive
@@ -65,10 +63,22 @@ loopReader(Servername, Servernode, NumberList) ->
 		%13 Gibt es weitere Nachrichten? -> durch Terminated-Falg realisiert
 		{reply, [NNr, Msg, _TSclientout, _TShbqin, _TSdlqin, _TSdlqout], false} ->
 			%12. eigene Nachricht markieren
-			logging(?LOGFILE, lists:flatten(io_lib:format("~p received new message; C In: " ++  timeMilliSecond() ++ "~n", [Msg]))),
-			loopReader(Servername, Servernode, NumberList ++ [NNr]);
-		{reply, [_NNr, Msg, _TSclientout, _TShbqin, _TSdlqin, _TSdlqout], true} ->
-			logging(?LOGFILE, lists:flatten(io_lib:format("~p received last message; C In: " ++  timeMilliSecond() ++ "~n", [Msg])));
+			%pruefung ob erhaltene Nachricht die vom eigenen Redakteur ist und mit Sternchen versehen
+			case lists:any(fun(N) -> NNr==N end, Numberlist) of
+				true ->
+					logging(?LOGFILE, lists:flatten(io_lib:format("~p received new message *****; C In: " ++  timeMilliSecond() ++ "~n", [Msg])));				
+				false ->
+					logging(?LOGFILE, lists:flatten(io_lib:format("~p received new message; C In: " ++  timeMilliSecond() ++ "~n", [Msg])))
+			end,
+			loopReader(Servername, Servernode, Numberlist);
+		{reply, [NNr, Msg, _TSclientout, _TShbqin, _TSdlqin, _TSdlqout], true} ->
+			%pruefung ob erhaltene Nachricht die vom eigenen Redakteur ist und mit Sternchen versehen
+			case lists:any(fun(N) -> NNr==N end, Numberlist) of
+				true ->
+					logging(?LOGFILE, lists:flatten(io_lib:format("~p received last message *****; C In: " ++  timeMilliSecond() ++ "~n", [Msg])));
+				false ->
+					logging(?LOGFILE, lists:flatten(io_lib:format("~p received last message; C In: " ++  timeMilliSecond() ++ "~n", [Msg])))
+			end;
 		{interrupt, timeout} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("reader-client interruted: ~p timeout " ++ timeMilliSecond() ++ "~n", [self()]))),
 			exit(self(), "reader-client interrupted: timeout~n");

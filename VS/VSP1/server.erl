@@ -21,10 +21,10 @@ readCfg() ->
 	{ok, ConfigListe} = file:consult("server.cfg"),
    	{ok, Clientlifetime} = get_config_value(clientlifetime, ConfigListe),
    	{ok, Servername} = get_config_value(servername, ConfigListe),
-    {ok, HBQname} = get_config_value(hbqname, ConfigListe),
-    {ok, HBQnode} = get_config_value(hbqnode, ConfigListe),
-    logging(?LOGFILE, lists:flatten(io_lib:format("Server: server.cfg geoeffnet... ~n", []))),
-    {Clientlifetime, Servername, HBQname, HBQnode}.
+   	{ok, HBQname} = get_config_value(hbqname, ConfigListe),
+    	{ok, HBQnode} = get_config_value(hbqnode, ConfigListe),
+    	logging(?LOGFILE, lists:flatten(io_lib:format("Server: server.cfg geoeffnet... ~n", []))),
+   	{Clientlifetime, Servername, HBQname, HBQnode}.
 
 initHBQCMEM(Clientlifetime, HBQname, HBQnode) ->
 	{HBQname, HBQnode} ! {self(), {request, initHBQ}},

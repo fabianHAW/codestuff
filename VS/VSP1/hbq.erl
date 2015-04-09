@@ -1,6 +1,6 @@
 -module(hbq).
 -import(werkzeug, [logging/2, timeMilliSecond/0, get_config_value/2, to_String/1, timeMilliSecond/0]).
--import(dlq, [push2DLQ/3, expectedNr/1, initDLQ/2, deliverMSG/4, getSize/1]).
+-import(dlq, [push2DLQ/3, expectedNr/1, initDLQ/2, deliverMSG/4]).
 -export([start/0, loop/0]).
 
 -define(SEVERCFG, "server.cfg").
@@ -51,9 +51,7 @@ loop(HBQ, DLQ, DLQlimit, running) ->
 		%Terminierungsanfrage der HBQ von Seiten des Servers.
 		{Pid, {request,dellHBQ}} ->
 			{HBQsize, _HBQn} = HBQ,
-			%keine oeffentliche Schnittstelle -> kritisch!
-			DLQsize = getSize(DLQ),
-			logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> Downtime: ~p| von HBQ und DLQ ~p; Anzahl Restnachrichten HBQ/DLQ:~p/~p (~p). ~n", [timeMilliSecond(), self(), HBQsize, DLQsize, (HBQsize + DLQsize)]))),
+			logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> Downtime: ~p| von HBQ und DLQ ~p; Anzahl Restnachrichten HBQ:~p. ~n", [timeMilliSecond(), self(), HBQsize]))),
 			Pid ! {reply, ok};
 		_Any ->
 				logging(?LOGFILE, lists:flatten(io_lib:format("HBQ>>> !!!UNDEFINIERTE NACHRICHT ERHALTEN!!!. ~n", []))),

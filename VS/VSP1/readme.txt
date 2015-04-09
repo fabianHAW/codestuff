@@ -10,8 +10,13 @@ readme.txt; client.cfg; server.cfg
 (w)erl -(s)name server -setcookie kekse
 1> make:all().
 
+Die Reihenfolge des Startens der Prozesse muss eingehalten werden:
+1.) HBQ-Prozess
+2.) Server
+3.) Clients
+
 --------------------
-Starten des HBQ-Prozesses (muss vor dem Starten des Servers gestartet werden):
+Starten des HBQ-Prozesses:
 --------------------
 (w)erl -(s)name hbqNode -setcookie kekse
 1> hbq:start().
@@ -27,9 +32,10 @@ Starten des Servers:
 % {clientlifetime,4}. Zeitspanne, in der sich an den Client erinnert wird
 % {servername, wk}. Name des Servers als Atom
 % {hbqname, hbq}. Name der HBQ als Atom
-% {hbqnode, 'hbqNode@KI-VS'}. Name der Node der HBQ als Atom
+% {hbqnode, 'hbqNode@lab23.cpt.haw-hamburg.de'}. Name der Node der HBQ als Atom
 % {dlqlimit, 15}. Größe der DLQ
 
+--------------------
 Starten des Clients:
 --------------------
 (w)erl -(s)name client -setcookie kekse
@@ -41,7 +47,7 @@ Starten des Clients:
 % {clients, 3}.  Anzahl der Clients, die gestartet werden sollen
 % {lifetime, 42}. Laufzeit der Clients
 % {servername, wk}. Name des Servers
-% {servernode, 'server@KI-VS'}. Node des Servers
+% {servernode, 'server@lab23.cpt.haw-hamburg.de'}. Node des Servers
 % {sendeintervall, 3}. Zeitabstand der einzelnen Nachrichten
 
 Runterfahren:
