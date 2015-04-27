@@ -1,5 +1,5 @@
 -module(koordinator).
--import(werkzeug, [get_config_value/2, logging/2, timeMilliSecond/0, shuffle/1]).
+-import(werkzeug, [get_config_value/2, logging/2, timeMilliSecond/0, shuffle/1, bestimme_mis/2]).
 -export([start/0]).
 -define(LOGFILE, lists:flatten(io_lib:format("~p.log", [node()]))).
 
@@ -61,14 +61,35 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD) when CMD 
 		{hello, GGTName} ->
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL ++ GGTName, CMD);
 		{step} ->
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, createRing(GGTL, PIDns), step);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, createRing(GGTL, PIDns), [step, undef]);
+		{reset} ->
+			print("reset nicht implementiert ~n");
+		{prompt} ->
+			print("prompt nicht implementiert ~n");
+		{nudge} ->
+			print("nudge nicht implementiert ~n");
+		{toggle} ->
+			print("toggle nicht implementiert ~n");
+		{kill} ->
+			print("kill nicht implementiert ~n")
+	end	
+	;
+loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD) when hd(CMD) /= kill, hd(CMD) /= reset ->
+	receive
 	%%%%********************************************************************************************************************%%%%
 	%%%%*****************************************Arbeitsphase***************************************************************%%%%
 	%%%%********************************************************************************************************************%%%%
-	
-	%%%%********************************************************************************************************************%%%%
-	%%%%*****************************************Beendigungsphase***********************************************************%%%%
-	%%%%********************************************************************************************************************%%%%
+		{calc,WggT} ->
+			print("{calc, WggT} nicht implementiert ~n"),
+			Mis1 = bestimme_mis(WggT, lists:length(GGTL)),
+			sendeMis(PIDns, GGTL, Mis1),
+			GewaehlteProzesse = startProzesseErmitteln(GGTL),
+			Mis2 = bestimme_mis(WggT, lists:length(GewaehlteProzesse)),
+			sendeY(PIDns, GewaehlteProzesse, Mis2);
+		{briefmi, {MeinName, CMi, CZeit}} ->
+			print("briefmi ... nicht implementiert ~n");
+		{GGTpid, briefterm, {MeinName, CMi, CZeit}} ->
+			print("... briefterm ... nicht implementiert ~n");
 		{reset} ->
 			print("reset nicht implementiert ~n");
 		{prompt} ->
@@ -81,7 +102,6 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD) when CMD 
 			print("kill nicht implementiert ~n")
 	end	
 	.
-	
 createRing(GGTL, PIDns) ->
 	createRing(werkzeug:shuffle(GGTL), 1, PIDns),
 	GGTL.
@@ -89,9 +109,9 @@ createRing(GGTL, Idx, PIDns) ->
 	PIDns ! {self(), {lookup, lists:nth(length(GGTL))}},
 	receive
 		{pin, {GGTName, GGTNode}} ->
-			{GGTName, GGTNode} ! {setneighbors,getLneighbor(Idx, PIDns, GGTL), getRneighbor(Idx, PIDns, GGTL)},
-			createRing(GGTL, Idx + 1, PIDns)
-	end
+			{GGTName, GGTNode} ! {setneighbors,getLneighbor(Idx, PIDns, GGTL), getRneighbor(Idx, PIDns, GGTL)}
+	end,
+	createRing(GGTL, Idx + 1, PIDns)
 	.
 
 getRneighbor(Idx, PIDns, GGTL) when Idx == length(GGTL) ->
@@ -127,6 +147,36 @@ getLneighbor(Idx, PIDns, GGTL) ->
 	end,
 	Lneighbor
 	.
+sendeMis(PIDns, [], []) ->
+	ok;
+sendeMis(PIDns, [H | T], [MiNeu | Rest]) ->
+	PIDns ! {self(), {lookup, H}},
+	receive
+		{pin, {GGTName, GGTNode}} ->
+		GGT = {GGTName, GGTNode}
+	end,
+	GGT ! {setpm, MiNeu},
+	sendeMis(PIDns, T, Rest)
+	.
+
+sendeY(PIDns, [], []) ->
+	ok;
+sendeY(PIDns, [H | T], [Mi | MiRest]) ->
+	PIDns ! {self(), {lookup, H}},
+	receive
+		{pin, {GGTName, GGTNode}} ->
+		GGT = {GGTName, GGTNode}
+	end,
+	GGT ! {sendy, Mi},
+	sendeY(PIDns, T, MiRest)
+	.
+
+startProzesseErmitteln(GGTL) -> startProzesseErmitteln(werkzeug:shuffle(GGTL), [], length(GGTL)).
+startProzesseErmitteln([H | T], GewaehlteProzesse, LengthGGTL) when length(GewaehlteProzesse) < ((LengthGGTL / 100) * 20)->
+	startProzesseErmitteln(T, GewaehlteProzesse ++ H, LengthGGTL);
+startProzesseErmitteln(_GGTL, GewaehlteProzesse, _LGGTL) ->
+	GewaehlteProzesse.
+
 	
 readConfig() ->
 	{ok, CfgList} = file:consult("koordinator.cfg"),
