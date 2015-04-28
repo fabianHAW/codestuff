@@ -16,11 +16,11 @@ start() ->
 	{ok, Korrigieren}} = readConfig(), %Config-Werte auslesen.
 	logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: koordinator.cfg gelesen...", []))),
 	
-	Pang = net_adm:ping(nameservices),  %Ping an Erlang-Node.
+	Pong = net_adm:ping(Nameservicenode),  %Ping an Erlang-Node.
 	timer:sleep(1000), %2 Sekunden warten um Nameservice Zeit zu geben.
 	
 	%Pang erhalten? Loggen!
-	case Pang == pang of
+	case Pong == pong of
 		true ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: Ping erfolgreich. ~n", [])));
 		false ->
@@ -65,7 +65,7 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST + 1);
 		{hello, GGTName} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: hello: ~p (~p). ~n", [GGTName, GGTPNr]))),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL ++ GGTName, CMD, MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL ++ [GGTName], CMD, MiMin, SPZF, AST);
 		{step} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: step: um ~p Uhr. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, createRing(GGTL, PIDns), [step, undef], MiMin, SPZF, AST);
@@ -76,34 +76,34 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 		{prompt} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [prompt,tl(CMD)], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [prompt, lists:nth(2, CMD)], MiMin, SPZF, AST);
 		{nudge} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [nudge,tl(CMD)], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [nudge,lists:nth(2, CMD)], MiMin, SPZF, AST);
 		{toggle} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: toggle: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF * -1, AST);
 		{kill} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: kill: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [kill, tl(CMD)], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [kill, lists:nth(2, CMD)], MiMin, SPZF, AST);
 		_Any ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: received anything: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST)
 	end	
 	;
 loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(CMD) /= kill, tl(CMD) /= reset ->
+	io:format("CMD: ~p", [CMD]), 
 	receive
 	%%%%********************************************************************************************************************%%%%
 	%%%%*****************************************Arbeitsphase***************************************************************%%%%
 	%%%%********************************************************************************************************************%%%%
 		{calc,WggT} ->
-			print("{calc, WggT} nicht implementiert ~n"),
-			Mis1 = bestimme_mis(WggT, lists:length(GGTL)),
+			Mis1 = bestimme_mis(WggT, length(GGTL)),
 			sendeMis(PIDns, GGTL, Mis1),
 			GewaehlteProzesse = startProzesseErmitteln(GGTL),
-			Mis2 = bestimme_mis(WggT, lists:length(GewaehlteProzesse)),
+			Mis2 = bestimme_mis(WggT, length(GewaehlteProzesse)),
 			sendeY(PIDns, GewaehlteProzesse, Mis2),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
 		{briefmi, {MeinName, CMi, CZeit}} ->
@@ -122,22 +122,22 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 		{reset} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: reset: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [hd(CMD),reset], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [lists:nth(1, CMD),reset], MiMin, SPZF, AST);
 		{prompt} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [prompt,tl(CMD)], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [prompt,lists:nth(2, CMD)], MiMin, SPZF, AST);
 		{nudge} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [nudge,tl(CMD)], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [nudge,lists:nth(2, CMD)], MiMin, SPZF, AST);
 		{toggle} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: toggle: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF * -1, AST);
 		{kill} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: kill: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [kill, tl(CMD)], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [kill, lists:nth(2, CMD)], MiMin, SPZF, AST);
 		_Any ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: received anything: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST)
@@ -158,13 +158,15 @@ createRing(GGTL, PIDns) when length(GGTL) >= 1 ->
 	GGTL;
 createRing(GGTL, _PIDns) ->
 	GGTL.
-createRing(GGTL, Idx, PIDns) ->
-	PIDns ! {self(), {lookup, lists:nth(length(GGTL))}},
+createRing(GGTL, Idx, PIDns) when Idx =< length(GGTL)->
+	PIDns ! {self(), {lookup, lists:nth(Idx)}},
 	receive
 		{pin, {GGTName, GGTNode}} ->
 			{GGTName, GGTNode} ! {setneighbors,getLneighbor(Idx, PIDns, GGTL), getRneighbor(Idx, PIDns, GGTL)}
 	end,
-	createRing(GGTL, Idx + 1, PIDns)
+	createRing(GGTL, Idx + 1, PIDns);
+createRing(_GGTL, _Idx, _PIDns) ->
+	ok
 	.
 
 getRneighbor(Idx, PIDns, GGTL) when Idx == length(GGTL) ->

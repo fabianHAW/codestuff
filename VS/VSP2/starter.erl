@@ -12,10 +12,10 @@ start(StarterNummer) ->
 	
 	logging(?LOGFILE, lists:flatten(io_lib:format("Starter: ggt gelesen... ~n", []))),
 	
-	Pang = net_adm:ping(nameservices),  %Ping an Erlang-Node.
-	
+	Pong = net_adm:ping(NameserviceNode),  %Ping an Erlang-Node.
+	timer:sleep(1000),
 	%Pang erhalten? Loggen!
-	case Pang == pang of
+	case Pong == pong of
 		true ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Starter: Ping erfolgreich. ~n", [])));
 		false ->
@@ -31,8 +31,8 @@ start(StarterNummer) ->
 		false ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Starter: Nameservice gebunden... ~n", [])))
 	end,
-	
-	{PIDns, NameserviceNode} ! {self(), {lookup, KoordinatorName}},
+
+	{NameserviceName, NameserviceNode} ! {self(), {lookup, KoordinatorName}},
 	
 	receive
 		{pin, {KoNa, KoNo}} ->
@@ -41,20 +41,20 @@ start(StarterNummer) ->
 	
 	logging(?LOGFILE, lists:flatten(io_lib:format("Starter: Koordinator ~p gebunden... ~n", [KoNa]))),
 	
-	true = register(StarterNummer, self()),	
+	register('1', self()),	
 	
 	KN ! {self(), getsteeringval},
 	
     receive 
 			{steeringval, AZ, TZ, Quota, GGTPNr} -> 
-				startGGTs(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, 1),
-				logging(?LOGFILE, lists:flatten(io_lib:format("Starter: getsteeringval: ~p Arbeitszeit ggT; ~p Wartezeit Terminierung ggT; ~p Abstimmungsquote ggT; ~p-te GGT Prozess.", [AZ, TZ, Quota, GGTPNr])))
+				logging(?LOGFILE, lists:flatten(io_lib:format("Starter: getsteeringval: ~p Arbeitszeit ggT; ~p Wartezeit Terminierung ggT; ~p Abstimmungsquote ggT; ~p-te GGT Prozess.", [AZ, TZ, Quota, GGTPNr]))),
+				startGGTs(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, 1)
 	end,
  
 	logging(?LOGFILE, lists:flatten(io_lib:format("Starter: ggt gelesen... ~n", [])))
 	.
 
-startGGTs(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer) when ProzessNummer /= GGTPNr ->
+startGGTs(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer) when ProzessNummer =< GGTPNr ->
 	spawn(ggt, start, [AZ, TZ, ProzessNummer, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota]),
 	startGGTs(AZ, TZ, GGTPNr - 1, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer + 1) 
 	;
