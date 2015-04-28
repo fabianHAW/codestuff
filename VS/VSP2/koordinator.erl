@@ -17,6 +17,7 @@ start() ->
 	logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: koordinator.cfg gelesen...", []))),
 	
 	Pang = net_adm:ping(nameservices),  %Ping an Erlang-Node.
+	timer:sleep(1000), %2 Sekunden warten um Nameservice Zeit zu geben.
 	
 	%Pang erhalten? Loggen!
 	case Pang == pang of
@@ -36,7 +37,6 @@ start() ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: Nameservice gebunden: ~p ~n", [PIDns])))
 	end,
 	
-	timer:sleep(2*1000), %2 Sekunden warten um Nameservice Zeit zu geben.
 	true = register(Koordinatorname, self()), %Bei Erlang-Node registrieren.
 	logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: lokal registriert. ~n", []))),
 	PIDns ! {self(), {rebind, Koordinatorname, node()}}, %An Nameservice binden.
