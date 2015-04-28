@@ -37,7 +37,7 @@ start() ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: Nameservice gebunden: ~p ~n", [PIDns])))
 	end,
 	
-	true = register(Koordinatorname, self()), %Bei Erlang-Node registrieren.
+	io:format("~p",[register(Koordinatorname, self())]), %Bei Erlang-Node registrieren.
 	logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: lokal registriert. ~n", []))),
 	PIDns ! {self(), {rebind, Koordinatorname, node()}}, %An Nameservice binden.
 	
@@ -45,14 +45,15 @@ start() ->
 		ok ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: beim Nameservice registriert. ~n", [])))
 	end,
-	
+	%spawn(koordinator, loop, [Arbeitszeit, Termzeit, Ggtprozessnummer, Nameservicenode, Nameservicename, Koordinatorname, Quote, Korrigieren, PIDns, [], [undef, undef], 1000000, -1, 0])
 	loop(Arbeitszeit, Termzeit, Ggtprozessnummer, Nameservicenode, Nameservicename, Koordinatorname, Quote, Korrigieren, PIDns, [], [undef, undef], 1000000, -1, 0)
 	.
 %AZ := Arbeitszeit; TZ := Termzeit; GGTPNr := GGT-Prozessnummer; NameSno := NameserviceNode
 %NameSna := NameserviceName; KN := Koordinatorname; QUO := Quote; KOR := Korrigieren
 %PIDns := PID-Nameservice; CMD := Command; GGTL := GGT-Prozessliste; MiMin := Aktuelles minimales Mi; 
 %SPZF := Spezialflag (-1 = false, 1 = true); AST := Anzahl Starter (für Abstimmungsquote);
-loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(CMD) /= step ->
+loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(CMD) /= step, hd(CMD) /= kill ->
+	io:format("CMD: ~p", [CMD]), 
 	receive
 	%%%%********************************************************************************************************************%%%%
 	%%%%*****************************************Initialiserungsphase*******************************************************%%%%
@@ -69,20 +70,26 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: step: um ~p Uhr. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, createRing(GGTL, PIDns), [step, undef], MiMin, SPZF, AST);
 		{reset} ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: reset: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [undef,reset], MiMin, SPZF, 0);
 		{prompt} ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [prompt,tl(CMD)], MiMin, SPZF, AST);
 		{nudge} ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [nudge,tl(CMD)], MiMin, SPZF, AST);
 		{toggle} ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: toggle: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF * -1, AST);
 		{kill} ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: kill: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [kill, tl(CMD)], MiMin, SPZF, AST);
 		_Any ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: received anything: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST)
 	end	
 	;
@@ -113,20 +120,26 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 			end,
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
 		{reset} ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: reset: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [hd(CMD),reset], MiMin, SPZF, AST);
 		{prompt} ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [prompt,tl(CMD)], MiMin, SPZF, AST);
 		{nudge} ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [nudge,tl(CMD)], MiMin, SPZF, AST);
 		{toggle} ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: toggle: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF * -1, AST);
 		{kill} ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: kill: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [kill, tl(CMD)], MiMin, SPZF, AST);
 		_Any ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: received anything: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST)
 	end	
 	;
@@ -136,12 +149,14 @@ loop(_AZ, _TZ, _GGTPNr, _NameSno, _NameSna, KN, _QUO, _KOR, PIDns, _GGTL, _CMD, 
 		ok ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: Erfolgreich vom Nameservice abgemeldet um ~p Uhr. ~n", [werkzeug:timeMilliSecond()])))
 	end,
-	unregister(self()),
+	unregister(KN),
 	logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: Downtime ~p Uhr | vom Koordinator ~p ~n", [werkzeug:timeMilliSecond(), KN])))
 	.
 	
-createRing(GGTL, PIDns) ->
+createRing(GGTL, PIDns) when length(GGTL) >= 1 ->
 	createRing(werkzeug:shuffle(GGTL), 1, PIDns),
+	GGTL;
+createRing(GGTL, _PIDns) ->
 	GGTL.
 createRing(GGTL, Idx, PIDns) ->
 	PIDns ! {self(), {lookup, lists:nth(length(GGTL))}},
