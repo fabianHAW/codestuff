@@ -47,11 +47,11 @@ start(ArbeitsZeit, TermZeit, ProzessNummer, StarterNummer, PraktikumsGruppe, Tea
 %Arbeits-, Terminierungs- und Beendigungsphase
 %es werden noch weitere Variablen benoetigt die hier angelegt und mitgegeben werden
 loop(MeinName, LogFile, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota) ->
-	%loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsetAnfrage, Termmeldungen, Killed)
-	loop(MeinName, LogFile, -1, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, timer:start(), -1, false, 0, false).
+	%loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsetAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, Killed)
+	loop(MeinName, LogFile, -1, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, timer:start(), -1, false, 0, 0, timer:start(), false).
 
 %Fall, wenn noch KEIN kill vom Koordinator kam
-loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, false) ->
+loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false) ->
 	receive
 		%MiNeu setzen und wieder in receive-Block springen
 		{setpm, MiNeu} ->
@@ -59,7 +59,7 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 			TimeNeu = getUTC(),
 			ErsteAnfrageNeu = true,
 			logging(LogFile, lists:flatten(io_lib:format("setpm: ~p. (~p)~n", [MiNeu, MeinName]))),
-			loop(MeinName, LogFile, MiNeu, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, TimeNeu, ErsteAnfrageNeu, Termmeldungen, false);
+			loop(MeinName, LogFile, MiNeu, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, TimeNeu, ErsteAnfrageNeu, Termmeldungen, VoteYesCounter, VoteTimer, false);
 		%moegliches neues Y und impliziete Aufforderung, dass ggT-Algorithmus gestartet wird
 		{sendy, Y} ->
 			TermTimerNeu = reset_timer(TermTimer, TermZeit, {terminated, terminterrupt}),
@@ -67,48 +67,54 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 			ErsteAnfrageNeu = true,
 			{Reason, CMi} = ggtAlgorithmus(Mi, Y, LeftN, RightN, ArbeitsZeit, LogFile),
 			%Nach Berechnung des ggT wird nun geprueft, ob und welche Nachricht an Koordinator gesendet werden muss
+			%changed := Mi wurde neu berechnet -> briefme an Koordinator
+			%terminated := ggT wurde berechnet -> briefterm an Koordinator
+			%notchanged := der ggT-Algorithmus wurde nicht angewendet -> nichts an Koordinator senden
 			case Reason of
 				changed ->
 					Koordinator ! {briefme, {MeinName, CMi, timeMilliSecond()}},
 					logging(LogFile, lists:flatten(io_lib:format("~p: Mi: ~p geandert und an Koordinator (~p) gesendet~n", [MeinName, CMi, Koordinator])));
 				terminated ->
-					Koordinator ! {briefterm, {MeinName, CMi, timeMilliSecond()}},
+					Koordinator ! {self(), briefterm, {MeinName, CMi, timeMilliSecond()}},
 					logging(LogFile, lists:flatten(io_lib:format("~p: Mi: ~p ggT erfolgreich berechnet und an Koordinator (~p) gesendet~n", [MeinName, CMi, Koordinator])));
 				notchanged ->
 					logging(LogFile, lists:flatten(io_lib:format("~p: keine Nachricht an Koordinator gesendet~n", [MeinName])))
 			end,
-			loop(MeinName, LogFile, CMi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, TimeNeu, ErsteAnfrageNeu, Termmeldungen, false);			
+			loop(MeinName, LogFile, CMi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, TimeNeu, ErsteAnfrageNeu, Termmeldungen, VoteYesCounter, VoteTimer, false);			
 		%moegliche Nachricht von Koordinator um aktuelles Mi zu erhalten
 		{KoordinatorPID, tellmi} ->
 			KoordinatorPID ! {mi, Mi},
-			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, false);
+			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false);
 		%moegliches ping von Seiten des Koordinators
 		{KoordinatorPID, pingGGT} ->
 			KoordinatorPID ! {pongGGT, MeinName},
-			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, false);
-		%der Timer schickt ein Interrupt, da nun die TermZeit abgelaufen ist une eine Terminierungsabstimmung durchgefuehrt werden muss
+			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false);
+		%der TermTimer schickt ein Interrupt, da nun die TermZeit abgelaufen ist une eine Terminierungsabstimmung durchgefuehrt werden muss
 		{terminated, terminterrupt} ->
-			%*******************************************schleife aus dem diagramm 3 entfernen
 			case ErsteAnfrage of
 				true ->
+					logging(LogFile, lists:flatten(io_lib:format("~p: initiiere die ~pte Terminierungsabstimmung (~p). " ++ timeMilliSecond() ++ "~n", [MeinName, Termmeldungen, VoteYesCounter]))),
 					Nameservice ! {self(), {multicast, vote, MeinName}},
-					%*******************************************VoteTimer bezeichner und 500 in diagramm 3 anpassen
-					VoteTimer = reset_timer(timer:start(), 500, {terminated, voteinterrupt}),
-					%Terminierungsmeldungen = terminierungsphase(MeinName, Nameservice, Koordinator, Quota, LogFile),
+					%neuen VoteTimer starten, da es vorkommen kann, dass 2 Votierungen stattfinden, daher darf der schon existierende Votetimer
+					%nicht unterbrochen werden
+					VoteTimerNeu = reset_timer(timer:start(), 500, {terminated, voteinterrupt}),
 					TermTimerNeu = reset_timer(timer:start(), TermZeit, {terminated, terminterrupt}),
-					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, Time, false, Termmeldungen, false);
+					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, Time, false, Termmeldungen, VoteYesCounter, VoteTimerNeu, false);
 				false ->
-					%neuen Timer starten und einen neuen Timestamp ermitteln
+					%neuen Timer starten
+					logging(LogFile, lists:flatten(io_lib:format("~p: eine weitere Terminierungsabstimmung ist nicht moeglich, da noch keine neue Zahl eingetroffen ist. " ++ timeMilliSecond() ++ "~n", [MeinName]))),
 					TermTimerNeu = reset_timer(timer:start(), TermZeit, {terminated, terminterrupt}),
-					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, Time, ErsteAnfrage, Termmeldungen, false)
+					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false)
 			end;
+		%Interrupt des VoteTimer ist eingetreten -> Voting wird abgebrochen
+		{terminated, voteinterrupt} ->
+			logging(LogFile, lists:flatten(io_lib:format("~p: Voting wurde abgebrochen, da Zeit zur Rueckmeldung vorbei ist.~n", [MeinName]))),
+			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, 0, timer:start(), false);
 		{_InitiatorPID, {vote, Initiator}} ->
 			TimeNeu = getUTC(),
 			TimeDiff = (TimeNeu - Time) div 1000,		
-			%*******************************************round in das diagramm einbauen
 			case TimeDiff > round(TermZeit / 2) of
 				true -> 
-					%*******************************************ggf diesen lookup ins diagramm einbauen
 					%ein lookup ist noetig, da der Initiator auf einer ganz anderen Node laufen kann
 					Nameservice ! {self(), {lookup, Initiator}},
 					receive
@@ -116,19 +122,38 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 							{InitiatorNeu, Initiatornode} ! {voteYes, MeinName}
 					end
 			end,
-			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, false);
-		%*******************************************Name in AbsenderName in Diagramm aendern
+			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false);
+		%Zustimmungen zum Voting treffen ein und werden behandelt
 		{voteYes, AbsenderName} ->
-			ok;
+			logging(LogFile, lists:flatten(io_lib:format("~p: stimme ab (~p): mit >JA< gestimmt. " ++ timeMilliSecond() ++ "~n", [MeinName, AbsenderName]))),
+			VoteYesCounterNeu = VoteYesCounter + 1,
+			case VoteYesCounterNeu == Quota of
+				true ->
+					%VoteTimer muss beendet werden, da sonst faelschlicherweise ein Interrupt eintrifft
+					timer:cancel(VoteTimer),
+					Koordinator ! {self(), briefterm, {MeinName, Mi, timeMilliSecond()}},
+					TermmeldungenNeu = Termmeldungen + 1,
+					logging(LogFile, lists:flatten(io_lib:format("~p: Koordinator ~pte Terminierung gemeldet mit ~p " ++ timeMilliSecond() ++ "~n", [MeinName, TermmeldungenNeu, VoteYesCounterNeu]))),
+					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, TermmeldungenNeu, 0, timer:start(), false);
+				false ->
+					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounterNeu, VoteTimer, false)
+			end;
 		%bei kill wird die Schleife verlassen: letztes Flag im Methodenkopf = true
 		kill ->
-			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, true)
+			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, true);
+		%falls irgendwelche anderen, nicht zutreffenden, Nachrichten eintreffen werden diese geloggt
+		Any ->
+			logging(LogFile, lists:flatten(io_lib:format("~p: Es wurde irgendetwas anderes empfangen: ~p " ++ timeMilliSecond() ++ "~n", [MeinName, Any]))),
+			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false)	
 	end;
 %Fall, wenn EIN kill vom Koordinator kam -> Beendigungsphase
-loop(MeinName, LogFile, _Mi, _ArbeitsZeit, _TermZeit, Nameservice, _Koordinator, _LeftN, _RightN, _Quota, TermTimer, _Time, __ErsteAnfrage, _Termmeldungen, true) ->
+loop(MeinName, LogFile, _Mi, _ArbeitsZeit, _TermZeit, Nameservice, _Koordinator, _LeftN, _RightN, _Quota, TermTimer, _Time, __ErsteAnfrage, _Termmeldungen, _VoteYesCounter, _VoteTimer, true) ->
 	Nameservice ! {self(), {unbind, MeinName}},
 	timer:cancel(TermTimer),
-	logging(LogFile, lists:flatten(io_lib:format("Downtime: " ++ timeMilliSecond() ++ " vom Client ~p~n", [MeinName]))).
+	receive ok ->
+		unregister(MeinName),
+		logging(LogFile, lists:flatten(io_lib:format("Downtime: " ++ timeMilliSecond() ++ " vom Client ~p~n", [MeinName])))
+	end.
 	
 %verteilten ggT-Algorithmus anwenden
 ggtAlgorithmus(MiNeu, Y, LeftN, RightN, ArbeitsZeit, LogFile) when Y < MiNeu ->
@@ -148,12 +173,3 @@ ggtAlgorithmusDecision(Y, CMi) when Y == CMi ->
 	{terminated, CMi};
 ggtAlgorithmusDecision(_Y, CMi) ->
 	{changed, CMi}.
-
-
-
-
-
-
-
-
-
