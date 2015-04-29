@@ -84,7 +84,7 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 		prompt ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [undef, lists:nth(2, CMD)], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
 		nudge ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
@@ -141,7 +141,7 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 		prompt ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [prompt,lists:nth(2, CMD)], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
 		nudge ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
