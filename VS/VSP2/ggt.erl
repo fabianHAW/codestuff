@@ -31,7 +31,9 @@ start(ArbeitsZeit, TermZeit, ProzessNummer, StarterNummer, PraktikumsGruppe, Tea
 	
 	%auf Nachbarn warten und ggf. andere befehle vom Koordinator empfangen
 	{LeftN, RightN} = waitingForNeighbors(MeinName, LogFile, {Nameservicename, Nameservicenode}, undef),
-
+	
+	%wurde kill befehl in der initialisierungsphase empfangen, wird nichts getan,
+	%sonst geht der normale ablauf weiter.
 	case (LeftN == -1) and (RightN == -1) of
 		true ->
 			do_nothing;
@@ -185,6 +187,9 @@ waitingForNeighbors(MeinName, LogFile, Nameservice, TermTimer) ->
 			logging(LogFile, lists:flatten(io_lib:format("Linker Nachbar ~p  gebunden.~n", [LeftN]))),
 			logging(LogFile, lists:flatten(io_lib:format("Rechter Nachbar ~p gebunden.~n", [RightN]))),
 			{LeftN, RightN};
+		{KoordinatorPID, tellmi} ->
+			KoordinatorPID ! {mi, undef},
+			waitingForNeighbors(MeinName, LogFile, Nameservice, TermTimer);
 		{KoordinatorPID, pingGGT} ->
 			KoordinatorPID ! {pongGGT, MeinName},
 			waitingForNeighbors(MeinName, LogFile, Nameservice, TermTimer);

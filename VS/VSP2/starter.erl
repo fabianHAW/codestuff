@@ -41,7 +41,9 @@ start(StarterNummer) ->
 	
 	logging(?LOGFILE, lists:flatten(io_lib:format("Starter: Koordinator ~p gebunden... ~n", [KoNa]))),
 	
-	register('1', self()),	
+	%starter muss nicht registriert sein. und wenn dann muss er sich unregistrieren wenn alle prozesse gestartet sind,
+	%sonst gibt es einen namenskonflikt wenn ein weiterer starter gestartet wird und sich mit dem selben namen registrieren will
+	%register('1', self()),	
 	
 	KN ! {self(), getsteeringval},
 	
