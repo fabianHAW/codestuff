@@ -28,24 +28,28 @@ start(ArbeitsZeit, TermZeit, ProzessNummer, StarterNummer, PraktikumsGruppe, Tea
 	%Meldung beim Koordinator
 	{KoordinatornameNeu, Koordinatornode} ! {hello, MeinName},
 	logging(LogFile, lists:flatten(io_lib:format("beim Koordinator gemeldet.~n", []))),
-	receive 
-		{setneighbors, LeftN, RightN} ->
-			logging(LogFile, lists:flatten(io_lib:format("Linker Nachbar ~p  gebunden.~n", [LeftN]))),
-			logging(LogFile, lists:flatten(io_lib:format("Rechter Nachbar ~p gebunden.~n", [RightN])))
-	end,
-	%Node-Informationen über Nameservice des linken Nachbarn holen
-	{Nameservicename, Nameservicenode} ! {self(), {lookup, LeftN}},
-	receive
-		{pin, {LeftNNeu, LeftNnode}} ->
-			LeftNNeuNeu = LeftNNeu
-	end,
-	%Node-Informationen über Nameservice des rechten Nachbarn holen
-	{Nameservicename, Nameservicenode} ! {self(), {lookup, RightN}},
-	receive
-		{pin, {RightNNeu, RightNnode}} ->
-			RightNNeuNeu = RightNNeu
-	end,
-	loop(MeinName, LogFile, ArbeitsZeit, TermZeit, {Nameservicename, Nameservicenode}, {KoordinatornameNeu, Koordinatornode}, {LeftNNeuNeu, LeftNnode}, {RightNNeuNeu, RightNnode}, Quota).
+	
+	%auf Nachbarn warten und ggf. andere befehle vom Koordinator empfangen
+	{LeftN, RightN} = waitingForNeighbors(MeinName, LogFile, {Nameservicename, Nameservicenode}, undef),
+
+	case (LeftN == -1) and (RightN == -1) of
+		true ->
+			do_nothing;
+		false ->
+			%Node-Informationen über Nameservice des linken Nachbarn holen
+			{Nameservicename, Nameservicenode} ! {self(), {lookup, LeftN}},
+			receive
+				{pin, {LeftNNeu, LeftNnode}} ->
+					LeftNNeuNeu = LeftNNeu
+			end,
+			%Node-Informationen über Nameservice des rechten Nachbarn holen
+			{Nameservicename, Nameservicenode} ! {self(), {lookup, RightN}},
+			receive
+				{pin, {RightNNeu, RightNnode}} ->
+					RightNNeuNeu = RightNNeu
+			end,
+			loop(MeinName, LogFile, ArbeitsZeit, TermZeit, {Nameservicename, Nameservicenode}, {KoordinatornameNeu, Koordinatornode}, {LeftNNeuNeu, LeftNnode}, {RightNNeuNeu, RightNnode}, Quota)
+	end.
 
 %Arbeits-, Terminierungs- und Beendigungsphase
 %es werden noch weitere Variablen benoetigt die hier angelegt und mitgegeben werden
@@ -90,8 +94,8 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false);
 		%moegliches ping von Seiten des Koordinators
 		{KoordinatorPID, pingGGT} ->
-			KoordinatorPID ! {pongGGT, MeinName},
-			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false);
+				KoordinatorPID ! {pongGGT, MeinName},
+				loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false);
 		%der TermTimer schickt ein Interrupt, da nun die TermZeit abgelaufen ist une eine Terminierungsabstimmung durchgefuehrt werden muss
 		{terminated, terminterrupt} ->
 			case ErsteAnfrage of
@@ -154,12 +158,7 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 	end;
 %Fall, wenn EIN kill vom Koordinator kam -> Beendigungsphase
 loop(MeinName, LogFile, _Mi, _ArbeitsZeit, _TermZeit, Nameservice, _Koordinator, _LeftN, _RightN, _Quota, TermTimer, _Time, __ErsteAnfrage, _Termmeldungen, _VoteYesCounter, _VoteTimer, true) ->
-	Nameservice ! {self(), {unbind, MeinName}},
-	timer:cancel(TermTimer),
-	receive ok ->
-		unregister(MeinName),
-		logging(LogFile, lists:flatten(io_lib:format("Downtime: " ++ timeMilliSecond() ++ " vom Client ~p~n", [MeinName])))
-	end.
+	unbind(MeinName, LogFile, Nameservice, TermTimer).
 	
 %verteilten ggT-Algorithmus anwenden
 ggtAlgorithmus(MiNeu, Y, LeftN, RightN, ArbeitsZeit, LogFile) when Y < MiNeu ->
@@ -179,3 +178,30 @@ ggtAlgorithmusDecision(Y, CMi) when Y == CMi ->
 	{terminated, CMi};
 ggtAlgorithmusDecision(_Y, CMi) ->
 	{changed, CMi}.
+	
+waitingForNeighbors(MeinName, LogFile, Nameservice, TermTimer) ->
+	receive 
+		{setneighbors, LeftN, RightN} ->
+			logging(LogFile, lists:flatten(io_lib:format("Linker Nachbar ~p  gebunden.~n", [LeftN]))),
+			logging(LogFile, lists:flatten(io_lib:format("Rechter Nachbar ~p gebunden.~n", [RightN]))),
+			{LeftN, RightN};
+		{KoordinatorPID, pingGGT} ->
+			KoordinatorPID ! {pongGGT, MeinName},
+			waitingForNeighbors(MeinName, LogFile, Nameservice, TermTimer);
+		kill ->
+			unbind(MeinName, LogFile, Nameservice, TermTimer),
+			{-1, -1}
+	end.
+
+unbind(MeinName, LogFile, Nameservice, TermTimer) ->
+	Nameservice ! {self(), {unbind, MeinName}},
+	case TermTimer == undef of
+		true ->
+			no_timer_to_cancel;
+		false ->
+			timer:cancel(TermTimer)
+	end,
+	receive ok ->
+		unregister(MeinName),
+		logging(LogFile, lists:flatten(io_lib:format("Downtime: " ++ timeMilliSecond() ++ " vom Client ~p~n", [MeinName])))
+	end.

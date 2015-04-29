@@ -60,6 +60,11 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 	%%%%********************************************************************************************************************%%%%
 	%%%%*****************************************Initialiserungsphase*******************************************************%%%%
 	%%%%********************************************************************************************************************%%%%
+	
+	
+%*******Kommentar von fabian***********
+%prompt darf an dieser stelle noch gar nicht hin? es gibt ja noch kein mi bei den prozesse..
+%nudge ok -> ggt muss den befehl noch verstehen
 		{StarterPID, getsteeringval} ->
 			%Quota = round(QUO / 100) * (AST +  1), %AST + 1 da StarterPID neuer Starter ist.
 			Quota = round((QUO / 100) * (GGTPNr * (AST +  1))), %AST + 1 da StarterPID neuer Starter ist.
@@ -245,15 +250,22 @@ sendeY(PIDns, [H | T], [Mi | MiRest]) ->
 prompt(_PIDns, []) ->
 	ok;
 prompt(PIDns, [H | T]) ->
+	io:format("1# prompt vor PIDns send PID: ~p Head: ~p Tail: ~p~n", [PIDns, H, T]),
 	PIDns ! {self(), {lookup, H}},
 	receive
 		{pin, {GGTName, GGTNode}} ->
-		GGT = {GGTName, GGTNode}
+			GGT = {GGTName, GGTNode};
+		not_found ->
+			io:format("2# prompt in receive not_found~n", []),
+			GGT = PIDns
 	end,
+	io:format("3# prompt nach 1. receive-block: GGT: ~p~n", [GGT]),
 	GGT ! {self(), tellmi},
 	receive
 		{mi, Mi} ->
-			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: ggT-Prozess ~p ~p aktuelles Mi ~p (~p).~n", [H, tl(GGT), Mi, werkzeug:timeMilliSecond()])))
+			io:format("4# prompt 2.receive-block. Mi ~p~n", [Mi]),
+			%logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: ggT-Prozess ~p ~p aktuelles Mi ~p (~p).~n", [H, tl(GGT), Mi, werkzeug:timeMilliSecond()])))
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: ggT-Prozess ~p ~p aktuelles Mi ~p (~p).~n", [H, tail, Mi, werkzeug:timeMilliSecond()])))
 	end,
 	prompt(PIDns, T)
 	.
