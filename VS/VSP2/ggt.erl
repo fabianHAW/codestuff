@@ -82,10 +82,10 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 			case Reason of
 				changed ->
 					Koordinator ! {briefmi, {MeinName, CMi, timeMilliSecond()}},
-					logging(LogFile, lists:flatten(io_lib:format("~p: Mi: ~p geandert und an Koordinator (~p) gesendet~n", [MeinName, CMi, Koordinator])));
+					logging(LogFile, lists:flatten(io_lib:format("~p: Mi: ~p geandert und an Koordinator gesendet~n", [MeinName, CMi])));
 				terminated ->
 					Koordinator ! {self(), briefterm, {MeinName, CMi, timeMilliSecond()}},
-					logging(LogFile, lists:flatten(io_lib:format("~p: Mi: ~p ggT erfolgreich berechnet und an Koordinator (~p) gesendet~n", [MeinName, CMi, Koordinator])));
+					logging(LogFile, lists:flatten(io_lib:format("~p: Mi: ~p ggT erfolgreich berechnet und an Koordinator gesendet~n", [MeinName, CMi])));
 				notchanged ->
 					logging(LogFile, lists:flatten(io_lib:format("~p: keine Nachricht an Koordinator gesendet~n", [MeinName])))
 			end,
@@ -102,7 +102,7 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 		{terminated, terminterrupt} ->
 			case ErsteAnfrage of
 				true ->
-					logging(LogFile, lists:flatten(io_lib:format("~p: initiiere die ~pte Terminierungsabstimmung (~p). " ++ timeMilliSecond() ++ "~n", [MeinName, Termmeldungen, VoteYesCounter]))),
+					logging(LogFile, lists:flatten(io_lib:format("~p: initiiere die ~pte Terminierungsabstimmung (~p). " ++ timeMilliSecond() ++ "~n", [MeinName, Termmeldungen + 1, Mi]))),
 					Nameservice ! {self(), {multicast, vote, MeinName}},
 					%neuen VoteTimer starten, da es vorkommen kann, dass 2 Votierungen stattfinden, daher darf der schon existierende Votetimer
 					%nicht unterbrochen werden
@@ -136,18 +136,17 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 		{voteYes, AbsenderName} ->
 			logging(LogFile, lists:flatten(io_lib:format("~p: stimme ab (~p): mit >JA< gestimmt. " ++ timeMilliSecond() ++ "~n", [MeinName, AbsenderName]))),
 			VoteYesCounterNeu = VoteYesCounter + 1,
-			io:format("Voteyes vor case: ~p Quota: ~p~n", [VoteYesCounterNeu, Quota]),
 			case VoteYesCounterNeu == Quota of
 				true ->
 					%VoteTimer muss beendet werden, da sonst faelschlicherweise ein Interrupt eintrifft
 					timer:cancel(VoteTimer),
 					Koordinator ! {self(), briefterm, {MeinName, Mi, timeMilliSecond()}},
 					TermmeldungenNeu = Termmeldungen + 1,
-					io:format("Voteyes in case: ~p~n", [VoteYesCounterNeu]),
-					io:format("Termmeldungenneu in case: ~p~n", [TermmeldungenNeu]),
-					logging(LogFile, lists:flatten(io_lib:format("~p: Koordinator ~pte Terminierung gemeldet mit ~p " ++ timeMilliSecond() ++ "~n", [MeinName, TermmeldungenNeu, VoteYesCounterNeu]))),
+					logging(LogFile, lists:flatten(io_lib:format("~p: Koordinator ~pte Terminierung gemeldet mit ~p " ++ timeMilliSecond() ++ "~n", [MeinName, TermmeldungenNeu, Mi]))),
 					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, TermmeldungenNeu, 0, timer:start(), false);
 				false ->
+				%*****PROBLEM: treffen weitere voteYes-Nachrichten ein, nachdem die Abstimmung vorbei ist, werden diese neu eingetroffenen
+				%voteYes-Nachrichten mit zu der neuen Terminierungsabstimmung gezaehlt. -> Absicht?****
 					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounterNeu, VoteTimer, false)
 			end;
 		%bei kill wird die Schleife verlassen: letztes Flag im Methodenkopf = true
@@ -173,7 +172,7 @@ ggtAlgorithmus(MiNeu, Y, LeftN, RightN, ArbeitsZeit, LogFile) when Y < MiNeu ->
 	ggtAlgorithmusDecision(Y, CMi);
 ggtAlgorithmus(MiNeu, Y, _LeftN, _RightN, _Arbeitszeit, LogFile) ->
 	logging(LogFile, lists:flatten(io_lib:format("sendy: ~p (~p); keine Berechnung~n", [Y, MiNeu]))),
-	{notchanged, -1}.
+	{notchanged, MiNeu}.
 
 %Pruefung, ob der ggT berechnet wurde, damit Koordinator die Terminierung mitgeteilt werden kann
 ggtAlgorithmusDecision(Y, CMi) when Y == CMi ->
