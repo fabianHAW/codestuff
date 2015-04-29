@@ -75,11 +75,11 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 		reset ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: reset: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [undef,reset], MiMin, SPZF, 0);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, [], [undef, undef], MiMin, SPZF, 0);
 		prompt ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [prompt, lists:nth(2, CMD)], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [undef, lists:nth(2, CMD)], MiMin, SPZF, AST);
 		nudge ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
@@ -132,7 +132,7 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 		reset ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: reset: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [lists:nth(1, CMD),reset], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, [], [undef, undef], MiMin, -1, 0);
 		prompt ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
