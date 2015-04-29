@@ -253,7 +253,7 @@ prompt(PIDns, [H | T]) ->
 	GGT ! {self(), tellmi},
 	receive
 		{mi, Mi} ->
-			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: ggT-Prozess ~p ~p aktuelles Mi ~p (~p).~n", [H, tl(GGT), Mi, werkzeug:timeMilliSecond()])))
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: ggT-Prozess ~p ~p aktuelles Mi ~p (~p).~n", [H, element(2, GGT), Mi, werkzeug:timeMilliSecond()])))
 	end,
 	prompt(PIDns, T)
 	.
