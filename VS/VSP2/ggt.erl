@@ -10,7 +10,10 @@ start(ArbeitsZeit, TermZeit, ProzessNummer, StarterNummer, PraktikumsGruppe, Tea
 	logging(LogFile, lists:flatten(io_lib:format("~p Startzeit: " ++ timeMilliSecond() ++ " mit PID ~p auf ~p~n", [MeinName, self(), node()]))),
 	register(MeinName, self()),
 	{Nameservicename, Nameservicenode} ! {self(), {rebind, MeinName, node()}},
-	logging(LogFile, lists:flatten(io_lib:format("beim Namensdienst und auf Node lokal registriert.~n", []))),
+	receive 
+		ok ->
+			logging(LogFile, lists:flatten(io_lib:format("beim Namensdienst und auf Node lokal registriert.~n", [])))
+	end,
 	{Nameservicename, Nameservicenode} ! {self(), {lookup, Koordinatorname}},
 	receive
 		{pin, {KoordinatornameNeu, Koordinatornode}} ->
@@ -67,12 +70,12 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 			ErsteAnfrageNeu = true,
 			{Reason, CMi} = ggtAlgorithmus(Mi, Y, LeftN, RightN, ArbeitsZeit, LogFile),
 			%Nach Berechnung des ggT wird nun geprueft, ob und welche Nachricht an Koordinator gesendet werden muss
-			%changed := Mi wurde neu berechnet -> briefme an Koordinator
+			%changed := Mi wurde neu berechnet -> briefmi an Koordinator
 			%terminated := ggT wurde berechnet -> briefterm an Koordinator
 			%notchanged := der ggT-Algorithmus wurde nicht angewendet -> nichts an Koordinator senden
 			case Reason of
 				changed ->
-					Koordinator ! {briefme, {MeinName, CMi, timeMilliSecond()}},
+					Koordinator ! {briefmi, {MeinName, CMi, timeMilliSecond()}},
 					logging(LogFile, lists:flatten(io_lib:format("~p: Mi: ~p geandert und an Koordinator (~p) gesendet~n", [MeinName, CMi, Koordinator])));
 				terminated ->
 					Koordinator ! {self(), briefterm, {MeinName, CMi, timeMilliSecond()}},
