@@ -3,3 +3,6 @@
 
 #beam-files (erlang)
 *.beam
+
+#log-files
+*.log
