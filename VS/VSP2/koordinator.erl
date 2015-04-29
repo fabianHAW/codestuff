@@ -14,7 +14,7 @@ start() ->
 	{ok, Koordinatorname}, 
 	{ok, Quote}, 
 	{ok, Korrigieren}} = readConfig(), %Config-Werte auslesen.
-	logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: koordinator.cfg gelesen...", []))),
+	logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: koordinator.cfg gelesen...~n", []))),
 	
 	Pong = net_adm:ping(Nameservicenode),  %Ping an Erlang-Node.
 	timer:sleep(1000), %2 Sekunden warten um Nameservice Zeit zu geben.
@@ -39,7 +39,7 @@ start() ->
 	
 	%io:format("~p",[register(Koordinatorname, self())]), %Bei Erlang-Node registrieren.
 	Val = register(Koordinatorname, self()),
-	io:format("Koordinator lokal registriert: ~p",[Val]), %Bei Erlang-Node registrieren.
+	io:format("Koordinator lokal registriert: ~p~n",[Val]), %Bei Erlang-Node registrieren.
 	logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: lokal registriert. ~n", []))),
 	PIDns ! {self(), {rebind, Koordinatorname, node()}}, %An Nameservice binden.
 	
@@ -111,12 +111,12 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 			sendeY(PIDns, GewaehlteProzesse, Mis2),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
 		{briefmi, {MeinName, CMi, CZeit}} ->
-			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: ~p meldet neues Mi ~p um ~p|  (~p).", [MeinName,CMi, CZeit, werkzeug:timeMilliSecond()]))),
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: ~p meldet neues Mi ~p um ~p|  (~p).~n", [MeinName,CMi, CZeit, werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
 		{GGTpid, briefterm, {MeinName, CMi, CZeit}} ->
 			case MiMin < CMi of
 				true ->
-					logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: Fehlernachricht um ~p Uhr | ~p terminiert mit CMi ~p > MiMin ~p um ~p Uhr.", [werkzeug:timeMilliSecond(), MeinName, CMi, MiMin, CZeit])));
+					logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: Fehlernachricht um ~p Uhr | ~p terminiert mit CMi ~p > MiMin ~p um ~p Uhr.~n", [werkzeug:timeMilliSecond(), MeinName, CMi, MiMin, CZeit])));
 				%false-zweig hinzugefuegt, da fehlermeldung ausgegeben wurde
 				false ->
 					do_nothing
@@ -253,7 +253,7 @@ prompt(PIDns, [H | T]) ->
 	GGT ! {self(), tellmi},
 	receive
 		{mi, Mi} ->
-			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: ggT-Prozess ~p ~p aktuelles Mi ~p (~p).", [H, tl(GGT), Mi, werkzeug:timeMilliSecond()])))
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: ggT-Prozess ~p ~p aktuelles Mi ~p (~p).~n", [H, tl(GGT), Mi, werkzeug:timeMilliSecond()])))
 	end,
 	prompt(PIDns, T)
 	.
@@ -269,7 +269,7 @@ nudge(PIDns, [H | T]) ->
 	GGT ! {self(), pingGGT},
 	receive
 		{pongGGT, GGTname} ->
-			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: ggT-Prozess ~p ist lebendig (~p).", [GGTname, werkzeug:timeMilliSecond()])))
+			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: ggT-Prozess ~p ist lebendig (~p).~n", [GGTname, werkzeug:timeMilliSecond()])))
 	end,
 	nudge(PIDns, T)
 	.
@@ -299,7 +299,7 @@ startProzesseErmitteln(_GGTL, GewaehlteProzesse, _LGGTL) ->
 	
 readConfig() ->
 	{ok, CfgList} = file:consult("koordinator.cfg"),
-	logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: koordinator.cfg geoeffnet...", []))),
+	logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: koordinator.cfg geoeffnet...~n", []))),
 	{get_config_value(arbeitszeit, CfgList),
 	get_config_value(termzeit, CfgList),
 	get_config_value(ggtprozessnummer, CfgList),
