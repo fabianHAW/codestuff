@@ -66,25 +66,25 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 		{hello, GGTName} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: hello: ~p (~p). ~n", [GGTName, GGTPNr]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL ++ [GGTName], CMD, MiMin, SPZF, AST);
-		{step} ->
+		step ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: step: um ~p Uhr. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, createRing(GGTL, PIDns), [step, undef], MiMin, SPZF, AST);
-		{reset} ->
+		reset ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: reset: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [undef,reset], MiMin, SPZF, 0);
-		{prompt} ->
+		prompt ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [prompt, lists:nth(2, CMD)], MiMin, SPZF, AST);
-		{nudge} ->
+		nudge ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [nudge,lists:nth(2, CMD)], MiMin, SPZF, AST);
-		{toggle} ->
+		toggle ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: toggle: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF * -1, AST);
-		{kill} ->
+		kill ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: kill: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [kill, lists:nth(2, CMD)], MiMin, SPZF, AST);
@@ -119,22 +119,22 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 						GGTpid ! {sendy, MiMin}
 			end,
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
-		{reset} ->
+		reset ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: reset: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [lists:nth(1, CMD),reset], MiMin, SPZF, AST);
-		{prompt} ->
+		prompt ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [prompt,lists:nth(2, CMD)], MiMin, SPZF, AST);
-		{nudge} ->
+		nudge ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [nudge,lists:nth(2, CMD)], MiMin, SPZF, AST);
-		{toggle} ->
+		toggle ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: toggle: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF * -1, AST);
-		{kill} ->
+		kill ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: kill: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [kill, lists:nth(2, CMD)], MiMin, SPZF, AST);
@@ -159,7 +159,7 @@ createRing(GGTL, PIDns) when length(GGTL) >= 1 ->
 createRing(GGTL, _PIDns) ->
 	GGTL.
 createRing(GGTL, Idx, PIDns) when Idx =< length(GGTL)->
-	PIDns ! {self(), {lookup, lists:nth(Idx)}},
+	PIDns ! {self(), {lookup, lists:nth(Idx, GGTL)}},
 	receive
 		{pin, {GGTName, GGTNode}} ->
 			{GGTName, GGTNode} ! {setneighbors,getLneighbor(Idx, PIDns, GGTL), getRneighbor(Idx, PIDns, GGTL)}
