@@ -6,7 +6,7 @@
 start(ArbeitsZeit, TermZeit, ProzessNummer, StarterNummer, PraktikumsGruppe, TeamNummer, Nameservicename, Nameservicenode, Koordinatorname, Quota) ->
 	MeinName = list_to_atom(lists:flatten(io_lib:format("~p~p~p~p", [PraktikumsGruppe, TeamNummer, ProzessNummer, StarterNummer]))),
 	{ok, Hostname} = inet:gethostname(),
-	LogFile = lists:flatten(io_lib:format("GGTP_~p@" ++ Hostname ++ ".log", [MeinName])),
+	LogFile = lists:flatten(io_lib:format("ggt_log/GGTP_~p@" ++ Hostname ++ ".log", [MeinName])),
 	logging(LogFile, lists:flatten(io_lib:format("~p Startzeit: " ++ timeMilliSecond() ++ " mit PID ~p auf ~p~n", [MeinName, self(), node()]))),
 	register(MeinName, self()),
 	{Nameservicename, Nameservicenode} ! {self(), {rebind, MeinName, node()}},
@@ -127,12 +127,15 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 		{voteYes, AbsenderName} ->
 			logging(LogFile, lists:flatten(io_lib:format("~p: stimme ab (~p): mit >JA< gestimmt. " ++ timeMilliSecond() ++ "~n", [MeinName, AbsenderName]))),
 			VoteYesCounterNeu = VoteYesCounter + 1,
+			io:format("Voteyes vor case: ~p Quota: ~p~n", [VoteYesCounterNeu, Quota]),
 			case VoteYesCounterNeu == Quota of
 				true ->
 					%VoteTimer muss beendet werden, da sonst faelschlicherweise ein Interrupt eintrifft
 					timer:cancel(VoteTimer),
 					Koordinator ! {self(), briefterm, {MeinName, Mi, timeMilliSecond()}},
 					TermmeldungenNeu = Termmeldungen + 1,
+					io:format("Voteyes in case: ~p~n", [VoteYesCounterNeu]),
+					io:format("Termmeldungenneu in case: ~p~n", [TermmeldungenNeu]),
 					logging(LogFile, lists:flatten(io_lib:format("~p: Koordinator ~pte Terminierung gemeldet mit ~p " ++ timeMilliSecond() ++ "~n", [MeinName, TermmeldungenNeu, VoteYesCounterNeu]))),
 					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, TermmeldungenNeu, 0, timer:start(), false);
 				false ->

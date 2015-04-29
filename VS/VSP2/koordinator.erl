@@ -1,6 +1,6 @@
 -module(koordinator).
 -import(werkzeug, [get_config_value/2, logging/2, timeMilliSecond/0, shuffle/1, bestimme_mis/2]).
--export([start/0]).
+-export([start/0, createRing/2]).
 -define(LOGFILE, lists:flatten(io_lib:format("~p.log", [node()]))).
 
 %Umsetzung der Anforderungen "Modul: Koordinator" Anf.-Nr. 1
@@ -37,7 +37,9 @@ start() ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: Nameservice gebunden: ~p ~n", [PIDns])))
 	end,
 	
-	io:format("~p",[register(Koordinatorname, self())]), %Bei Erlang-Node registrieren.
+	%io:format("~p",[register(Koordinatorname, self())]), %Bei Erlang-Node registrieren.
+	Val = register(Koordinatorname, self()),
+	io:format("Koordinator lokal registriert: ~p",[Val]), %Bei Erlang-Node registrieren.
 	logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: lokal registriert. ~n", []))),
 	PIDns ! {self(), {rebind, Koordinatorname, node()}}, %An Nameservice binden.
 	
@@ -53,48 +55,49 @@ start() ->
 %PIDns := PID-Nameservice; CMD := Command; GGTL := GGT-Prozessliste; MiMin := Aktuelles minimales Mi; 
 %SPZF := Spezialflag (-1 = false, 1 = true); AST := Anzahl Starter (für Abstimmungsquote);
 loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(CMD) /= step, hd(CMD) /= kill ->
-	io:format("CMD: ~p", [CMD]), 
+	io:format("CMD: ~p~n", [CMD]), 
 	receive
 	%%%%********************************************************************************************************************%%%%
 	%%%%*****************************************Initialiserungsphase*******************************************************%%%%
 	%%%%********************************************************************************************************************%%%%
 		{StarterPID, getsteeringval} ->
-			Quota = round(QUO / 100) * (AST +  1), %AST + 1 da StarterPID neuer Starter ist.
+			%Quota = round(QUO / 100) * (AST +  1), %AST + 1 da StarterPID neuer Starter ist.
+			Quota = round((QUO / 100) * (GGTPNr * (AST +  1))), %AST + 1 da StarterPID neuer Starter ist.
 			StarterPID ! {steeringval, AZ, TZ, Quota, GGTPNr},
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: getsteeringval: ~p (~p). ~n", [StarterPID, GGTPNr * (AST + 1)]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST + 1);
 		{hello, GGTName} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: hello: ~p (~p). ~n", [GGTName, GGTPNr]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL ++ [GGTName], CMD, MiMin, SPZF, AST);
-		{step} ->
+		step ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: step: um ~p Uhr. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, createRing(GGTL, PIDns), [step, undef], MiMin, SPZF, AST);
-		{reset} ->
+		reset ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: reset: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [undef,reset], MiMin, SPZF, 0);
-		{prompt} ->
+		prompt ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [prompt, lists:nth(2, CMD)], MiMin, SPZF, AST);
-		{nudge} ->
+		nudge ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [nudge,lists:nth(2, CMD)], MiMin, SPZF, AST);
-		{toggle} ->
+		toggle ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: toggle: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF * -1, AST);
-		{kill} ->
+		kill ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: kill: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [kill, lists:nth(2, CMD)], MiMin, SPZF, AST);
-		_Any ->
-			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: received anything: ~p. ~n", [werkzeug:timeMilliSecond()]))),
+		Any ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("1.Any-Block: Koordinator: received anything: ~p ~p. ~n", [Any, werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST)
 	end	
 	;
 loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(CMD) /= kill, tl(CMD) /= reset ->
-	io:format("CMD: ~p", [CMD]), 
+	io:format("CMD: ~p~n", [CMD]), 
 	receive
 	%%%%********************************************************************************************************************%%%%
 	%%%%*****************************************Arbeitsphase***************************************************************%%%%
@@ -103,6 +106,7 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 			Mis1 = bestimme_mis(WggT, length(GGTL)),
 			sendeMis(PIDns, GGTL, Mis1),
 			GewaehlteProzesse = startProzesseErmitteln(GGTL),
+			io:format("gewaehlteprozesse von mis2 bestimmung: ~p~n", [GewaehlteProzesse]),
 			Mis2 = bestimme_mis(WggT, length(GewaehlteProzesse)),
 			sendeY(PIDns, GewaehlteProzesse, Mis2),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
@@ -112,34 +116,40 @@ loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SP
 		{GGTpid, briefterm, {MeinName, CMi, CZeit}} ->
 			case MiMin < CMi of
 				true ->
-				logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: Fehlernachricht um ~p Uhr | ~p terminiert mit CMi ~p > MiMin ~p um ~p Uhr.", [werkzeug:timeMilliSecond(), MeinName, CMi, MiMin, CZeit])))
+					logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: Fehlernachricht um ~p Uhr | ~p terminiert mit CMi ~p > MiMin ~p um ~p Uhr.", [werkzeug:timeMilliSecond(), MeinName, CMi, MiMin, CZeit])));
+				%false-zweig hinzugefuegt, da fehlermeldung ausgegeben wurde
+				false ->
+					do_nothing
 			end,
 			case SPZF == 1 of
 					true ->
-						GGTpid ! {sendy, MiMin}
+						GGTpid ! {sendy, MiMin};
+					%false-zweig hinzugefuegt, da fehlermeldung ausgegeben wurde
+					false ->
+						do_nothing
 			end,
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
-		{reset} ->
+		reset ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: reset: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [lists:nth(1, CMD),reset], MiMin, SPZF, AST);
-		{prompt} ->
+		prompt ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [prompt,lists:nth(2, CMD)], MiMin, SPZF, AST);
-		{nudge} ->
+		nudge ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [nudge,lists:nth(2, CMD)], MiMin, SPZF, AST);
-		{toggle} ->
+		toggle ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: toggle: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF * -1, AST);
-		{kill} ->
+		kill ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: kill: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [kill, lists:nth(2, CMD)], MiMin, SPZF, AST);
-		_Any ->
-			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: received anything: ~p. ~n", [werkzeug:timeMilliSecond()]))),
+		Any ->
+			logging(?LOGFILE, lists:flatten(io_lib:format("2.Any-Block: Koordinator: received anything: ~p ~p. ~n", [Any, werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST)
 	end	
 	;
@@ -154,12 +164,14 @@ loop(_AZ, _TZ, _GGTPNr, _NameSno, _NameSna, KN, _QUO, _KOR, PIDns, _GGTL, _CMD, 
 	.
 	
 createRing(GGTL, PIDns) when length(GGTL) >= 1 ->
+	io:format("GGTL: ~p ggtllaenge: ~p~n", [GGTL, length(GGTL)]),
 	createRing(werkzeug:shuffle(GGTL), 1, PIDns),
 	GGTL;
 createRing(GGTL, _PIDns) ->
 	GGTL.
 createRing(GGTL, Idx, PIDns) when Idx =< length(GGTL)->
-	PIDns ! {self(), {lookup, lists:nth(Idx)}},
+	io:format("Idx: ~p~n", [Idx]),
+	PIDns ! {self(), {lookup, lists:nth(Idx, GGTL)}},
 	receive
 		{pin, {GGTName, GGTNode}} ->
 			{GGTName, GGTNode} ! {setneighbors,getLneighbor(Idx, PIDns, GGTL), getRneighbor(Idx, PIDns, GGTL)}
@@ -173,7 +185,8 @@ getRneighbor(Idx, PIDns, GGTL) when Idx == length(GGTL) ->
 	PIDns ! {self(), {lookup, lists:nth(1, GGTL)}},
 	receive
 		{pin, {GGTName, GGTNode}} ->
-		Rneighbor = {GGTName, GGTNode}
+		%Rneighbor = {GGTName, GGTNode}
+		Rneighbor = GGTName
 	end,
 	Rneighbor
 	;
@@ -181,7 +194,8 @@ getRneighbor(Idx, PIDns, GGTL) ->
 	PIDns ! {self(), {lookup, lists:nth(Idx + 1, GGTL)}},
 	receive
 		{pin, {GGTName, GGTNode}} ->
-		Rneighbor = {GGTName, GGTNode}
+		%Rneighbor = {GGTName, GGTNode}
+		Rneighbor = GGTName
 	end,
 	Rneighbor
 	.
@@ -190,7 +204,8 @@ getLneighbor(1, PIDns, GGTL) when  length(GGTL) > 1 ->
 	PIDns ! {self(), {lookup, lists:nth(length(GGTL), GGTL)}},
 	receive
 		{pin, {GGTName, GGTNode}} ->
-		Lneighbor = {GGTName, GGTNode}
+		%Lneighbor = {GGTName, GGTNode}
+		Lneighbor = GGTName
 	end,
 	Lneighbor
 	;
@@ -198,7 +213,8 @@ getLneighbor(Idx, PIDns, GGTL) ->
 	PIDns ! {self(), {lookup, lists:nth(Idx - 1, GGTL)}},
 	receive
 		{pin, {GGTName, GGTNode}} ->
-		Lneighbor = {GGTName, GGTNode}
+		%Lneighbor = {GGTName, GGTNode}
+		Lneighbor = GGTName
 	end,
 	Lneighbor
 	.
@@ -272,9 +288,11 @@ kill(PIDns, [H | T]) ->
 
 startProzesseErmitteln(GGTL) -> startProzesseErmitteln(werkzeug:shuffle(GGTL), [], length(GGTL)).
 startProzesseErmitteln([H | T], GewaehlteProzesse, LengthGGTL) when length(GewaehlteProzesse) < ((LengthGGTL / 100) * 20)->
-	startProzesseErmitteln(T, GewaehlteProzesse ++ H, LengthGGTL);
+	%startProzesseErmitteln(T, GewaehlteProzesse ++ H, LengthGGTL);
+	startProzesseErmitteln(T, GewaehlteProzesse ++ [H], LengthGGTL);
 startProzesseErmitteln(GGTL, GewaehlteProzesse, _LGGTL) when length(GewaehlteProzesse) == 1 ->
-	GewaehlteProzesse ++ hd(GGTL);
+	%GewaehlteProzesse ++ hd(GGTL);
+	GewaehlteProzesse ++ [hd(GGTL)];
 startProzesseErmitteln(_GGTL, GewaehlteProzesse, _LGGTL) ->
 	GewaehlteProzesse
 	.
