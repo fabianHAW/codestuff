@@ -10,7 +10,7 @@ start(StarterNummer) ->
 	{ok, NameserviceName},
 	{ok, KoordinatorName}} = readConfig(),
 	
-	logging(?LOGFILE, lists:flatten(io_lib:format("Starter: ggt gelesen... ~n", []))),
+	logging(?LOGFILE, lists:flatten(io_lib:format("Starter: ggt.cfg gelesen... ~n", []))),
 	
 	Pong = net_adm:ping(NameserviceNode),  %Ping an Erlang-Node.
 	timer:sleep(1000),
@@ -51,18 +51,17 @@ start(StarterNummer) ->
     receive 
 			{steeringval, AZ, TZ, Quota, GGTPNr} -> 
 				logging(?LOGFILE, lists:flatten(io_lib:format("Starter: getsteeringval: ~p Arbeitszeit ggT; ~p Wartezeit Terminierung ggT; ~p Abstimmungsquote ggT; ~p-te GGT Prozess.", [AZ, TZ, Quota, GGTPNr]))),
-				loop(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, 1)
-	end,
- 
-	logging(?LOGFILE, lists:flatten(io_lib:format("Starter: ggt gelesen... ~n", [])))
+				loop(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, PIDns, KoordinatorName, Quota, 1)
+	end
 	.
 
-loop(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer) when ProzessNummer =< GGTPNr ->
-	spawn(ggt, start, [AZ, TZ, ProzessNummer, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota]),
+loop(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, PIDns, KoordinatorName, Quota, ProzessNummer) when ProzessNummer =< GGTPNr ->
+	spawn(ggt, start, [AZ, TZ, ProzessNummer, StarterNummer, PraktikumsGruppe, TeamNummer, PIDns, KoordinatorName, Quota]),
 	%startGGTs(AZ, TZ, GGTPNr - 1, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer + 1) 
-	startGGTs(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, PIDns, KoordinatorName, Quota, ProzessNummer + 1) 
+	logging(?LOGFILE, lists:flatten(io_lib:format("Starter: ggt-Prozess ~p von ~p erzeugt ~n.", [ProzessNummer, GGTPNr]))),
+	loop(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe, TeamNummer, PIDns, KoordinatorName, Quota, ProzessNummer + 1) 
 	;
-loop(_AZ, _TZ, _GGTPNr, _StarterNummer, _PraktikumsGruppe,  _TeamNummer, _NameserviceName, _NameserviceNode, _KoordinatorName, _Quota, _ProzessNummer) ->
+loop(_AZ, _TZ, _GGTPNr, _StarterNummer, _PraktikumsGruppe,  _TeamNummer, _PIDns, _KoordinatorName, _Quota, _ProzessNummer) ->
 	ok
 	.
 
