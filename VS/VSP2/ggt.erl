@@ -1,20 +1,20 @@
 -module(ggt).
--export([start/10]).
+-export([start/9]).
 -import(werkzeug, [logging/2, timeMilliSecond/0, reset_timer/3, getUTC/0]).
 
 %Initialisierungsphase
-start(ArbeitsZeit, TermZeit, ProzessNummer, StarterNummer, PraktikumsGruppe, TeamNummer, Nameservicename, Nameservicenode, Koordinatorname, Quota) ->
+start(ArbeitsZeit, TermZeit, ProzessNummer, StarterNummer, PraktikumsGruppe, TeamNummer, Nameservice, Koordinatorname, Quota) ->
 	MeinName = list_to_atom(lists:flatten(io_lib:format("~p~p~p~p", [PraktikumsGruppe, TeamNummer, ProzessNummer, StarterNummer]))),
 	{ok, Hostname} = inet:gethostname(),
 	LogFile = lists:flatten(io_lib:format("ggt_log/GGTP_~p@" ++ Hostname ++ ".log", [MeinName])),
 	logging(LogFile, lists:flatten(io_lib:format("~p Startzeit: " ++ timeMilliSecond() ++ " mit PID ~p auf ~p~n", [MeinName, self(), node()]))),
 	register(MeinName, self()),
-	{Nameservicename, Nameservicenode} ! {self(), {rebind, MeinName, node()}},
+	Nameservice ! {self(), {rebind, MeinName, node()}},
 	receive 
 		ok ->
 			logging(LogFile, lists:flatten(io_lib:format("beim Namensdienst und auf Node lokal registriert.~n", [])))
 	end,
-	{Nameservicename, Nameservicenode} ! {self(), {lookup, Koordinatorname}},
+	Nameservice ! {self(), {lookup, Koordinatorname}},
 	receive
 		{pin, {KoordinatornameNeu, Koordinatornode}} ->
 			logging(LogFile, lists:flatten(io_lib:format("Koordinatornode erhalten : ~p.~n", [Koordinatornode])));
@@ -30,7 +30,7 @@ start(ArbeitsZeit, TermZeit, ProzessNummer, StarterNummer, PraktikumsGruppe, Tea
 	logging(LogFile, lists:flatten(io_lib:format("beim Koordinator gemeldet.~n", []))),
 	
 	%auf Nachbarn warten und ggf. andere befehle vom Koordinator empfangen
-	{LeftN, RightN} = waitingForNeighbors(MeinName, LogFile, {Nameservicename, Nameservicenode}, undef),
+	{LeftN, RightN} = waitingForNeighbors(MeinName, LogFile, Nameservice, undef),
 	
 	%wurde kill befehl in der initialisierungsphase empfangen, wird nichts getan,
 	%sonst geht der normale ablauf weiter.
@@ -39,18 +39,18 @@ start(ArbeitsZeit, TermZeit, ProzessNummer, StarterNummer, PraktikumsGruppe, Tea
 			do_nothing;
 		false ->
 			%Node-Informationen über Nameservice des linken Nachbarn holen
-			{Nameservicename, Nameservicenode} ! {self(), {lookup, LeftN}},
+			Nameservice ! {self(), {lookup, LeftN}},
 			receive
 				{pin, {LeftNNeu, LeftNnode}} ->
 					LeftNNeuNeu = LeftNNeu
 			end,
 			%Node-Informationen über Nameservice des rechten Nachbarn holen
-			{Nameservicename, Nameservicenode} ! {self(), {lookup, RightN}},
+			Nameservice ! {self(), {lookup, RightN}},
 			receive
 				{pin, {RightNNeu, RightNnode}} ->
 					RightNNeuNeu = RightNNeu
 			end,
-			loop(MeinName, LogFile, ArbeitsZeit, TermZeit, {Nameservicename, Nameservicenode}, {KoordinatornameNeu, Koordinatornode}, {LeftNNeuNeu, LeftNnode}, {RightNNeuNeu, RightNnode}, Quota)
+			loop(MeinName, LogFile, ArbeitsZeit, TermZeit, Nameservice, {KoordinatornameNeu, Koordinatornode}, {LeftNNeuNeu, LeftNnode}, {RightNNeuNeu, RightNnode}, Quota)
 	end.
 
 %Arbeits-, Terminierungs- und Beendigungsphase
@@ -82,10 +82,10 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 			case Reason of
 				changed ->
 					Koordinator ! {briefmi, {MeinName, CMi, timeMilliSecond()}},
-					logging(LogFile, lists:flatten(io_lib:format("~p: Mi: ~p geandert und an Koordinator (~p) gesendet~n", [MeinName, CMi, Koordinator])));
+					logging(LogFile, lists:flatten(io_lib:format("~p: Mi: ~p geandert und an Koordinator gesendet~n", [MeinName, CMi])));
 				terminated ->
 					Koordinator ! {self(), briefterm, {MeinName, CMi, timeMilliSecond()}},
-					logging(LogFile, lists:flatten(io_lib:format("~p: Mi: ~p ggT erfolgreich berechnet und an Koordinator (~p) gesendet~n", [MeinName, CMi, Koordinator])));
+					logging(LogFile, lists:flatten(io_lib:format("~p: Mi: ~p ggT erfolgreich berechnet und an Koordinator gesendet~n", [MeinName, CMi])));
 				notchanged ->
 					logging(LogFile, lists:flatten(io_lib:format("~p: keine Nachricht an Koordinator gesendet~n", [MeinName])))
 			end,
@@ -102,13 +102,14 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 		{terminated, terminterrupt} ->
 			case ErsteAnfrage of
 				true ->
-					logging(LogFile, lists:flatten(io_lib:format("~p: initiiere die ~pte Terminierungsabstimmung (~p). " ++ timeMilliSecond() ++ "~n", [MeinName, Termmeldungen, VoteYesCounter]))),
+					logging(LogFile, lists:flatten(io_lib:format("~p: initiiere die ~pte Terminierungsabstimmung (~p). " ++ timeMilliSecond() ++ "~n", [MeinName, Termmeldungen + 1, Mi]))),
 					Nameservice ! {self(), {multicast, vote, MeinName}},
 					%neuen VoteTimer starten, da es vorkommen kann, dass 2 Votierungen stattfinden, daher darf der schon existierende Votetimer
 					%nicht unterbrochen werden
 					VoteTimerNeu = reset_timer(timer:start(), 500, {terminated, voteinterrupt}),
 					TermTimerNeu = reset_timer(timer:start(), TermZeit, {terminated, terminterrupt}),
-					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, Time, false, Termmeldungen, VoteYesCounter, VoteTimerNeu, false);
+					%VoteYesCounter auf 0 setzen, damit die "alten" voteYes-Nachrichten unberücksichtig bleiben 
+					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, Time, false, Termmeldungen, 0, VoteTimerNeu, false);
 				false ->
 					%neuen Timer starten
 					logging(LogFile, lists:flatten(io_lib:format("~p: eine weitere Terminierungsabstimmung ist nicht moeglich, da noch keine neue Zahl eingetroffen ist. " ++ timeMilliSecond() ++ "~n", [MeinName]))),
@@ -129,23 +130,24 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 					receive
 						{pin, {InitiatorNeu, Initiatornode}} ->
 							{InitiatorNeu, Initiatornode} ! {voteYes, MeinName}
-					end
+					end;
+				false ->
+					%in dem Log des Initiators die "Nein-Abstimmung" eintragen
+					{ok, Hostname} = inet:gethostname(),
+					logging(lists:flatten(io_lib:format("ggt_log/GGTP_~p@" ++ Hostname ++ ".log", [Initiator])), lists:flatten(io_lib:format("~p: stimme ab (~p): mit >NEIN< gestimmt und ignoriert.~n", [Initiator, MeinName])))
 			end,
 			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false);
 		%Zustimmungen zum Voting treffen ein und werden behandelt
 		{voteYes, AbsenderName} ->
 			logging(LogFile, lists:flatten(io_lib:format("~p: stimme ab (~p): mit >JA< gestimmt. " ++ timeMilliSecond() ++ "~n", [MeinName, AbsenderName]))),
 			VoteYesCounterNeu = VoteYesCounter + 1,
-			io:format("Voteyes vor case: ~p Quota: ~p~n", [VoteYesCounterNeu, Quota]),
 			case VoteYesCounterNeu == Quota of
 				true ->
 					%VoteTimer muss beendet werden, da sonst faelschlicherweise ein Interrupt eintrifft
 					timer:cancel(VoteTimer),
 					Koordinator ! {self(), briefterm, {MeinName, Mi, timeMilliSecond()}},
 					TermmeldungenNeu = Termmeldungen + 1,
-					io:format("Voteyes in case: ~p~n", [VoteYesCounterNeu]),
-					io:format("Termmeldungenneu in case: ~p~n", [TermmeldungenNeu]),
-					logging(LogFile, lists:flatten(io_lib:format("~p: Koordinator ~pte Terminierung gemeldet mit ~p " ++ timeMilliSecond() ++ "~n", [MeinName, TermmeldungenNeu, VoteYesCounterNeu]))),
+					logging(LogFile, lists:flatten(io_lib:format("~p: Koordinator ~pte Terminierung gemeldet mit ~p " ++ timeMilliSecond() ++ "~n", [MeinName, TermmeldungenNeu, Mi]))),
 					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, TermmeldungenNeu, 0, timer:start(), false);
 				false ->
 					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounterNeu, VoteTimer, false)
@@ -173,7 +175,7 @@ ggtAlgorithmus(MiNeu, Y, LeftN, RightN, ArbeitsZeit, LogFile) when Y < MiNeu ->
 	ggtAlgorithmusDecision(Y, CMi);
 ggtAlgorithmus(MiNeu, Y, _LeftN, _RightN, _Arbeitszeit, LogFile) ->
 	logging(LogFile, lists:flatten(io_lib:format("sendy: ~p (~p); keine Berechnung~n", [Y, MiNeu]))),
-	{notchanged, -1}.
+	{notchanged, MiNeu}.
 
 %Pruefung, ob der ggT berechnet wurde, damit Koordinator die Terminierung mitgeteilt werden kann
 ggtAlgorithmusDecision(Y, CMi) when Y == CMi ->

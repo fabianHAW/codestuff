@@ -32,7 +32,8 @@ start(StarterNummer) ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Starter: Nameservice gebunden... ~n", [])))
 	end,
 
-	{NameserviceName, NameserviceNode} ! {self(), {lookup, KoordinatorName}},
+	%{NameserviceName, NameserviceNode} ! {self(), {lookup, KoordinatorName}},
+	PIDns ! {self(), {lookup, KoordinatorName}},
 	
 	receive
 		{pin, {KoNa, KoNo}} ->
@@ -59,7 +60,7 @@ start(StarterNummer) ->
 loop(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer) when ProzessNummer =< GGTPNr ->
 	spawn(ggt, start, [AZ, TZ, ProzessNummer, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota]),
 	%startGGTs(AZ, TZ, GGTPNr - 1, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer + 1) 
-	startGGTs(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer + 1) 
+	startGGTs(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, PIDns, KoordinatorName, Quota, ProzessNummer + 1) 
 	;
 loop(_AZ, _TZ, _GGTPNr, _StarterNummer, _PraktikumsGruppe,  _TeamNummer, _NameserviceName, _NameserviceNode, _KoordinatorName, _Quota, _ProzessNummer) ->
 	ok
