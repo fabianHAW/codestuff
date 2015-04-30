@@ -180,7 +180,7 @@ loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(C
 	;
 %loop(_AZ, _TZ, _GGTPNr, _NameSno, _NameSna, KN, _QUO, _KOR, PIDns, _GGTL, _CMD, _MiMin, _SPZF, _AST) ->
 loop(_AZ, _TZ, _GGTPNr, KN, _QUO, _KOR, PIDns, _GGTL, _CMD, _MiMin, _SPZF, _AST) ->
-	PIDns ! {self(),{unbind,meindienst}},
+	PIDns ! {self(),{unbind,KN}},
 	receive 
 		ok ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Koordinator: Erfolgreich vom Nameservice abgemeldet um ~p Uhr. ~n", [werkzeug:timeMilliSecond()])))
