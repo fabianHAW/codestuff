@@ -50,18 +50,18 @@ start(StarterNummer) ->
     receive 
 			{steeringval, AZ, TZ, Quota, GGTPNr} -> 
 				logging(?LOGFILE, lists:flatten(io_lib:format("Starter: getsteeringval: ~p Arbeitszeit ggT; ~p Wartezeit Terminierung ggT; ~p Abstimmungsquote ggT; ~p-te GGT Prozess.", [AZ, TZ, Quota, GGTPNr]))),
-				startGGTs(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, 1)
+				loop(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, 1)
 	end,
  
 	logging(?LOGFILE, lists:flatten(io_lib:format("Starter: ggt gelesen... ~n", [])))
 	.
 
-startGGTs(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer) when ProzessNummer =< GGTPNr ->
+loop(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer) when ProzessNummer =< GGTPNr ->
 	spawn(ggt, start, [AZ, TZ, ProzessNummer, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota]),
 	%startGGTs(AZ, TZ, GGTPNr - 1, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer + 1) 
 	startGGTs(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer + 1) 
 	;
-startGGTs(_AZ, _TZ, _GGTPNr, _StarterNummer, _PraktikumsGruppe,  _TeamNummer, _NameserviceName, _NameserviceNode, _KoordinatorName, _Quota, _ProzessNummer) ->
+loop(_AZ, _TZ, _GGTPNr, _StarterNummer, _PraktikumsGruppe,  _TeamNummer, _NameserviceName, _NameserviceNode, _KoordinatorName, _Quota, _ProzessNummer) ->
 	ok
 	.
 
