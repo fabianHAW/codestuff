@@ -133,7 +133,7 @@ loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(C
 			logging(?LOGFILE, lists:flatten(io_lib:format("nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
 			%loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [nudge,lists:nth(2, CMD)], MiMin, SPZF, AST);
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, [nudge,lists:nth(2, CMD)], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
 		toggle ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("toggle: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			%loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF * -1, AST);
@@ -205,7 +205,7 @@ loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(C
 			logging(?LOGFILE, lists:flatten(io_lib:format("nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
 			%loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, [nudge,lists:nth(2, CMD)], MiMin, SPZF, AST);
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, [nudge,lists:nth(2, CMD)], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
 		toggle ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("toggle: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			%loop(AZ, TZ, GGTPNr, NameSno, NameSna, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF * -1, AST);
