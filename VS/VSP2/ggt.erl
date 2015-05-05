@@ -139,12 +139,12 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 			%Anf.-Nr. 13) Sofern dieses Flag nicht gesetzt ist (false) darf auch keine weitere Terminierungsabstimmung erfolgen
 			case ErsteAnfrage of
 				true ->
-					logging(LogFile, lists:flatten(io_lib:format("~p: initiiere die ~pte Terminierungsabstimmung (~p). " ++ timeMilliSecond() ++ "~n", [MeinName, Termmeldungen + 1, Mi]))),
+					logging(LogFile, lists:flatten(io_lib:format("~p: initiiere eine Terminierungsabstimmung (~p). " ++ timeMilliSecond() ++ "~n", [MeinName, Mi]))),
 					%Anf.-Nr. 12) Multicast durchfuehren
 					Nameservice ! {self(), {multicast, vote, MeinName}},
 					%neuen VoteTimer starten, da es vorkommen kann, dass 2 Votierungen stattfinden, daher darf der schon existierende Votetimer
 					%nicht unterbrochen werden
-					VoteTimerNeu = reset_timer(timer:start(), 500, {terminated, voteinterrupt}),
+					VoteTimerNeu = reset_timer(timer:start(), 200, {terminated, voteinterrupt}),
 					TermTimerNeu = reset_timer(timer:start(), TermZeit, {terminated, terminterrupt}),
 					%VoteYesCounter auf 0 setzen, damit die "alten" voteYes-Nachrichten unberücksichtig bleiben 
 					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, Time, false, Termmeldungen, 0, VoteTimerNeu, false);
@@ -162,8 +162,8 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 		%einer Zahl (sendy, setpm) ueberschritten, wird dem Initiator eine voteYes-Nachricht geschickt
 		{_InitiatorPID, {vote, Initiator}} ->
 			TimeNeu = getUTC(),
-			TimeDiff = (TimeNeu - Time) div 1000,		
-			case TimeDiff > round(TermZeit / 2) of
+			TimeDiff = (TimeNeu - Time) / 1000,		
+			case TimeDiff > TermZeit / 2 of
 				true -> 
 					%ein lookup ist noetig, da der Initiator auf einer ganz anderen Node laufen kann
 					Nameservice ! {self(), {lookup, Initiator}},
@@ -176,7 +176,7 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 				false ->
 					%in dem Log des Initiators die "Nein-Abstimmung" eintragen
 					{ok, Hostname} = inet:gethostname(),
-					logging(lists:flatten(io_lib:format("ggt_log/GGTP_~p@" ++ Hostname ++ ".log", [Initiator])), lists:flatten(io_lib:format("~p: stimme ab (~p): mit >NEIN< gestimmt und ignoriert.~n", [Initiator, MeinName])))
+					logging(lists:flatten(io_lib:format("ggt_log/GGTP_~p@" ++ Hostname ++ ".log", [Initiator])), lists:flatten(io_lib:format("~p: stimme ab (~p): mit >NEIN< gestimmt und ignoriert. " ++ timeMilliSecond() ++ "~n", [Initiator, MeinName])))
 			end,
 			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false);
 		%%Anf.-Nr. 14) Zustimmungen zum Voting treffen ein und werden behandelt: Wurde die Quota erreich wird dem Koordinator 
