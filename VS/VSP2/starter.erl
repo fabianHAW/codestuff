@@ -1,9 +1,16 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Auf Anforderungen wird im Code wie folgt Bezug genommen:
+%Anforderungen, die an den Koordinator gestellt werden: Mod. Star
+%Anforderungsnummer: Anf.-Nr. [Nr [- Nr]]
+
 -module(starter).
 -import(werkzeug, [get_config_value/2, logging/2, timeMilliSecond/0]).
 -export([start/1]).
 -define(LOGFILE, lists:flatten(io_lib:format("~p.log", [node()]))).
 
+%Mod. Star Anf.-Nr 1
 start(StarterNummer) ->
+	%Mod. Star Anf.-Nr. 3 - 7
 	{{ok, PraktikumsGruppe},
 	{ok, TeamNummer},
 	{ok, NameserviceNode},
@@ -12,8 +19,10 @@ start(StarterNummer) ->
 	
 	logging(?LOGFILE, lists:flatten(io_lib:format("Starter: ggt.cfg gelesen... ~n", []))),
 	
-	Pong = net_adm:ping(NameserviceNode),  %Ping an Erlang-Node.
+	%Ping an Erlang-Node.
+	Pong = net_adm:ping(NameserviceNode), 
 	timer:sleep(1000),
+	
 	%Pang erhalten? Loggen!
 	case Pong == pong of
 		true ->
@@ -32,7 +41,7 @@ start(StarterNummer) ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("Starter: Nameservice gebunden... ~n", [])))
 	end,
 
-	%{NameserviceName, NameserviceNode} ! {self(), {lookup, KoordinatorName}},
+	%Koordinator-Kontaktdaten ermitteln
 	PIDns ! {self(), {lookup, KoordinatorName}},
 	
 	receive
@@ -42,10 +51,7 @@ start(StarterNummer) ->
 	
 	logging(?LOGFILE, lists:flatten(io_lib:format("Starter: Koordinator ~p gebunden... ~n", [KoNa]))),
 	
-	%starter muss nicht registriert sein. und wenn dann muss er sich unregistrieren wenn alle prozesse gestartet sind,
-	%sonst gibt es einen namenskonflikt wenn ein weiterer starter gestartet wird und sich mit dem selben namen registrieren will
-	%register('1', self()),	
-	
+	%Mod. Star Anf.-Nr. 2
 	KN ! {self(), getsteeringval},
 	
     receive 
@@ -54,7 +60,8 @@ start(StarterNummer) ->
 				loop(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, PIDns, KoordinatorName, Quota, 1)
 	end
 	.
-
+%Mod. Star Anf.-Nr. 7
+%Startet die ggt Prozesse
 loop(AZ, TZ, GGTPNr, StarterNummer, PraktikumsGruppe,  TeamNummer, PIDns, KoordinatorName, Quota, ProzessNummer) when ProzessNummer =< GGTPNr ->
 	spawn(ggt, start, [AZ, TZ, ProzessNummer, StarterNummer, PraktikumsGruppe, TeamNummer, PIDns, KoordinatorName, Quota]),
 	%startGGTs(AZ, TZ, GGTPNr - 1, StarterNummer, PraktikumsGruppe,  TeamNummer, NameserviceName, NameserviceNode, KoordinatorName, Quota, ProzessNummer + 1) 
@@ -65,6 +72,7 @@ loop(_AZ, _TZ, _GGTPNr, _StarterNummer, _PraktikumsGruppe,  _TeamNummer, _PIDns,
 	ok
 	.
 
+%Liest die Konfigurationsdatei ggt.cfg aus.
 readConfig() ->
 	{ok, CfgList} = file:consult("ggt.cfg"),
 	logging(?LOGFILE, lists:flatten(io_lib:format("Starter: ggt geoeffnet... ~n", []))),

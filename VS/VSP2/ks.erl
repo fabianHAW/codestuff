@@ -1,7 +1,15 @@
 -module(ks).
--export([startKoordinator/0]).
--import(koordinator, [start/0]).
+-export([startK/0, startN/0, startS/0]).
 
-startKoordinator() ->
+
+startK() ->
 	spawn(koordinator, start, [])
 	.
+	
+startN() ->
+	spawn(nameservice, start, [])
+	.
+	
+startS() ->
+	spawn(starter, start, [1])
+	.		
