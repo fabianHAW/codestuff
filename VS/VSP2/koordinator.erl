@@ -159,7 +159,12 @@ loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(C
 			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
 		{briefmi, {MeinName, CMi, CZeit}} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("~p meldet neues Mi ~p um ~p|  (~p).~n", [MeinName,CMi, CZeit, werkzeug:timeMilliSecond()]))),
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
+			case CMi < MiMin of
+				true ->
+					loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, CMi, SPZF, AST);
+				false ->
+					loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST)
+			end;
 		{GGTpid, briefterm, {MeinName, CMi, CZeit}} ->
 			case MiMin < CMi of
 				true ->
