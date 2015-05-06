@@ -81,7 +81,7 @@ start() ->
 	end,
 	%spawn(koordinator, loop, [Arbeitszeit, Termzeit, Ggtprozessnummer, Nameservicenode, Nameservicename, Koordinatorname, Quote, Korrigieren, PIDns, [], [undef, undef], 1000000, -1, 0])
 	%loop(Arbeitszeit, Termzeit, Ggtprozessnummer, Nameservicenode, Nameservicename, Koordinatorname, Quote, Korrigieren, PIDns, [], [undef, undef], 1000000, -1, 0)
-	loop(Arbeitszeit, Termzeit, Ggtprozessnummer, Koordinatorname, Quote, Korrigieren, PIDns, [], [undef, undef], 1000000000000000000000, -1, 0)
+	loop(Arbeitszeit, Termzeit, Ggtprozessnummer, Koordinatorname, Quote, Korrigieren, PIDns, [], [undef, undef], -1, 0)
 	.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Mod.Koor. Anf.-Nr. 11
@@ -94,7 +94,7 @@ start() ->
 %Der Koordinator kann neue Starter und ggt-Prozesse annehmen.
 %Der manuelle Befehl "step" versetzt den Koordinator in die Arbeitsphase,
 %in der keine neuen Starter- und ggt-Prozesse mehr angenommen werden können.
-loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(CMD) /= step, hd(CMD) /= kill ->
+loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, SPZF, AST) when hd(CMD) /= step, hd(CMD) /= kill ->
 	io:format("CMD: ~p~n", [CMD]), 
 	receive
 	%%%%********************************************************************************************************************%%%%
@@ -107,42 +107,42 @@ loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(C
 			Quota = round((QUO / 100) * (GGTPNr * (AST +  1))), %AST + 1 da StarterPID neuer Starter ist.
 			StarterPID ! {steeringval, AZ, TZ, Quota, GGTPNr},
 			logging(?LOGFILE, lists:flatten(io_lib:format("getsteeringval von Starter ~p | Erwartete Prozesse ~p | (~p). ~n", [StarterPID, GGTPNr * (AST + 1), werkzeug:timeMilliSecond()]))),
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST + 1);
+			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, SPZF, AST + 1);
 		%Nachricht von einem ggt-Prozess: Meldet sich beim Koordinator an, 
 		%wird in die Liste der ggt-Prozesse aufgenommen.
 		{hello, GGTName} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("hello: ~p (~p). ~n", [GGTName, GGTPNr]))),
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL ++ [GGTName], CMD, MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL ++ [GGTName], CMD, SPZF, AST);
 		%Mod.Koor. Anf.-Nr. 14 - 15 da er Guard dieses loop-Zweigs durch setzen des Step-Befehls im CMD Parameter nicht mehr true ist.
 		step ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("step: um ~p Uhr. ~n", [werkzeug:timeMilliSecond()]))),
 			logging(?LOGFILE, lists:flatten(io_lib:format("Erzeuge Ring von ~p ggt-Prozessen | (~p). ~n", [length(GGTL), werkzeug:timeMilliSecond()]))),
 			%Mod.Koor. Anf.-Nr. 16 - 17 (createRing Rückgabewert als Parameter). 
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, createRing(GGTL, PIDns), [step, undef], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, createRing(GGTL, PIDns), [step, undef], undef, SPZF, AST);
 		reset ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("reset: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, [], [undef, undef], MiMin, SPZF, 0);
+			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, [], [undef, undef], SPZF, 0);
 		prompt ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("prompt: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			prompt(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, SPZF, AST);
 		nudge ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("nudge: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			nudge(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, SPZF, AST);
 		toggle ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("toggle: ~p. ~n", [werkzeug:timeMilliSecond()]))),
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF * -1, AST);
+			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, SPZF * -1, AST);
 		kill ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("kill: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			kill(PIDns, GGTL),
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, [kill, lists:nth(2, CMD)], MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, [kill, lists:nth(2, CMD)], SPZF, AST);
 		Any ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("1.Any-Block:  received anything: ~p ~p. ~n", [Any, werkzeug:timeMilliSecond()]))),
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST)
+			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, SPZF, AST)
 	end	
-	;
+	.
 loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(CMD) /= kill, tl(CMD) /= reset ->
 	receive
 	%%%%********************************************************************************************************************%%%%
@@ -156,9 +156,15 @@ loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(C
 			Mis2 = bestimme_mis(WggT, length(GewaehlteProzesse)),
 			sendeY(PIDns, GewaehlteProzesse, Mis2),
 			logging(?LOGFILE, lists:flatten(io_lib:format("Beginne eine neue ggt Berechnung mit Ziel ~p. ~n", [WggT]))),
-			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
+			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, undef, SPZF, AST);
 		{briefmi, {MeinName, CMi, CZeit}} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("~p meldet neues Mi ~p um ~p|  (~p).~n", [MeinName,CMi, CZeit, werkzeug:timeMilliSecond()]))),
+			case MiMin == undef of
+				true ->
+					loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, CMi, SPZF, AST);
+				false ->
+					do_nothing
+			end,
 			case CMi < MiMin of
 				true ->
 					loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, CMi, SPZF, AST);
