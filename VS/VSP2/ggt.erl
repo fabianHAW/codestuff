@@ -82,8 +82,10 @@ loop(MeinName, LogFile, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, 
 %Termmeldungen := Counter zur Terminierungsmeldungen (zu Beginn 0)
 %VoteYesCounter := Counter zum Zaehlen der eingetroffenen voteYes-Nachrichten pro Terminierungsmeldung (zu Beginn 0)
 %VoteTimer := Timer zur Terminierung einer Terminierungsabstimmung, sofern eine gewisse Zeit ueberschritten wurde und die Quota noch nicht erreicht wurde
+%VoteingFlag := Flag welches zusaetzlich zu dem VoteTimer signalisiert, dass eine Terminierungsabstimmung durchgefuerht werden darf, sowie dafuer
+%die voteYes-Nachrichten empfangen werden koennen. (zu Beginn false)
 %Killed := Flag zur Signalisierungs, ob ein Kill-Befehl seitens des Koordinators eingetroffen ist (zu Beginn false)
-	loop(MeinName, LogFile, -1, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, timer:start(), -1, false, 0, 0, timer:start(), false).
+	loop(MeinName, LogFile, -1, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, timer:start(), -1, false, 0, 0, timer:start(), false, false).
 
 %In diesem receive-Block steht der ggT-Prozess fuer alle moeglichen Nachrichten seitens des Koordinators
 %und anderer ggT-Prozessen bereit. Ueber den letzten Parameter wird angegeben, ob ein kill-Befehl 
@@ -92,7 +94,7 @@ loop(MeinName, LogFile, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, 
 %Anf.-Nr. 8) ggT ist jederzeit bereit fuer neue Berechnungen
 %Anf.-Nr. 18) es wird in eine Log-Datei geloggt
 %Weitere realisierte Anforderungen sind ggf. an den Nachrichtenempfangsblöcken angegeben
-loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false) ->
+loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, VoteingFlag, false) ->
 	receive
 		%Anf.-Nr. 7) MiNeu setzen und wieder in receive-Block springen
 		{setpm, MiNeu} ->
@@ -101,7 +103,7 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 			%Anf.-Nr. 13) Eine neue Terminierungsabstimmung ist nun moeglich
 			ErsteAnfrageNeu = true,
 			logging(LogFile, lists:flatten(io_lib:format("setpm: ~p. (~p)~n", [MiNeu, MeinName]))),
-			loop(MeinName, LogFile, MiNeu, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, TimeNeu, ErsteAnfrageNeu, Termmeldungen, VoteYesCounter, VoteTimer, false);
+			loop(MeinName, LogFile, MiNeu, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, TimeNeu, ErsteAnfrageNeu, Termmeldungen, VoteYesCounter, VoteTimer, VoteingFlag, false);
 		%Anf.-Nr. 9) moegliches neues Y und impliziete Aufforderung, dass ggT-Algorithmus gestartet wird
 		{sendy, Y} ->
 			TermTimerNeu = reset_timer(TermTimer, TermZeit, {terminated, terminterrupt}),
@@ -123,15 +125,15 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 				notchanged ->
 					logging(LogFile, lists:flatten(io_lib:format("~p: keine Nachricht an Koordinator gesendet~n", [MeinName])))
 			end,
-			loop(MeinName, LogFile, CMi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, TimeNeu, ErsteAnfrageNeu, Termmeldungen, VoteYesCounter, VoteTimer, false);			
+			loop(MeinName, LogFile, CMi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, TimeNeu, ErsteAnfrageNeu, Termmeldungen, VoteYesCounter, VoteTimer, VoteingFlag, false);			
 		%moegliche Nachricht von Koordinator um aktuelles Mi zu erhalten
 		{KoordinatorPID, tellmi} ->
 			KoordinatorPID ! {mi, Mi},
-			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false);
+			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, VoteingFlag, false);
 		%moegliches ping von Seiten des Koordinators
 		{KoordinatorPID, pingGGT} ->
 				KoordinatorPID ! {pongGGT, MeinName},
-				loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false);
+				loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, VoteingFlag, false);
 		%Anf.-Nr. 12) der TermTimer signalisiert, dass eine bestimmte Zeit (TermZeit) abgelaufen ist und seit dem Start dieses Timers keine
 		%neue Zahl (sendy, setpm) empfangen wurde. Daher wird ein Interrupt als Nachricht geschickt, da nun die TermZeit abgelaufen ist
 		%und eine Terminierungsabstimmung durchgefuehrt werden muss
@@ -142,22 +144,20 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 					logging(LogFile, lists:flatten(io_lib:format("~p: initiiere eine Terminierungsabstimmung (~p). " ++ timeMilliSecond() ++ "~n", [MeinName, Mi]))),
 					%Anf.-Nr. 12) Multicast durchfuehren
 					Nameservice ! {self(), {multicast, vote, MeinName}},
-					%neuen VoteTimer starten, da es vorkommen kann, dass 2 Votierungen stattfinden, daher darf der schon existierende Votetimer
-					%nicht unterbrochen werden
-					VoteTimerNeu = reset_timer(timer:start(), 200, {terminated, voteinterrupt}),
+					VoteTimerNeu = reset_timer(VoteTimer, 2, {terminated, voteinterrupt}),
 					TermTimerNeu = reset_timer(timer:start(), TermZeit, {terminated, terminterrupt}),
 					%VoteYesCounter auf 0 setzen, damit die "alten" voteYes-Nachrichten unberücksichtig bleiben 
-					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, Time, false, Termmeldungen, 0, VoteTimerNeu, false);
+					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, Time, false, Termmeldungen, 0, VoteTimerNeu, true, false);
 				false ->
 					%neuen Timer starten
 					logging(LogFile, lists:flatten(io_lib:format("~p: eine weitere Terminierungsabstimmung ist nicht moeglich, da noch keine neue Zahl eingetroffen ist. " ++ timeMilliSecond() ++ "~n", [MeinName]))),
 					TermTimerNeu = reset_timer(timer:start(), TermZeit, {terminated, terminterrupt}),
-					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false)
+					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimerNeu, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, VoteingFlag, false)
 			end;
 		%Interrupt des VoteTimer ist eingetreten -> Voting wird abgebrochen
 		{terminated, voteinterrupt} ->
 			logging(LogFile, lists:flatten(io_lib:format("~p: Voting wurde abgebrochen, da Zeit zur Rueckmeldung vorbei ist.~n", [MeinName]))),
-			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, 0, timer:start(), false);
+			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, 0, timer:start(), false, false);
 		%Anf.-Nr. 16) Ein Multicast durch den Initiator wurde durchgefuehrt. Wurde die haelfte der Zeit nach dem letzten Empfangen
 		%einer Zahl (sendy, setpm) ueberschritten, wird dem Initiator eine voteYes-Nachricht geschickt
 		{_InitiatorPID, {vote, Initiator}} ->
@@ -178,41 +178,46 @@ loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, Lef
 					{ok, Hostname} = inet:gethostname(),
 					logging(lists:flatten(io_lib:format("ggt_log/GGTP_~p@" ++ Hostname ++ ".log", [Initiator])), lists:flatten(io_lib:format("~p: stimme ab (~p): mit >NEIN< gestimmt und ignoriert. " ++ timeMilliSecond() ++ "~n", [Initiator, MeinName])))
 			end,
-			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false);
+			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, VoteingFlag, false);
 		%%Anf.-Nr. 14) Zustimmungen zum Voting treffen ein und werden behandelt: Wurde die Quota erreich wird dem Koordinator 
 		%eine briefterm-Nachricht geschickt
 		{voteYes, AbsenderName} ->
-			logging(LogFile, lists:flatten(io_lib:format("~p: stimme ab (~p): mit >JA< gestimmt. " ++ timeMilliSecond() ++ "~n", [MeinName, AbsenderName]))),
-			VoteYesCounterNeu = VoteYesCounter + 1,
-			case VoteYesCounterNeu == Quota of
+			case VoteingFlag of
 				true ->
-					%VoteTimer muss beendet werden, da sonst faelschlicherweise ein Interrupt eintrifft
-					timer:cancel(VoteTimer),
-					%Anf.-Nr. 14) Terminierung der Berechnung: Name, aktuelle Mi und aktuelle Systemzeit
-					Koordinator ! {self(), briefterm, {MeinName, Mi, timeMilliSecond()}},
-					%Anf.-Nr. 15) Terminierungsmeldungen hochzaehlen und loggen
-					TermmeldungenNeu = Termmeldungen + 1,
-					logging(LogFile, lists:flatten(io_lib:format("~p: Koordinator ~pte Terminierung gemeldet mit ~p " ++ timeMilliSecond() ++ "~n", [MeinName, TermmeldungenNeu, Mi]))),
-					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, TermmeldungenNeu, 0, timer:start(), false);
+					logging(LogFile, lists:flatten(io_lib:format("~p: stimme ab (~p): mit >JA< gestimmt. " ++ timeMilliSecond() ++ "~n", [MeinName, AbsenderName]))),
+					VoteYesCounterNeu = VoteYesCounter + 1,
+					case VoteYesCounterNeu == Quota of
+						true ->
+							%VoteTimer muss beendet werden, da sonst faelschlicherweise ein Interrupt eintrifft
+							timer:cancel(VoteTimer),
+							%Anf.-Nr. 14) Terminierung der Berechnung: Name, aktuelle Mi und aktuelle Systemzeit
+							Koordinator ! {self(), briefterm, {MeinName, Mi, timeMilliSecond()}},
+							%Anf.-Nr. 15) Terminierungsmeldungen hochzaehlen und loggen
+							TermmeldungenNeu = Termmeldungen + 1,
+							logging(LogFile, lists:flatten(io_lib:format("~p: Koordinator ~pte Terminierung gemeldet mit ~p " ++ timeMilliSecond() ++ "~n", [MeinName, TermmeldungenNeu, Mi]))),
+							loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, TermmeldungenNeu, 0, timer:start(), false, false);
+						false ->
+							loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounterNeu, VoteTimer, VoteingFlag, false)
+					end;
 				false ->
-					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounterNeu, VoteTimer, false)
-			end;
+					loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, VoteingFlag, false)
+			end;		
 		%bei kill wird die Schleife verlassen: letztes Flag im Methodenkopf = true
 		kill ->
-			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, true);
+			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, VoteingFlag, true);
 		%falls irgendwelche anderen, nicht zutreffenden, Nachrichten eintreffen werden diese geloggt
 		Any ->
 			logging(LogFile, lists:flatten(io_lib:format("~p: Es wurde irgendetwas anderes empfangen: ~p " ++ timeMilliSecond() ++ "~n", [MeinName, Any]))),
-			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, false)	
+			loop(MeinName, LogFile, Mi, ArbeitsZeit, TermZeit, Nameservice, Koordinator, LeftN, RightN, Quota, TermTimer, Time, ErsteAnfrage, Termmeldungen, VoteYesCounter, VoteTimer, VoteingFlag, false)	
 	end;
 %Wurde seitens des Koordinators ein kill-Befehl geschickt, wird die Beendigungsphase eingeleitet
-loop(MeinName, LogFile, _Mi, _ArbeitsZeit, _TermZeit, Nameservice, _Koordinator, _LeftN, _RightN, _Quota, TermTimer, _Time, __ErsteAnfrage, _Termmeldungen, _VoteYesCounter, _VoteTimer, true) ->
+loop(MeinName, LogFile, _Mi, _ArbeitsZeit, _TermZeit, Nameservice, _Koordinator, _LeftN, _RightN, _Quota, TermTimer, _Time, __ErsteAnfrage, _Termmeldungen, _VoteYesCounter, _VoteTimer, _VoteingFlag, true) ->
 	unbind(MeinName, LogFile, Nameservice, TermTimer).
 	
 %verteilten ggT-Algorithmus anwenden
 ggtAlgorithmus(MiNeu, Y, LeftN, RightN, ArbeitsZeit, LogFile) when Y < MiNeu ->
 	%Anf.-Nr. 11) Arbeitszeit muss vor dem versenden an die Nachbarn verrichtet werden
-	timer:sleep(ArbeitsZeit),
+	timer:sleep(ArbeitsZeit * 1000),
 	CMi = ((MiNeu - 1) rem Y) + 1,
 	LeftN ! {sendy, CMi},
 	RightN ! {sendy, CMi},
