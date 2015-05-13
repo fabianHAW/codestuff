@@ -1,5 +1,7 @@
 package accessor_one;
 
+import mware_lib.Skeleton;
+
 /**
  * 
  * @author Francis und Fabian
@@ -7,11 +9,16 @@ package accessor_one;
  * Stellt das Skeleton dar -> Objekte seitens des Servers greifen darauf zu
  */
 
-public class ClassOneSkeleton extends ClassOneImplBase{
+public class ClassOneSkeleton extends Thread implements Skeleton{
 
-	public String methodOne(String param1, int param2) throws SomeException112 {
-		// TODO Auto-generated method stub
-		return null;
+	public void run(){
+		
 	}
+	
+	public void invoke() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
