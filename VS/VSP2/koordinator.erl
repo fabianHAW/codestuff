@@ -135,8 +135,11 @@ loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, SPZF, AST) when hd(CMD) /= 
 			logging(?LOGFILE, lists:flatten(io_lib:format("toggle: ~p. ~n", [werkzeug:timeMilliSecond()]))),
 			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, SPZF * -1, AST);
 		kill ->
+			io:format("1~n"),
 			logging(?LOGFILE, lists:flatten(io_lib:format("kill: ~p. ~n", [werkzeug:timeMilliSecond()]))),
+			io:format("2~n"),
 			kill(PIDns, GGTL),
+			io:format("3~n"),
 			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, [kill, lists:nth(2, CMD)], SPZF, AST);
 		Any ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("1.Any-Block:  received anything: ~p ~p. ~n", [Any, werkzeug:timeMilliSecond()]))),
@@ -175,19 +178,18 @@ loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(C
 			case MiMin < CMi of
 				true ->
 					%Mod.Koor. Anf.-Nr. 21
-					logging(?LOGFILE, lists:flatten(io_lib:format("Fehlernachricht um ~p Uhr | ~p terminiert mit CMi ~p > MiMin ~p um ~p Uhr.~n", [werkzeug:timeMilliSecond(), MeinName, CMi, MiMin, CZeit])));
+					logging(?LOGFILE, lists:flatten(io_lib:format("Fehlernachricht um ~p Uhr | ~p terminiert mit CMi ~p > MiMin ~p um ~p Uhr.~n", [werkzeug:timeMilliSecond(), MeinName, CMi, MiMin, CZeit]))),
+					%Mod.Koor. Anf.-Nr. 22
+					case SPZF == 1 of
+							true ->
+								GGTpid ! {sendy, MiMin},
+								logging(?LOGFILE, lists:flatten(io_lib:format("Sende kleinste Zahl ~p an ~p | (~p) Uhr ~n", [MiMin, MeinName, werkzeug:timeMilliSecond()])));
+							false ->
+								do_nothing
+					end;
 				%false-zweig hinzugefuegt, da fehlermeldung ausgegeben wurde
 				false ->
 					logging(?LOGFILE, lists:flatten(io_lib:format("ggt ~p meldet Terminierung der Berechnung mit ggt ~p um ~p Uhr  | (~p).~n", [MeinName, CMi, CZeit, werkzeug:timeMilliSecond()])))
-			end,
-			%Mod.Koor. Anf.-Nr. 22
-			case SPZF == 1 of
-					true ->
-						GGTpid ! {sendy, MiMin},
-					%false-zweig hinzugefuegt, da fehlermeldung ausgegeben wurde
-						logging(?LOGFILE, lists:flatten(io_lib:format("Sende kleinste Zahl ~p an ~p | (~p) Uhr ~n", [MiMin, MeinName, werkzeug:timeMilliSecond()])));
-					false ->
-						do_nothing
 			end,
 			loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST);
 		{voteYes, Name} ->
@@ -223,11 +225,15 @@ loop(AZ, TZ, GGTPNr, KN, QUO, KOR, PIDns, GGTL, CMD, MiMin, SPZF, AST) when hd(C
 %%%%********************************************************************************************************************%%%%
 loop(_AZ, _TZ, _GGTPNr, KN, _QUO, _KOR, PIDns, _GGTL, _CMD, _MiMin, _SPZF, _AST) ->
 	PIDns ! {self(),{unbind,KN}},
+	io:format("5~n"),
 	receive 
 		ok ->
+			io:format("6~n"),
 			logging(?LOGFILE, lists:flatten(io_lib:format("Erfolgreich vom Nameservice abgemeldet um ~p Uhr. ~n", [werkzeug:timeMilliSecond()])))
 	end,
+	io:format("7~n"),
 	unregister(KN),
+	io:format("8~n"),
 	logging(?LOGFILE, lists:flatten(io_lib:format("Downtime ~p Uhr | vom Koordinator ~p ~n", [werkzeug:timeMilliSecond(), KN])))
 	.
 
@@ -368,9 +374,9 @@ nudge(PIDns, [H | T]) ->
 %Erfüllt Mod.Koor. Anf.-Nr. 24
 %Schaltet den Koordinator aus, welcher vor dem Shutdown allen ggt Prozessen ein kill sendet.
 kill(_PIDns, []) ->
-	logging(?LOGFILE, lists:flatten(io_lib:format("Allen ggt Prozessen ein kill gesendet.~n", []))),
-	ok;
+	logging(?LOGFILE, lists:flatten(io_lib:format("Allen ggt Prozessen ein kill gesendet.~n", [])));
 kill(PIDns, [H | T]) ->
+	io:format("4~n"),
 	PIDns ! {self(), {lookup, H}},
 	receive
 		{pin, {GGTName, GGTNode}} ->
