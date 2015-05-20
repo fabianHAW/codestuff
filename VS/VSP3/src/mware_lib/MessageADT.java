@@ -1,10 +1,15 @@
 package mware_lib;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.List;
 
-public class MessageADT {
+public class MessageADT implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private InetAddress iNetAdrress;
 	private int messageID;
 	private String methodName;
