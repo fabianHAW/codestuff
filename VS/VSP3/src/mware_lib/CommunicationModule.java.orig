@@ -1,21 +1,20 @@
 package mware_lib;
 
+<<<<<<< HEAD
 import java.net.InetAddress;
-
+=======
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
+>>>>>>> 1389521b3c4bd58ea43b64f7656f76416457fbce
 
 /**
  * 
  * @author Francis und Fabian
  *
- * Stellt Request/Reply-Protokoll bereit und hat somit 
- * auch einen Socket bzw. Serversocket
  */
 
 public class CommunicationModule extends Thread{
@@ -75,12 +74,12 @@ public class CommunicationModule extends Thread{
 		}
 	}
 	
-
+<<<<<<< HEAD
 	private static InetAddress inetAddress;
 	
-//	public void sendReplyToClient(MessageADT m){
-//		
-//	}
+	public void sendReplyToClient(MessageADT m){
+		
+	}
 	
 	public static CommunicationModuleThread sendRequest(MessageADT m){
 		return new CommunicationModuleThread(m);
@@ -89,7 +88,7 @@ public class CommunicationModule extends Thread{
 	public static InetAddress getInetAddress(){
 		return inetAddress;
 	}
-
+=======
 	private void handleServerReply(MessageADT m){
 		//port vom proxy fehlt
 //		Socket s = new Socket("localhost");
@@ -140,6 +139,8 @@ public class CommunicationModule extends Thread{
 	public static int getCommunicationmoduleport() {
 		return COMMUNICATIONMODULEPORT;
 	}
-
+	
+	
+>>>>>>> 1389521b3c4bd58ea43b64f7656f76416457fbce
 
 }
