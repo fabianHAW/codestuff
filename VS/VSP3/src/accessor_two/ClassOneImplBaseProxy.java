@@ -3,7 +3,6 @@ package accessor_two;
 /**
  * 
  * @author Francis und Fabian
- * Stellt den Stub dar -> Objekte seitens des Clients greifen darauf zu
  *
  */
 
