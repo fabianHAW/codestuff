@@ -3,8 +3,14 @@ package mware_lib;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
+import accessor_two.ClassOneAT;
+import accessor_two.ClassOneImplBase;
 
 public class NameServiceProxy extends NameService {
 
@@ -31,7 +37,10 @@ public class NameServiceProxy extends NameService {
 
 	@Override
 	public void rebind(Object servant, String name) {
-		NameServiceRequest n = new NameServiceRequest("rebind", name, servant);
+		
+		RemoteObjectRef rof = ReferenceModule.createNewRemoteRef(servant);
+		
+		NameServiceRequest n = new NameServiceRequest("rebind", name, rof);
 		try {
 			this.output.writeObject(n);
 		} catch (IOException e) {
