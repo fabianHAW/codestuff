@@ -6,7 +6,6 @@
 
 #log-files
 *.log
-.gitignore.orig
 VS/VSP2/geany_run_script.bat
 VS/VSP2/ggt.cfg.orig
 VS/VSP2/koordinator.cfg.orig

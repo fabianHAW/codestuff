@@ -1,5 +1,7 @@
 package mware_lib;
 
+import java.util.List;
+
 /**
  * 
  * @author Francis und Fabian
@@ -10,5 +12,6 @@ package mware_lib;
 public interface Skeleton {
 
 	//ruft die Methoden des Servers auf
-	void invoke();
+	public MessageADT invoke();
+		
 }

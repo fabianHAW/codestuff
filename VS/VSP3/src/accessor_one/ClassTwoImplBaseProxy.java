@@ -1,5 +1,7 @@
 package accessor_one;
 
+import java.util.List;
+
 /**
  * 
  * @author Francis und Fabian
@@ -7,7 +9,7 @@ package accessor_one;
  *
  */
 
-public class ClassTwoProxy extends ClassTwoImplBase {
+public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 
 	public int methodOne(double param1) throws SomeException110 {
 		// TODO Auto-generated method stub
@@ -17,6 +19,15 @@ public class ClassTwoProxy extends ClassTwoImplBase {
 	public double methodTwo() throws SomeException112 {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	public byte[] valsToByte(List<Object> o ){
+		
+		return null;
+	}
+	
+	private void listenToSocket(){
+		
 	}
 
 }

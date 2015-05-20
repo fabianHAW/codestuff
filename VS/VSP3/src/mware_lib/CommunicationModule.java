@@ -9,5 +9,9 @@ package mware_lib;
  */
 
 public class CommunicationModule {
+	
+	public void sendReplyToClient(MessageADT m){
+		
+	}
 
 }

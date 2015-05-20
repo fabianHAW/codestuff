@@ -1,7 +1,6 @@
 package mware_lib;
 
 import nameservice.NameService;
-import nameservice.NameServiceImpl;
 
 public class ObjectBroker { // - Front-End der Middleware -
 
@@ -20,7 +19,7 @@ public class ObjectBroker { // - Front-End der Middleware -
 	// Liefert den Namensdienst (Stellvetreterobjekt).
 	public NameService getNameService() {
 		if(this.nameservice == null)
-			return new NameServiceImpl();
+			return new NameService();
 		
 		return this.nameservice;
 	}

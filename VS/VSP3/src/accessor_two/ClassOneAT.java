@@ -1,20 +1,19 @@
 package accessor_two;
 
-/**
- * 
- * @author Francis und Fabian
- * Stellt den Stub dar -> Objekte seitens des Clients greifen darauf zu
- *
- */
+public class ClassOneAT extends ClassOneImplBase {
 
-public class ClassOneProxy extends ClassOneImplBase{
+	public ClassOneAT() {
+		// TODO Auto-generated constructor stub
+	}
 
+	@Override
 	public double methodOne(String param1, double param2)
 			throws SomeException112 {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	@Override
 	public double methodTwo(String param1, double param2)
 			throws SomeException112, SomeException304 {
 		// TODO Auto-generated method stub

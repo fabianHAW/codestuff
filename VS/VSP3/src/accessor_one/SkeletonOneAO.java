@@ -1,5 +1,8 @@
 package accessor_one;
 
+import java.net.InetAddress;
+
+import mware_lib.MessageADT;
 import mware_lib.Skeleton;
 
 /**
@@ -9,15 +12,21 @@ import mware_lib.Skeleton;
  * Stellt das Skeleton dar -> Objekte seitens des Servers greifen darauf zu
  */
 
-public class ClassTwoSkeleton extends Thread implements Skeleton{
+public class SkeletonOneAO extends Thread implements Skeleton{
 
 	public void run(){
 		
 	}
 	
-	public void invoke() {
+	public MessageADT invoke() {
+		return null;
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public SkeletonOneAO(MessageADT m, InetAddress komModAddr){
+		
+	}
+
 
 }
