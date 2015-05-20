@@ -11,3 +11,6 @@ VS/VSP2/ggt.cfg.orig
 VS/VSP2/koordinator.cfg.orig
 VS/VSP2/koordinator.erl.orig
 VS/VSP2/start.bat
+
+#class-files
+*.class
