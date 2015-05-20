@@ -23,6 +23,6 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase{
 	
 	public void listenToSocket(){
 		
-	};
+	}
 
 }

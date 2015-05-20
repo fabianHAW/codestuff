@@ -9,15 +9,24 @@ public class MessageADT {
 	private int messageID;
 	private String methodName;
 	private int messageType;
-	private RemoteObjRef objectRef;
+	private RemoteObjectRef objectRef;
 	private byte[] returnVal;
-	private List<Byte[]> arguments;
+	private List<byte[]> arguments;
 	private List<Exception> exceptionList;
 	
-	public MessageADT() {
-		// TODO Auto-generated constructor stub
+	public MessageADT(InetAddress i, Integer mId, String mName,
+			Integer mType, RemoteObjectRef rof, byte[] rV,
+			List<byte[]> arg, List<Exception> lE){
+		this.iNetAdrress = i;
+		this.messageID = mId;
+		this.methodName = mName;
+		this.messageType = mType;
+		this.objectRef = rof;
+		this.returnVal = rV;
+		this.arguments = arg;
+		this.exceptionList = lE;
 	}
-
+	
 	public InetAddress getiNetAdrress() {
 		return iNetAdrress;
 	}
@@ -50,11 +59,11 @@ public class MessageADT {
 		this.messageType = messageType;
 	}
 
-	public RemoteObjRef getObjectRef() {
+	public RemoteObjectRef getObjectRef() {
 		return objectRef;
 	}
 
-	public void setObjectRef(RemoteObjRef objectRef) {
+	public void setObjectRef(RemoteObjectRef objectRef) {
 		this.objectRef = objectRef;
 	}
 
@@ -66,11 +75,11 @@ public class MessageADT {
 		this.returnVal = returnVal;
 	}
 
-	public List<Byte[]> getArguments() {
+	public List<byte[]> getArguments() {
 		return arguments;
 	}
 
-	public void setArguments(List<Byte[]> arguments) {
+	public void setArguments(List<byte[]> arguments) {
 		this.arguments = arguments;
 	}
 

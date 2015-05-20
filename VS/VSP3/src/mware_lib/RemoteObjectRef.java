@@ -3,7 +3,7 @@ package mware_lib;
 import java.net.InetAddress;
 import java.util.List;
 
-public class RemoteObjRef {
+public class RemoteObjectRef {
 
 	private InetAddress inetAddress;
 	private int port;
@@ -11,7 +11,7 @@ public class RemoteObjRef {
 	private int objectNumber;
 	private List<String> interfaces;
 	
-	public RemoteObjRef() {
+	public RemoteObjectRef() {
 		// TODO Auto-generated constructor stub
 		
 	

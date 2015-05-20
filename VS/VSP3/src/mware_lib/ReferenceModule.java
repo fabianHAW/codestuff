@@ -11,12 +11,12 @@ package mware_lib;
 public class ReferenceModule {
 
 	
-	public RemoteObjRef createNewRemoteRef(Object myObject){
+	public RemoteObjectRef createNewRemoteRef(Object myObject){
 		
 		return null;	
 	}
 	
-	public void serveantToTable(RemoteObjRef rawObjRef, Object myObject){
+	public void serveantToTable(RemoteObjectRef rawObjRef, Object myObject){
 		
 	}
 	
@@ -24,16 +24,16 @@ public class ReferenceModule {
 		return false;
 	}
 	
-	public RemoteObjRef getRemoteObj(Object rawObjRef){
+	public RemoteObjectRef getRemoteObj(Object rawObjRef){
 		
 		return null;
 	}
 	
-	public void add(RemoteObjRef rawObj, Object remoteObj){
+	public void add(RemoteObjectRef rawObj, Object remoteObj){
 	
 	}
 	
-	public Object getServant(RemoteObjRef rawObjRef){
+	public static Object getServant(RemoteObjectRef rawObjRef){
 		
 		return null;
 	}

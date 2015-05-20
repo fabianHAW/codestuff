@@ -3,17 +3,19 @@ package accessor_two;
 import java.net.InetAddress;
 
 import mware_lib.MessageADT;
+import mware_lib.ObjectAdapter;
 
 public class RequestDemultiplexer implements mware_lib.RequestDemultiplexer {
 
+	private ObjectAdapter o;
+	 
 	public RequestDemultiplexer() {
-		// TODO Auto-generated constructor stub
+		this.o = new ObjectAdapterAT();
 	}
 
 	@Override
 	public void pass(MessageADT m, InetAddress komModAddr) {
-		// TODO Auto-generated method stub
-		
+		o.initSkeleton(m, komModAddr);		
 	}
 
 }

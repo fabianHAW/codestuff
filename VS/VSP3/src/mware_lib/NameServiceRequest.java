@@ -4,7 +4,7 @@ public class NameServiceRequest {
 
 	private String requestType;
 	private String serviceName;
-	private RemoteObjRef objectRef;
+	private RemoteObjectRef objectRef;
 	
 	public NameServiceRequest() {
 		// TODO Auto-generated constructor stub
@@ -26,11 +26,11 @@ public class NameServiceRequest {
 		this.serviceName = serviceName;
 	}
 
-	public RemoteObjRef getObjectRef() {
+	public RemoteObjectRef getObjectRef() {
 		return objectRef;
 	}
 
-	public void setObjectRef(RemoteObjRef objectRef) {
+	public void setObjectRef(RemoteObjectRef objectRef) {
 		this.objectRef = objectRef;
 	}
 

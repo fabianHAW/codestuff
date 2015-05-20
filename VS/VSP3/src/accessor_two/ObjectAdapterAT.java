@@ -10,14 +10,12 @@ public class ObjectAdapterAT implements ObjectAdapter{
 	public ObjectAdapterAT() {
 		// TODO Auto-generated constructor stub
 	}
-	
-	public void passMessage(MessageADT m){
-		
-	}
 
 	@Override
-	public void initSkeleton(MessageADT m, InetAddress komModAddr) {
-		// TODO Auto-generated method stub
+	public void initSkeleton(MessageADT m, InetAddress komModAddr) {		
+		//vorher noch die objektid rausholen und entscheiden welches skeleton
+		SkeletonOneAT s = new SkeletonOneAT(m, komModAddr);
+		s.start();
 		
 	}
 
