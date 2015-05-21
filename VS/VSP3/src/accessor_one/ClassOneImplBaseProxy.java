@@ -1,5 +1,11 @@
 package accessor_one;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +28,11 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase{
 	private final int REQUEST = 0;
 	private final int REPLY = 1;
 	private RemoteObjectRef rawObjRef;
+	private Socket socket;
+	private InputStream input;
+	private ObjectInputStream oinput;
+	private OutputStream output;
+	private ObjectOutputStream ooutput;
 	
 	public ClassOneImplBaseProxy(RemoteObjectRef rawObjRef){
 		this.rawObjRef = rawObjRef;
@@ -33,14 +44,37 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase{
 		byte[] p2 = ByteBuffer.allocate(Integer.BYTES).putInt(param2).array();
 		ArrayList<byte[]> arguments = new ArrayList<byte[]>(Arrays.asList(p1, p2));
 		MessageADT m = new MessageADT(CommunicationModule.getInetAddress(), 1, "methodOne", REQUEST, rawObjRef, null, arguments, null);
-		MessageADT received = sendRequest(m);
+		
+		try {
+			socket = new Socket(m.getObjectRef().getInetAddress(), m.getObjectRef().getPort());
+			input = socket.getInputStream();
+			oinput = new ObjectInputStream(input);
+			output = socket.getOutputStream();
+			ooutput = new ObjectOutputStream(output);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		sendRequest(m);
+		MessageADT received = listenToSocket();
 		String result = unmarshals(received);
+		
+		
 		return result;
 	}
 	
 	
-	private void listenToSocket(){
+	private MessageADT listenToSocket(){
+		MessageADT receivedMessage = null;
+		try {
+			receivedMessage = (MessageADT)oinput.readObject();
+		} catch (ClassNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
+		return receivedMessage;
 	}
 	
 	private String unmarshals(MessageADT m){
@@ -48,19 +82,40 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase{
 		return new String(returnval);
 	}
 	
-	private MessageADT sendRequest(MessageADT m){
-		CommunicationModuleThread t = CommunicationModule.sendRequest(m);
-		t.run();
+//	private MessageADT sendRequest(MessageADT m){
+//		CommunicationModuleThread t = CommunicationModule.sendRequest(m);
+//		t.run();
+//		
+//		synchronized(t){
+//			try{
+//				t.wait();
+//			}catch(InterruptedException e){
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		return t.getReceivedMessage();
+//	}
+	
+	private void sendRequest(MessageADT m){
+	
 		
-		synchronized(t){
-			try{
-				t.wait();
-			}catch(InterruptedException e){
-				e.printStackTrace();
-			}
+		try {
+			ooutput.writeObject(m);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
-		return t.getReceivedMessage();
+		try {
+			output.close();
+			ooutput.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 

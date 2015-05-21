@@ -7,6 +7,7 @@ public abstract class ClassTwoImplBase {
 	
 	//erzeugt neues Proxy- oder Skeleton-Objekt
 	public static ClassTwoImplBase narrowCast(Object rawObjectRef) {
+		
 		return null;
 	}
 
