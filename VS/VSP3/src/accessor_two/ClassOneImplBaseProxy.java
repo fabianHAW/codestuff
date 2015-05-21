@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mware_lib.MessageADT;
+import mware_lib.RemoteObjectRef;
 
 /**
  * 
@@ -23,6 +24,11 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 	private InetAddress inetAddress;
 	private String host = "localhost";
 	private int port = 50002;
+	private RemoteObjectRef rof;
+	
+	public ClassOneImplBaseProxy(RemoteObjectRef rof){
+		this.rof = rof;
+	}
 
 	public double methodOne(String param1, double param2)
 			throws SomeException112 {
@@ -72,8 +78,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 		values.add(param1.getBytes());
 		values.add(String.valueOf(param2).getBytes());
 		
-		//welche entfertne objektreferenz?
-		MessageADT m = new MessageADT(this.inetAddress, -1, mName, 0, null,
+		MessageADT m = new MessageADT(this.inetAddress, -1, mName, 0, this.rof,
 				null, values, null);
 		try {
 			s = new Socket(this.inetAddress, this.port);
