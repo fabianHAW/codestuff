@@ -49,7 +49,7 @@ public class NameService  {
 		referenceObjects.put(name, ref);
 	}
 	
-	public static RemoteObjectRef getService(String name){
+	public static synchronized RemoteObjectRef getService(String name){
 		return referenceObjects.get(name);
 	}
 	
@@ -57,7 +57,7 @@ public class NameService  {
 		return port;
 	}
 	
-	public static InetAddress getLocalHost(){
+	public static synchronized InetAddress getLocalHost(){
 		try {
 			return InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
