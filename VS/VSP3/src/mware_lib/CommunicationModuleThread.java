@@ -23,7 +23,7 @@ public class CommunicationModuleThread extends Thread {
 		// TODO Auto-generated constructor stub
 		sendMessage = m;
 		try {
-			socket = new Socket(m.getObjectRef().getInetAddress(), m.getObjectRef().getPort());
+			socket = new Socket(m.getObjectRef().getInetAddress(), CommunicationModule.getCommunicationmoduleport());
 			input = socket.getInputStream();
 			oinput = new ObjectInputStream(input);
 			output = socket.getOutputStream();
@@ -35,25 +35,69 @@ public class CommunicationModuleThread extends Thread {
 	}
 
 	public void run(){
-		synchronized(this){
+		synchronized (this) {
 			try {
 				ooutput.writeObject(sendMessage);
+				this.wait();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			try {
-				receivedMessage = (MessageADT)oinput.readObject();
-			} catch (ClassNotFoundException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (InterruptedException e) {
+				notify();
 			}
 		}
-		notify();
+		
+	}
+	
+	
+//	public void run(){
+//		synchronized(this){
+//			try {
+//				ooutput.writeObject(sendMessage);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			try {
+//				receivedMessage = (MessageADT)oinput.readObject();
+//			} catch (ClassNotFoundException | IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		notify();
+//		CommunicationModule.deleteThread(this);
+//	}
+	
+	
+	
+	private void handleServerReply(MessageADT m) {
+		// port vom proxy fehlt
+		// Socket s = new Socket("localhost");
+		// ObjectOutputStream o = new ObjectOutputStream(s.getOutputStream());
+		// o.writeObject(m);
+		// o.close();
+		// s.close();
+	}
+
+
+
+
+
+	private void handleClientRequest(MessageADT m) {
+		// korrekten RequestDemultiplexer auswählen
 	}
 	
 	public MessageADT getReceivedMessage(){
 		return receivedMessage;
 	}
+	
+	public void setReceivedMessage(MessageADT m){
+		this.receivedMessage = m;
+	}
 
+	
+	public MessageADT getSendMessage(){
+		return sendMessage;
+	}
 }

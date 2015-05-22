@@ -4,10 +4,10 @@ public class NameServiceRequest {
 
 	private String requestType;
 	private String serviceName;
-	private Object objectRef;
+	private RemoteObjectRef objectRef;
 
 	public NameServiceRequest(String requestType, String serviceName,
-			Object objectRef) {
+			RemoteObjectRef objectRef) {
 		this.requestType = requestType;
 		this.serviceName = serviceName;
 		this.objectRef = objectRef;
@@ -29,11 +29,11 @@ public class NameServiceRequest {
 		this.serviceName = serviceName;
 	}
 
-	public Object getObjectRef() {
+	public RemoteObjectRef getObjectRef() {
 		return objectRef;
 	}
 
-	public void setObjectRef(Object objectRef) {
+	public void setObjectRef(RemoteObjectRef objectRef) {
 		this.objectRef = objectRef;
 	}
 

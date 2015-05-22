@@ -10,7 +10,8 @@ public class ObjectBroker { // - Front-End der Middleware -
 
 	private ObjectBroker(String h, int p, boolean d) {
 		this.comModule = new CommunicationModule();
-		this.comModule.start();
+		this.comModule.waitingForMessages();
+		//this.comModule.start();
 		this.serviceHost = h;
 		this.listenPort = p;
 		DEBUG = d;
@@ -37,6 +38,6 @@ public class ObjectBroker { // - Front-End der Middleware -
 
 	// Beendet die Benutzung der Middleware in dieser Anwendung.
 	public void shutDown() {
-		this.comModule.stopCommunicationModule();
+		//this.comModule.stopCommunicationModule();
 	}
 }

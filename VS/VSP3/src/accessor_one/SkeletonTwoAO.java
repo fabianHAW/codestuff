@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import mware_lib.CommunicationModule;
 import mware_lib.MessageADT;
 import mware_lib.Skeleton;
 
@@ -25,7 +26,6 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 
 	public static final int ID = ClassTwoImplBase.ID;
 	private MessageADT message;
-	private InetAddress inetAddr;
 	private Socket socket;
 	private OutputStream output;
 	private ObjectOutputStream ooutput;
@@ -38,7 +38,7 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 	private void sendMessageBack(MessageADT reply) {
 		// TODO Auto-generated method stub
 		try {
-			socket = new Socket(inetAddr, 123);
+			socket = new Socket(reply.getiNetAdrress(), CommunicationModule.getCommunicationmoduleport());
 			output = socket.getOutputStream();
 			ooutput = new ObjectOutputStream(output);
 			ooutput.writeObject(reply);
@@ -130,9 +130,8 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 		return reply;
 	}
 
-	public SkeletonTwoAO(MessageADT m, InetAddress komModAddr){
+	public SkeletonTwoAO(MessageADT m){
 		this.message = m;
-		this.inetAddr = komModAddr;
 	}
 
 }

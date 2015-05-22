@@ -23,12 +23,10 @@ import mware_lib.Skeleton;
 public class SkeletonOneAT extends Thread implements Skeleton {
 
 	private MessageADT m;
-	private InetAddress komModAddr;
 	public static final int ID = ClassOneImplBase.ID;
 
-	public SkeletonOneAT(MessageADT m, InetAddress inetAddress) {
+	public SkeletonOneAT(MessageADT m) {
 		this.m = m;
-		this.komModAddr = inetAddress;
 	}
 
 	public void run() {
@@ -86,7 +84,7 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 		ObjectOutputStream o = null;
 		try {
 			//s = new Socket(this.komModAddr, CommunicationModule.getCommunicationmoduleport());
-			s = new Socket(InetAddress.getLocalHost(), CommunicationModule.getCommunicationmoduleport());
+			s = new Socket(mReturn.getiNetAdrress(), CommunicationModule.getCommunicationmoduleport());
 			o = new ObjectOutputStream(s.getOutputStream());
 			o.writeObject(mReturn);
 

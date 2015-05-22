@@ -14,11 +14,11 @@ public class ObjectAdapterAT implements ObjectAdapter{
 	}
 
 	@Override
-	public void initSkeleton(MessageADT m, InetAddress komModAddr) {		
+	public void initSkeleton(MessageADT m) {		
 		int objectNumber = m.getObjectRef().getObjectNumber();
 		switch(objectNumber){
 		case SkeletonOneAT.ID:
-			SkeletonOneAT s = new SkeletonOneAT(m, komModAddr);
+			SkeletonOneAT s = new SkeletonOneAT(m);
 			s.start();
 			break;
 		default:

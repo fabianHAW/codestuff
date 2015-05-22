@@ -43,7 +43,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase{
 		byte[] p1 = param1.getBytes();
 		byte[] p2 = ByteBuffer.allocate(Integer.BYTES).putInt(param2).array();
 		ArrayList<byte[]> arguments = new ArrayList<byte[]>(Arrays.asList(p1, p2));
-		MessageADT m = new MessageADT(CommunicationModule.getInetAddress(), 1, "methodOne", REQUEST, rawObjRef, null, arguments, null);
+		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), 1, "methodOne", REQUEST, rawObjRef, null, arguments, null);
 		
 		try {
 			socket = new Socket(m.getObjectRef().getInetAddress(), m.getObjectRef().getPort());
@@ -56,6 +56,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase{
 			e.printStackTrace();
 		}
 		
+		//rueckgabewert empfangen		
 		sendRequest(m);
 		MessageADT received = listenToSocket();
 		String result = unmarshals(received);
@@ -82,42 +83,47 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase{
 		return new String(returnval);
 	}
 	
-//	private MessageADT sendRequest(MessageADT m){
-//		CommunicationModuleThread t = CommunicationModule.sendRequest(m);
-//		t.run();
+	private MessageADT sendRequest(MessageADT m){
+		CommunicationModuleThread t = CommunicationModule.getNewCommunicationThread(m);
+		
+		synchronized(t){
+			try{
+				t.wait();
+			}catch(InterruptedException e){
+				e.printStackTrace();
+			}
+		}
+		
+		return t.getReceivedMessage();
+	}
+	
+	
+	
+	
+	
+	
+	
+//	private void sendRequest(MessageADT m){
+//	
 //		
-//		synchronized(t){
-//			try{
-//				t.wait();
-//			}catch(InterruptedException e){
-//				e.printStackTrace();
-//			}
+//		try {
+//			ooutput.writeObject(m);
+//			
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
 //		}
 //		
-//		return t.getReceivedMessage();
+//		try {
+//			output.close();
+//			ooutput.close();
+//			socket.close();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
 //	}
-	
-	private void sendRequest(MessageADT m){
-	
-		
-		try {
-			ooutput.writeObject(m);
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		try {
-			output.close();
-			ooutput.close();
-			socket.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
 	
 
 }

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.List;
 
-public class MessageADT implements Serializable{
+public class MessageADT implements Serializable {
 
 	/**
 	 * 
@@ -18,20 +18,21 @@ public class MessageADT implements Serializable{
 	private byte[] returnVal;
 	private List<byte[]> arguments;
 	private List<Exception> exceptionList;
-	
-	public MessageADT(InetAddress i, Integer mId, String mName,
-			Integer mType, RemoteObjectRef rof, byte[] rV,
-			List<byte[]> arg, List<Exception> lE){
-		this.iNetAdrress = i;
-		this.messageID = mId;
-		this.methodName = mName;
-		this.messageType = mType;
-		this.objectRef = rof;
-		this.returnVal = rV;
-		this.arguments = arg;
-		this.exceptionList = lE;
+
+	public MessageADT(InetAddress iNetAddress, Integer messageID,
+			String methodName, Integer messageType, RemoteObjectRef objectRef,
+			byte[] returnVal, List<byte[]> arguments,
+			List<Exception> exceptionList) {
+		this.iNetAdrress = iNetAddress;
+		this.messageID = messageID;
+		this.methodName = methodName;
+		this.messageType = messageType;
+		this.objectRef = objectRef;
+		this.returnVal = returnVal;
+		this.arguments = arguments;
+		this.exceptionList = exceptionList;
 	}
-	
+
 	public InetAddress getiNetAdrress() {
 		return iNetAdrress;
 	}

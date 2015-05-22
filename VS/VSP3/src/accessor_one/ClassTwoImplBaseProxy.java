@@ -42,7 +42,7 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 		byte[] p1 = new byte[Double.BYTES];
 		ByteBuffer.wrap(p1).putDouble(param1);
 		ArrayList<byte[]> arguments = new ArrayList<byte[]>(Arrays.asList(p1));
-		MessageADT m = new MessageADT(CommunicationModule.getInetAddress(), 1,
+		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), 1,
 				"methodOne", REQUEST, rawObjRef, null, arguments, null);
 
 		try {

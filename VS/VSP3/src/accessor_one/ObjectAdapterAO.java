@@ -7,9 +7,9 @@ import java.util.Arrays;
 import mware_lib.MessageADT;
 import mware_lib.ObjectAdapter;
 
-public class ObjectAdapterAO1 implements ObjectAdapter {
+public class ObjectAdapterAO implements ObjectAdapter {
 
-	public ObjectAdapterAO1() {
+	public ObjectAdapterAO() {
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -22,13 +22,13 @@ public class ObjectAdapterAO1 implements ObjectAdapter {
 	}
 
 	@Override
-	public void initSkeleton(MessageADT m, InetAddress komModAddr) {
+	public void initSkeleton(MessageADT m) {
 		// TODO Auto-generated method stub
 		if(SkeletonOneAO.ID == m.getObjectRef().getObjectNumber()){
-			SkeletonOneAO sk = new SkeletonOneAO(m, komModAddr);
+			SkeletonOneAO sk = new SkeletonOneAO(m);
 			sk.run();	
 		}else if(SkeletonTwoAO.ID == m.getObjectRef().getObjectNumber()){
-			SkeletonTwoAO sk = new SkeletonTwoAO(m, komModAddr);
+			SkeletonTwoAO sk = new SkeletonTwoAO(m);
 			sk.run();
 		}
 	}

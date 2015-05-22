@@ -17,7 +17,7 @@ public class RequestDemultiplexer {
 		this.komModAddr = komModAddr;
 		adapter = new ArrayList<ObjectAdapter>(
 				Arrays.asList(
-						new ObjectAdapterAO1()
+						new ObjectAdapterAO()
 						));
 	}
 	
@@ -26,7 +26,7 @@ public class RequestDemultiplexer {
 		for(ObjectAdapter o : adapter){
 			for(Integer id : o.getSkeletonIDs()){
 				if(id.intValue() == m.getObjectRef().getObjectNumber()){
-					o.initSkeleton(m, komModAddr);
+					o.initSkeleton(m);
 					found = true;
 					break;
 				}
