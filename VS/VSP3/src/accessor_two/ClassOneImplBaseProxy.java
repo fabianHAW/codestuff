@@ -62,8 +62,8 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 		values.add(param1.getBytes());
 		values.add(String.valueOf(param2).getBytes());
 
-		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), -1,
-				mName, 0, this.rof, null, values, null);
+		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), CommunicationModule.messageIDCounter(),
+				mName, ClassOneImplBase.REQUEST, this.rof, null, values, null);
 
 		CommunicationModuleThread cT = CommunicationModule
 				.getNewCommunicationThread(m);

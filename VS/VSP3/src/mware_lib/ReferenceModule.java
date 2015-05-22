@@ -1,7 +1,5 @@
 package mware_lib;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +30,7 @@ public class ReferenceModule {
 			objectNumber = 1;
 			interfaces.add("methodOne(String param1, int param2)");
 		} else if (myObject instanceof ClassTwoAO) {
-			objectNumber = 1;
+			objectNumber = 2;
 			interfaces.add("methodOne(double param1)");
 			interfaces.add("methodTwo()");
 		} else if (myObject instanceof ClassOneAT) {
@@ -42,14 +40,10 @@ public class ReferenceModule {
 		}
 
 		RemoteObjectRef rawObjRef = null;
-		try {
-			// InetAddress.getByName(InetAddress.getLocalHost().getHostName())
-			rawObjRef = new RemoteObjectRef(InetAddress.getLocalHost(), port,
-					System.currentTimeMillis(), objectNumber, interfaces);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		rawObjRef = new RemoteObjectRef(CommunicationModule.getLocalHost(),
+				port, System.currentTimeMillis(), objectNumber, interfaces);
+
 		servantToTable(rawObjRef, myObject);
 		return rawObjRef;
 	}
@@ -76,7 +70,7 @@ public class ReferenceModule {
 		mapRemoteProxy.put(rawObj, remoteObj);
 	}
 
-	public static Object getServant(RemoteObjectRef rawObjRef) {
+	public static Object getServant(RemoteObjectRef rawObjRef){
 		for (Entry<RemoteObjectRef, Object> item : mapRemoteServant.entrySet()) {
 			if (item.getKey().equals(rawObjRef)) {
 				return item.getValue();

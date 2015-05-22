@@ -2,7 +2,6 @@ package accessor_two;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -70,11 +69,11 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 		if (le.size() != 0) {
 			return new MessageADT(this.m.getiNetAdrress(),
 					this.m.getMessageID(), this.m.getMethodName(),
-					this.m.getMessageType(), this.m.getObjectRef(), returnVal,
+					ClassOneImplBase.REPLY, this.m.getObjectRef(), returnVal,
 					this.m.getArguments(), le);
 		}
 		return new MessageADT(this.m.getiNetAdrress(), this.m.getMessageID(),
-				this.m.getMethodName(), this.m.getMessageType(),
+				this.m.getMethodName(), ClassOneImplBase.REPLY,
 				this.m.getObjectRef(), returnVal, this.m.getArguments(),
 				this.m.getExceptionList());
 	}
@@ -83,8 +82,8 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 		Socket s = null;
 		ObjectOutputStream o = null;
 		try {
-			//s = new Socket(this.komModAddr, CommunicationModule.getCommunicationmoduleport());
-			s = new Socket(mReturn.getiNetAdrress(), CommunicationModule.getCommunicationmoduleport());
+			s = new Socket(mReturn.getiNetAdrress(),
+					CommunicationModule.getCommunicationmoduleport());
 			o = new ObjectOutputStream(s.getOutputStream());
 			o.writeObject(mReturn);
 

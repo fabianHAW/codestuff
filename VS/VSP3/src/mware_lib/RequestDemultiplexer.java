@@ -1,6 +1,5 @@
 package mware_lib;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -11,8 +10,6 @@ public class RequestDemultiplexer {
 	ArrayList<ObjectAdapter> adapter;
 
 	public RequestDemultiplexer() {
-		// TODO Auto-generated constructor stub
-		//this.komModAddr = komModAddr;
 		adapter = new ArrayList<ObjectAdapter>(
 				Arrays.asList(new ObjectAdapterAO(), new ObjectAdapterAT()));
 	}

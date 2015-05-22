@@ -14,9 +14,9 @@ public class NameServiceProxy extends NameService {
 	private String serviceHost;
 	private int port;
 
-	public NameServiceProxy(String h, int p) {
-		this.serviceHost = h;
-		this.port = p;
+	public NameServiceProxy(String serviceHost, int port) {
+		this.serviceHost = serviceHost;
+		this.port = port;
 
 		try {
 			this.socket = new Socket(this.serviceHost, this.port);
@@ -31,7 +31,6 @@ public class NameServiceProxy extends NameService {
 
 	@Override
 	public void rebind(Object servant, String name) {
-		
 		RemoteObjectRef rof = ReferenceModule.createNewRemoteRef(servant);
 		
 		NameServiceRequest n = new NameServiceRequest("rebind", name, rof);
