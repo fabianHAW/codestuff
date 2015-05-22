@@ -26,13 +26,13 @@ import mware_lib.RemoteObjectRef;
 public class ClassOneImplBaseProxy extends ClassOneImplBase{
 
 	private final int REQUEST = 0;
-	private final int REPLY = 1;
+//	private final int REPLY = 1;
 	private RemoteObjectRef rawObjRef;
-	private Socket socket;
-	private InputStream input;
-	private ObjectInputStream oinput;
-	private OutputStream output;
-	private ObjectOutputStream ooutput;
+//	private Socket socket;
+//	private InputStream input;
+//	private ObjectInputStream oinput;
+//	private OutputStream output;
+//	private ObjectOutputStream ooutput;
 	
 	public ClassOneImplBaseProxy(RemoteObjectRef rawObjRef){
 		this.rawObjRef = rawObjRef;
@@ -45,38 +45,38 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase{
 		ArrayList<byte[]> arguments = new ArrayList<byte[]>(Arrays.asList(p1, p2));
 		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), 1, "methodOne", REQUEST, rawObjRef, null, arguments, null);
 		
-		try {
-			socket = new Socket(m.getObjectRef().getInetAddress(), m.getObjectRef().getPort());
-			input = socket.getInputStream();
-			oinput = new ObjectInputStream(input);
-			output = socket.getOutputStream();
-			ooutput = new ObjectOutputStream(output);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			socket = new Socket(m.getObjectRef().getInetAddress(), m.getObjectRef().getPort());
+//			input = socket.getInputStream();
+//			oinput = new ObjectInputStream(input);
+//			output = socket.getOutputStream();
+//			ooutput = new ObjectOutputStream(output);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		//rueckgabewert empfangen		
-		sendRequest(m);
-		MessageADT received = listenToSocket();
+		MessageADT received = sendRequest(m);
+		//MessageADT received = listenToSocket();
 		String result = unmarshals(received);
 		
 		
 		return result;
 	}
 	
-	
-	private MessageADT listenToSocket(){
-		MessageADT receivedMessage = null;
-		try {
-			receivedMessage = (MessageADT)oinput.readObject();
-		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return receivedMessage;
-	}
+//	
+//	private MessageADT listenToSocket(){
+//		MessageADT receivedMessage = null;
+//		try {
+//			receivedMessage = (MessageADT)oinput.readObject();
+//		} catch (ClassNotFoundException | IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		return receivedMessage;
+//	}
 	
 	private String unmarshals(MessageADT m){
 		byte[] returnval = m.getReturnVal();

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import mware_lib.CommunicationModule;
+import mware_lib.CommunicationModuleThread;
 import mware_lib.MessageADT;
 import mware_lib.RemoteObjectRef;
 
@@ -25,13 +26,13 @@ import mware_lib.RemoteObjectRef;
 public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 
 	private final int REQUEST = 0;
-	private final int REPLY = 1;
+//	private final int REPLY = 1;
 	private RemoteObjectRef rawObjRef;
-	private Socket socket;
-	private InputStream input;
-	private ObjectInputStream oinput;
-	private OutputStream output;
-	private ObjectOutputStream ooutput;
+//	private Socket socket;
+//	private InputStream input;
+//	private ObjectInputStream oinput;
+//	private OutputStream output;
+//	private ObjectOutputStream ooutput;
 	
 	public ClassTwoImplBaseProxy(RemoteObjectRef rawObj){
 		rawObjRef = rawObj;
@@ -45,20 +46,20 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), 1,
 				"methodOne", REQUEST, rawObjRef, null, arguments, null);
 
-		try {
-			socket = new Socket(m.getObjectRef().getInetAddress(), m
-					.getObjectRef().getPort());
-			input = socket.getInputStream();
-			oinput = new ObjectInputStream(input);
-			output = socket.getOutputStream();
-			ooutput = new ObjectOutputStream(output);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			socket = new Socket(m.getObjectRef().getInetAddress(), m
+//					.getObjectRef().getPort());
+//			input = socket.getInputStream();
+//			oinput = new ObjectInputStream(input);
+//			output = socket.getOutputStream();
+//			ooutput = new ObjectOutputStream(output);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
-		sendRequest(m);
-		MessageADT received = listenToSocket();
+		MessageADT received = sendRequest(m);
+		//MessageADT received = listenToSocket();
 		int result = unmarshals(received);
 
 		return result;
@@ -66,7 +67,28 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 
 	public double methodTwo() throws SomeException112 {
 		// TODO Auto-generated method stub
-		return 0;
+		// TODO Auto-generated method stub
+		
+		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), 1,
+				"methodTwo", REQUEST, rawObjRef, null, null, null);
+
+//		try {
+//			socket = new Socket(m.getObjectRef().getInetAddress(), m
+//					.getObjectRef().getPort());
+//			input = socket.getInputStream();
+//			oinput = new ObjectInputStream(input);
+//			output = socket.getOutputStream();
+//			ooutput = new ObjectOutputStream(output);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+
+		MessageADT received = sendRequest(m);
+		//MessageADT received = listenToSocket();
+		int result = unmarshals(received);
+
+		return result;
 	}
 
 	/**
@@ -79,41 +101,55 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 		return null;
 	}
 
-	private MessageADT listenToSocket() {
-		MessageADT receivedMessage = null;
-		try {
-			receivedMessage = (MessageADT) oinput.readObject();
-		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return receivedMessage;
-	}
+//	private MessageADT listenToSocket() {
+//		MessageADT receivedMessage = null;
+//		try {
+//			receivedMessage = (MessageADT) oinput.readObject();
+//		} catch (ClassNotFoundException | IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		return receivedMessage;
+//	}
 
 	private int unmarshals(MessageADT m) {
 		byte[] returnval = m.getReturnVal();
 		return ByteBuffer.wrap(returnval).getInt();
 	}
 
-	private void sendRequest(MessageADT m) {
-
-		try {
-			ooutput.writeObject(m);
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+//	private void sendRequest(MessageADT m) {
+//
+//		try {
+//			ooutput.writeObject(m);
+//
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		try {
+//			output.close();
+//			ooutput.close();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//	}
+	
+	private MessageADT sendRequest(MessageADT m){
+		CommunicationModuleThread t = CommunicationModule.getNewCommunicationThread(m);
+		
+		synchronized(t){
+			try{
+				t.wait();
+			}catch(InterruptedException e){
+				e.printStackTrace();
+			}
 		}
-
-		try {
-			output.close();
-			ooutput.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		
+		return t.getReceivedMessage();
 	}
 
 }
