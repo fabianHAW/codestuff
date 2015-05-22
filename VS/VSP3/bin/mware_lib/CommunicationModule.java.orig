@@ -1,30 +1,30 @@
 package mware_lib;
 
+<<<<<<< HEAD
 import java.net.InetAddress;
-
+=======
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+>>>>>>> 1389521b3c4bd58ea43b64f7656f76416457fbce
 
 /**
  * 
  * @author Francis und Fabian
- * 
- *         Stellt Request/Reply-Protokoll bereit und hat somit auch einen Socket
- *         bzw. Serversocket
+ *
  */
 
-public class CommunicationModule extends Thread {
-
+public class CommunicationModule extends Thread{
+	
 	private ServerSocket serverSocket;
 	private ObjectInputStream input;
-	// private static final String COMMUNICATIONMODULEHOST = "localhost";
+	private static final String COMMUNICATIONMODULEHOST = "localhost";
 	private static final int COMMUNICATIONMODULEPORT = 50001;
-
-	public CommunicationModule() {
+	
+	public CommunicationModule(){
 		try {
 			this.serverSocket = new ServerSocket(COMMUNICATIONMODULEPORT);
 		} catch (UnknownHostException e) {
@@ -33,46 +33,36 @@ public class CommunicationModule extends Thread {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}	
 	}
-
-	public void run() {
-		String communicationModuleHost = null;
-
-		try {
-			communicationModuleHost = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		while (!Thread.currentThread().isInterrupted()) {
-
+	public void run(){
+		while(!Thread.currentThread().isInterrupted()){
+			
 			try {
 				Socket socket = this.serverSocket.accept();
 				this.input = new ObjectInputStream(socket.getInputStream());
 				MessageADT m = (MessageADT) this.input.readObject();
-
-				// Reply
-				if (m.getMessageType() != 0) {
-					// InetAddress von extern
-					if (!socket.getInetAddress().getHostName()
-							.equals(communicationModuleHost)) {
+				
+				//Reply
+				if(m.getMessageType() != 0){
+					//InetAddress von extern
+					if(!socket.getInetAddress().getHostName().equals(COMMUNICATIONMODULEHOST)){
 						handleServerReply(m);
-					} else {
+					}
+					else{
 						sendReplyToClient(m);
 					}
 				}
-				// Request
-				else {
-					// InetAdress von intern
-					if (socket.getInetAddress().getHostName()
-							.equals(communicationModuleHost)) {
+				//Request
+				else{
+					//InetAdress von intern
+					if(socket.getInetAddress().getHostName().equals(COMMUNICATIONMODULEHOST)){
 						sendRequestToServer(m);
-					} else {
+					}
+					else{
 						handleClientRequest(m);
 					}
-
+					
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -83,34 +73,34 @@ public class CommunicationModule extends Thread {
 			}
 		}
 	}
-
+	
+<<<<<<< HEAD
 	private static InetAddress inetAddress;
-
-	// public void sendReplyToClient(MessageADT m){
-	//
-	// }
-
-	public static CommunicationModuleThread sendRequest(MessageADT m) {
+	
+	public void sendReplyToClient(MessageADT m){
+		
+	}
+	
+	public static CommunicationModuleThread sendRequest(MessageADT m){
 		return new CommunicationModuleThread(m);
 	}
-
-	public static InetAddress getInetAddress() {
+	
+	public static InetAddress getInetAddress(){
 		return inetAddress;
 	}
-
-	private void handleServerReply(MessageADT m) {
-		// port vom proxy fehlt
-		// Socket s = new Socket("localhost");
-		// ObjectOutputStream o = new ObjectOutputStream(s.getOutputStream());
-		// o.writeObject(m);
-		// o.close();
-		// s.close();
+=======
+	private void handleServerReply(MessageADT m){
+		//port vom proxy fehlt
+//		Socket s = new Socket("localhost");
+//		ObjectOutputStream o = new ObjectOutputStream(s.getOutputStream());
+//		o.writeObject(m);
+//		o.close();
+//		s.close();
 	}
-
-	private void sendReplyToClient(MessageADT mReturn) {
+	
+	private void sendReplyToClient(MessageADT mReturn){
 		try {
-			Socket s = new Socket(mReturn.getiNetAdrress(),
-					COMMUNICATIONMODULEPORT);
+			Socket s = new Socket(mReturn.getiNetAdrress(), COMMUNICATIONMODULEPORT);
 			ObjectOutputStream o = new ObjectOutputStream(s.getOutputStream());
 			o.writeObject(mReturn);
 			o.close();
@@ -120,11 +110,10 @@ public class CommunicationModule extends Thread {
 			e.printStackTrace();
 		}
 	}
-
-	private void sendRequestToServer(MessageADT m) {
+	
+	private void sendRequestToServer(MessageADT m){
 		try {
-			Socket s = new Socket(m.getObjectRef().getInetAddress(), m
-					.getObjectRef().getPort());
+			Socket s = new Socket(m.getObjectRef().getInetAddress(), m.getObjectRef().getPort());
 			ObjectOutputStream o = new ObjectOutputStream(s.getOutputStream());
 			o.writeObject(m);
 			o.close();
@@ -135,21 +124,23 @@ public class CommunicationModule extends Thread {
 		}
 
 	}
-
-	private void handleClientRequest(MessageADT m) {
-		// korrekten RequestDemultiplexer auswählen
+	
+	private void handleClientRequest(MessageADT m){
+		//korrekten RequestDemultiplexer auswählen
 	}
-
-	public void stopCommunicationModule() {
+	
+	public void stopCommunicationModule(){
 		this.interrupt();
 	}
-
-	// public static String getCommunicationmodulehost() {
-	// return COMMUNICATIONMODULEHOST;
-	// }
-
+	
+	public static String getCommunicationmodulehost() {
+		return COMMUNICATIONMODULEHOST;
+	}
 	public static int getCommunicationmoduleport() {
 		return COMMUNICATIONMODULEPORT;
 	}
+	
+	
+>>>>>>> 1389521b3c4bd58ea43b64f7656f76416457fbce
 
 }

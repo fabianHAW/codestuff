@@ -12,11 +12,11 @@ public class RemoteObjectRef {
 	private List<String> interfaces;
 
 	public RemoteObjectRef(InetAddress inetAddress, int port, long time,
-			int objectNumer, List<String> interfaces) {
+			int objectNumber, List<String> interfaces) {
 		this.inetAddress = inetAddress;
 		this.port = port;
 		this.time = time;
-		this.objectNumber = objectNumer;
+		this.objectNumber = objectNumber;
 		this.interfaces = interfaces;
 	}
 

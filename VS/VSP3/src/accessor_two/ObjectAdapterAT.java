@@ -2,6 +2,7 @@ package accessor_two;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import mware_lib.MessageADT;
 import mware_lib.ObjectAdapter;
@@ -14,16 +15,23 @@ public class ObjectAdapterAT implements ObjectAdapter{
 
 	@Override
 	public void initSkeleton(MessageADT m, InetAddress komModAddr) {		
-		//vorher noch die objektid rausholen und entscheiden welches skeleton
-		SkeletonOneAT s = new SkeletonOneAT(m, komModAddr);
-		s.start();
+		int objectNumber = m.getObjectRef().getObjectNumber();
+		switch(objectNumber){
+		case SkeletonOneAT.ID:
+			SkeletonOneAT s = new SkeletonOneAT(m, komModAddr);
+			s.start();
+			break;
+		default:
+			System.out.println("can't find right Skeleton!");
+			break;		
+		}
+		
 		
 	}
 
 	@Override
 	public ArrayList<Integer> getSkeletonIDs() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<Integer>(Arrays.asList(SkeletonOneAT.ID));
 	}
 
 }

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import accessor_one.ClassOneAO;
+import accessor_one.ClassTwoAO;
 import accessor_two.ClassOneAT;
 
 /**
@@ -23,16 +25,17 @@ public class ReferenceModule {
 
 	public static RemoteObjectRef createNewRemoteRef(Object myObject) {
 
-		InetAddress inetAddress = null;
 		int port = -1;
 		int objectNumber = -1;
 		List<String> interfaces = new ArrayList<String>();
-		// if(myObject instanceof ClassOneAO){
-		//
-		// }else if(myObject instanceof ClassTwoAO){
-		//
-		// }else
-		if (myObject instanceof ClassOneAT) {
+		if (myObject instanceof ClassOneAO) {
+			objectNumber = 1;
+			interfaces.add("methodOne(String param1, int param2)");
+		} else if (myObject instanceof ClassTwoAO) {
+			objectNumber = 1;
+			interfaces.add("methodOne(double param1)");
+			interfaces.add("methodTwo()");
+		} else if (myObject instanceof ClassOneAT) {
 			objectNumber = 3;
 			interfaces.add("methodOne(String param1, double param2)");
 			interfaces.add("methodTwo(String param1, double param2)");
@@ -40,8 +43,8 @@ public class ReferenceModule {
 
 		RemoteObjectRef rawObjRef = null;
 		try {
-			rawObjRef = new RemoteObjectRef(
-					InetAddress.getByName("localhost"), port,
+			// InetAddress.getByName(InetAddress.getLocalHost().getHostName())
+			rawObjRef = new RemoteObjectRef(InetAddress.getLocalHost(), port,
 					System.currentTimeMillis(), objectNumber, interfaces);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block

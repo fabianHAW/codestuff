@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import mware_lib.CommunicationModule;
 import mware_lib.MessageADT;
 import mware_lib.RemoteObjectRef;
 
@@ -22,11 +23,12 @@ import mware_lib.RemoteObjectRef;
 public class ClassOneImplBaseProxy extends ClassOneImplBase {
 
 	private InetAddress inetAddress;
-	private String host = "localhost";
-	private int port = 50002;
+	// private String host = "localhost";
+	//private int sendPort = 50001;
+	private int listenPort = 50002;
 	private RemoteObjectRef rof;
-	
-	public ClassOneImplBaseProxy(RemoteObjectRef rof){
+
+	public ClassOneImplBaseProxy(RemoteObjectRef rof) {
 		this.rof = rof;
 	}
 
@@ -34,14 +36,14 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 			throws SomeException112 {
 		prepareAndSendMessage(param1, param2, "methodOne");
 		MessageADT m = listenToSocket();
-		
+
 		List<Exception> exceptionList = m.getExceptionList();
-		if(exceptionList.size() != 0){
-			for(Exception item : exceptionList){
+		if (exceptionList.size() != 0) {
+			for (Exception item : exceptionList) {
 				throw (SomeException112) item;
 			}
 		}
-		
+
 		return Double.parseDouble(new String(m.getReturnVal()));
 	}
 
@@ -49,14 +51,13 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 			throws SomeException112, SomeException304 {
 		prepareAndSendMessage(param1, param2, "methodTwo");
 		MessageADT m = listenToSocket();
-		
+
 		List<Exception> exceptionList = m.getExceptionList();
-		if(exceptionList.size() != 0){
-			for(Exception item : exceptionList){
-				if(item instanceof SomeException112){
+		if (exceptionList.size() != 0) {
+			for (Exception item : exceptionList) {
+				if (item instanceof SomeException112) {
 					throw (SomeException112) item;
-					}
-				else if(item instanceof SomeException304){
+				} else if (item instanceof SomeException304) {
 					throw (SomeException304) item;
 				}
 			}
@@ -65,11 +66,12 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 		return Double.parseDouble(new String(m.getReturnVal()));
 	}
 
-	private void prepareAndSendMessage(String param1, double param2, String mName){
+	private void prepareAndSendMessage(String param1, double param2,
+			String mName) {
 		Socket s = null;
 		ObjectOutputStream o;
 		try {
-			this.inetAddress = InetAddress.getByName(host);
+			this.inetAddress = InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -77,11 +79,12 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 		List<byte[]> values = new ArrayList<byte[]>();
 		values.add(param1.getBytes());
 		values.add(String.valueOf(param2).getBytes());
-		
+
 		MessageADT m = new MessageADT(this.inetAddress, -1, mName, 0, this.rof,
 				null, values, null);
 		try {
-			s = new Socket(this.inetAddress, this.port);
+			s = new Socket(this.inetAddress,
+					CommunicationModule.getCommunicationmoduleport());
 			o = new ObjectOutputStream(s.getOutputStream());
 			o.writeObject(m);
 			o.close();
@@ -91,15 +94,15 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public MessageADT listenToSocket() {
 		MessageADT m = null;
 		try {
-			ServerSocket proxySocket = new ServerSocket();
+			ServerSocket proxySocket = new ServerSocket(this.listenPort);
 			Socket s = proxySocket.accept();
 			ObjectInputStream i = new ObjectInputStream(s.getInputStream());
 			m = (MessageADT) i.readObject();
-			
+
 			i.close();
 			s.close();
 			proxySocket.close();
@@ -110,7 +113,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return m;
 	}
 

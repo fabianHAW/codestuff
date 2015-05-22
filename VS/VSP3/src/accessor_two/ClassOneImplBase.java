@@ -5,6 +5,8 @@ import mware_lib.RemoteObjectRef;
 
 public abstract class ClassOneImplBase {
 
+	public static final int ID = 3;
+	
 	public abstract double methodOne(String param1, double param2)
 			throws SomeException112;
 

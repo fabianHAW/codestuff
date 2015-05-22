@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import mware_lib.CommunicationModule;
 import mware_lib.MessageADT;
 import mware_lib.ReferenceModule;
 import mware_lib.RemoteObjectRef;
@@ -23,6 +24,7 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 
 	private MessageADT m;
 	private InetAddress komModAddr;
+	public static final int ID = ClassOneImplBase.ID;
 
 	public SkeletonOneAT(MessageADT m, InetAddress inetAddress) {
 		this.m = m;
@@ -83,9 +85,9 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 		Socket s = null;
 		ObjectOutputStream o = null;
 		try {
-			s = new Socket(this.komModAddr, 123);
+			//s = new Socket(this.komModAddr, CommunicationModule.getCommunicationmoduleport());
+			s = new Socket(InetAddress.getLocalHost(), CommunicationModule.getCommunicationmoduleport());
 			o = new ObjectOutputStream(s.getOutputStream());
-
 			o.writeObject(mReturn);
 
 			o.close();
