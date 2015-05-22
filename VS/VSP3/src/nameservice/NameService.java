@@ -2,24 +2,25 @@ package nameservice;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import mware_lib.MessageADT;
+import mware_lib.NameServiceRequest;
+import mware_lib.RemoteObjectRef;
 
-public class NameService extends mware_lib.NameService {
+public class NameService  {
 
 	private static Integer port;
 	private static ServerSocket serverSocket;
 	private static ObjectInputStream input;
+	private static HashMap<String, RemoteObjectRef> referenceObjects;
 	
-	public static void main(String[] args) {
-
-		if (args.length != 1) {
-			usage();
-			System.exit(-1);
-		}
-		port = Integer.valueOf(args[0]);
+	public void start(int port){
 		try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
@@ -29,40 +30,40 @@ public class NameService extends mware_lib.NameService {
 		listen();
 	}
 	
-	public static void listen(){
+	public  void listen(){
 		Socket socket = null;
+		NameServiceRequest request = null;
 		try {
 			socket = serverSocket.accept();
 			input = new ObjectInputStream(socket.getInputStream());
-			NameServiceRequest n = (NameServiceRequest) input.readObject();
+			request = (NameServiceRequest) input.readObject();
+			NameServiceThread t = new NameServiceThread(request);
+			t.start();
 		} catch (IOException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-	}
-
-	// - Schnittstelle zum Namensdienst -
-
-	// Meldet ein Objekt (servant) beim Namensdienst an.
-	// Eine eventuell schon vorhandene Objektreferenz gleichen Namens
-	// soll überschrieben werden.
-	@Override
-	public void rebind(Object servant, String name) {
-		// TODO Auto-generated method stub
-
-	}
-
-	// Liefert eine generische Objektreferenz zu einem Namen. (vgl. unten)
-	@Override
-	public Object resolve(String name) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
-	private static void usage(){
-		System.out.println("***forgot portnumber! try this***\n"
-				+ "java nameservice/NameServiceImpl portnumber");
+	public static void addService(String name, RemoteObjectRef ref){
+		referenceObjects.put(name, ref);
 	}
-
+	
+	public static RemoteObjectRef getService(String name){
+		return referenceObjects.get(name);
+	}
+	
+	public static int getPort(){
+		return port;
+	}
+	
+	public static InetAddress getLocalHost(){
+		try {
+			return InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
