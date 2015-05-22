@@ -1,6 +1,7 @@
 package accessor_two;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 import mware_lib.MessageADT;
 import mware_lib.ObjectAdapter;
@@ -17,6 +18,12 @@ public class ObjectAdapterAT implements ObjectAdapter{
 		SkeletonOneAT s = new SkeletonOneAT(m, komModAddr);
 		s.start();
 		
+	}
+
+	@Override
+	public ArrayList<Integer> getSkeletonIDs() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

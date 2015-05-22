@@ -32,6 +32,10 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 	private ObjectInputStream oinput;
 	private OutputStream output;
 	private ObjectOutputStream ooutput;
+	
+	public ClassTwoImplBaseProxy(RemoteObjectRef rawObj){
+		rawObjRef = rawObj;
+	}
 
 	public int methodOne(double param1) throws SomeException110 {
 		// TODO Auto-generated method stub
