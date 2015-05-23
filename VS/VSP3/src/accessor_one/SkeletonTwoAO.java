@@ -70,7 +70,7 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 					ByteBuffer.wrap(b).putDouble(returnVal);
 					reply = new MessageADT(
 							message.getiNetAdrress(), 
-							null, 
+							message.getMessageID(), //Alte MessageID zwecks Message-Zuordnung zu Proxy
 							null, 
 							null, 
 							null, 
@@ -82,7 +82,7 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 					//e.printStackTrace();
 					reply = new MessageADT(
 							message.getiNetAdrress(), 
-							null, 
+							message.getMessageID(), //Alte MessageID zwecks Message-Zuordnung zu Proxy
 							null, 
 							null, 
 							null, 
@@ -107,7 +107,7 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 			ByteBuffer.wrap(b).putInt(returnVal);
 			reply = new MessageADT(
 					message.getiNetAdrress(), 
-					null, 
+					message.getMessageID(), //Alte MessageID zwecks Message-Zuordnung zu Proxy
 					null, 
 					null, 
 					null, 
@@ -119,7 +119,7 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 			//e.printStackTrace();
 			reply = new MessageADT(
 					message.getiNetAdrress(), 
-					null, 
+					message.getMessageID(), //Alte MessageID zwecks Message-Zuordnung zu Proxy
 					null, 
 					null, 
 					null, 

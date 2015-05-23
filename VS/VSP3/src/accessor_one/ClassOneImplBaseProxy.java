@@ -43,7 +43,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase{
 		byte[] p1 = param1.getBytes();
 		byte[] p2 = ByteBuffer.allocate(Integer.BYTES).putInt(param2).array();
 		ArrayList<byte[]> arguments = new ArrayList<byte[]>(Arrays.asList(p1, p2));
-		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), 1, "methodOne", REQUEST, rawObjRef, null, arguments, null);
+		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), CommunicationModule.messageIDCounter(), "methodOne", REQUEST, rawObjRef, null, arguments, null);
 		
 //		try {
 //			socket = new Socket(m.getObjectRef().getInetAddress(), m.getObjectRef().getPort());

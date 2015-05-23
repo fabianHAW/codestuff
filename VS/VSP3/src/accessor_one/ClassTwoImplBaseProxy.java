@@ -43,7 +43,7 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 		byte[] p1 = new byte[Double.BYTES];
 		ByteBuffer.wrap(p1).putDouble(param1);
 		ArrayList<byte[]> arguments = new ArrayList<byte[]>(Arrays.asList(p1));
-		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), 1,
+		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), CommunicationModule.messageIDCounter(),
 				"methodOne", REQUEST, rawObjRef, null, arguments, null);
 
 //		try {
@@ -69,7 +69,7 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
 		
-		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), 1,
+		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), CommunicationModule.messageIDCounter(),
 				"methodTwo", REQUEST, rawObjRef, null, null, null);
 
 //		try {
