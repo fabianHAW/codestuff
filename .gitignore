@@ -6,12 +6,6 @@
 
 #log-files
 *.log
-VS/VSP2/geany_run_script.bat
-VS/VSP2/ggt.cfg.orig
-VS/VSP2/koordinator.cfg.orig
-VS/VSP2/koordinator.erl.orig
-VS/VSP2/start.bat
-.gitignore.orig
 
 #class-files
 *.class
