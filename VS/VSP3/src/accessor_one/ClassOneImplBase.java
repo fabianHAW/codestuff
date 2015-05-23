@@ -11,9 +11,14 @@ public abstract class ClassOneImplBase {
 	
 	//erzeugt neues Proxy- oder Skeleton-Objekt
 	public static ClassOneImplBase narrowCast(Object rawObjectRef) {
+		if(!ReferenceModule.contains(rawObjectRef)){
 		ClassOneImplBaseProxy proxy = new ClassOneImplBaseProxy((RemoteObjectRef)rawObjectRef);
 		ReferenceModule.add((RemoteObjectRef)rawObjectRef, proxy);
 		return proxy;
+		}else{
+			return (ClassOneImplBase) ReferenceModule.getProxy((RemoteObjectRef)rawObjectRef);
+		}
+		
 	}
 
 }
