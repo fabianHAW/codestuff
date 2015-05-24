@@ -1,7 +1,13 @@
 package mware_lib;
 
-public class NameServiceRequest {
+import java.io.Serializable;
 
+public class NameServiceRequest implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String requestType;
 	private String serviceName;
 	private RemoteObjectRef objectRef;
@@ -36,5 +42,14 @@ public class NameServiceRequest {
 	public void setObjectRef(RemoteObjectRef objectRef) {
 		this.objectRef = objectRef;
 	}
+
+	@Override
+	public String toString() {
+		return "NameServiceRequest [requestType=" + requestType
+				+ ", serviceName=" + serviceName + ", objectRef=" + objectRef
+				+ "]";
+	}
+	
+	
 
 }

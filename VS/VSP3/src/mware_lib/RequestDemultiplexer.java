@@ -10,15 +10,18 @@ public class RequestDemultiplexer {
 	ArrayList<ObjectAdapter> adapter;
 
 	public RequestDemultiplexer() {
-		adapter = new ArrayList<ObjectAdapter>(
-				Arrays.asList(new ObjectAdapterAO(), new ObjectAdapterAT()));
+		CommunicationModule.debugPrint(this.getClass(), "initialized");
+		adapter = new ArrayList<ObjectAdapter>(Arrays.asList(
+				new ObjectAdapterAO(), new ObjectAdapterAT()));
 	}
 
 	public void pass(MessageADT m) {
 		int objectNumber = m.getObjectRef().getObjectNumber();
 		for (ObjectAdapter item : this.adapter) {
-			if(item.getSkeletonIDs().contains(objectNumber)){
+			if (item.getSkeletonIDs().contains(objectNumber)) {
 				item.initSkeleton(m);
+				CommunicationModule.debugPrint(this.getClass(),
+						"found right skeleton and initialized");
 				break;
 			}
 		}

@@ -12,7 +12,8 @@ public class Main {
 			usage();
 			System.exit(-1);
 		}
-		Integer.valueOf(args[0]);
+		NameService n = new NameService();
+		n.start(Integer.valueOf(args[0]));
 	}
 	
 	private static void usage(){

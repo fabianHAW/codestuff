@@ -4,39 +4,52 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import mware_lib.CommunicationModule;
 import mware_lib.NameServiceRequest;
 import mware_lib.RemoteObjectRef;
 
 public class NameServiceThread extends Thread {
 
 	private NameServiceRequest request;
-	
-	public NameServiceThread(NameServiceRequest r) {
-		// TODO Auto-generated constructor stub
+	private Socket socket;
+
+	public NameServiceThread(NameServiceRequest r, Socket s) {
+		System.out.println(this.getClass() + "initialized");
 		request = r;
-		
+		this.socket = s;
+
 	}
-	
-	public void run(){
+
+	public void run() {
 		String type = request.getRequestType().toLowerCase();
-		if(type.equals("rebind")){
+		if (type.equals("rebind")) {
+			System.out.println(this.getClass() + "call rebind");
 			rebind(request.getObjectRef(), request.getServiceName());
-		}else if(type.equals("resolve")){
+		} else if (type.equals("resolve")) {
+			System.out.println(this.getClass() + "call resolve");
 			Object o = resolve(request.getServiceName());
-			sendObject(o);
+			sendObject(type, request.getServiceName(), o);
 		}
 	}
-	
 
-	private void sendObject(Object o) {
-		// TODO Auto-generated method stub
-		Socket socket = null;
+	private void sendObject(String type, String name, Object o) {
+		NameServiceRequest request = new NameServiceRequest(type, name,
+				(RemoteObjectRef) o);
 		try {
-			socket = new Socket(NameService.getLocalHost(), NameService.getPort());
-			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-			out.writeObject(o);
+			// TODO fuer lokale zwecke hier der listenport = 50004 und der
+			// lokale
+			// host. verteilt wird der socket genommen der dem thread uebergeben
+			// wurde -> folgende zeile loeschen
+			this.socket = new Socket(NameService.getLocalHost(), 50004);
+
+			ObjectOutputStream out = new ObjectOutputStream(
+					this.socket.getOutputStream());
+			out.writeObject(request);
+
+			System.out.println(this.getClass() + "send request back to client");
+
 			out.close();
-			socket.close();
+			this.socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -58,11 +71,4 @@ public class NameServiceThread extends Thread {
 		// TODO Auto-generated method stub
 		return NameService.getService(name);
 	}
-	
-	private static void usage(){
-		System.out.println("***forgot portnumber! try this***\n"
-				+ "java nameservice/NameServiceImpl portnumber");
-	}
-
-
 }

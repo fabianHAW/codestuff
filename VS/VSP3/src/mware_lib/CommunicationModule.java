@@ -17,12 +17,14 @@ import java.util.List;
  *         bzw. Serversocket
  */
 
-public class CommunicationModule {
+public class CommunicationModule extends Thread {
 
 	private ServerSocket serverSocket;
 	private ObjectInputStream input;
 	private static InetAddress localHost;
-	private static final int COMMUNICATIONMODULEPORT = 50001;
+	// private static final int COMMUNICATIONMODULEPORT = 50001;
+	// TODO zum lokalen Testen wird port in applikation gesetzt
+	private static int COMMUNICATIONMODULEPORT;
 	private static final int REQUEST = 0;
 	private static final int REPLY = 1;
 	private boolean isAlive;
@@ -49,24 +51,37 @@ public class CommunicationModule {
 		}
 	}
 
-	public void waitingForMessages() {
+	public void run() {
 		Socket socket;
+
 		while (this.isAlive) {
 			try {
+				CommunicationModule.debugPrint(this.getClass(),
+						"waiting for something on port: "
+								+ getCommunicationmoduleport());
+
 				socket = this.serverSocket.accept();
 				this.input = new ObjectInputStream(socket.getInputStream());
 				MessageADT m = (MessageADT) this.input.readObject();
+
+				CommunicationModule.debugPrint(this.getClass(),
+						"received new MessageADT");
+
 				// Request
 				if (m.getMessageType() == REQUEST) {
+					CommunicationModule.debugPrint(this.getClass(),
+							"REQUEST received");
 					requestToServant(m);
 				}
 				// Reply
-				else if (m.getMessageType() != REPLY) {
+				else if (m.getMessageType() == REPLY) {
+					CommunicationModule.debugPrint(this.getClass(),
+							"REPLY received");
 					replyToProxy(m);
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -75,7 +90,13 @@ public class CommunicationModule {
 
 		for (Thread item : communicationThreadList) {
 			((CommunicationModuleThread) item).interrupt();
+			CommunicationModule.debugPrint(this.getClass(), "interrupted other thread: <" + item.getName() + ">");
 		}
+
+		CommunicationModule
+				.debugPrint(this.getClass(),
+						"communication module was interrupted");
+
 	}
 
 	private void requestToServant(MessageADT m) {
@@ -83,30 +104,47 @@ public class CommunicationModule {
 	}
 
 	private void replyToProxy(MessageADT mReturn) {
-		for (Thread item : communicationThreadList) {
-			if (((CommunicationModuleThread) item).getSendMessage()
-					.getMessageID() == mReturn.getMessageID()) {
-				((CommunicationModuleThread) item).setReceivedMessage(mReturn);
-				item.notify();
+		synchronized (communicationThreadList) {
+			CommunicationModule.debugPrint(this.getClass(),
+					"searching for right thread");
+			for (Thread item : communicationThreadList) {
+				if (((CommunicationModuleThread) item).getSendMessage()
+						.getMessageID() == mReturn.getMessageID()) {
+					((CommunicationModuleThread) item)
+							.setReceivedMessage(mReturn);
+					((CommunicationModuleThread) item).interrupt();
+					CommunicationModule.debugPrint(this.getClass(),
+							"found right thread and interrupted");
+				}
 			}
 		}
-
 	}
 
 	public static CommunicationModuleThread getNewCommunicationThread(
 			MessageADT m) {
 		CommunicationModuleThread c = new CommunicationModuleThread(m);
-		communicationThreadList.add(c);
+		CommunicationModule
+				.debugPrint("mware_lib.CommunicationModule: created new thread <"
+						+ c.getName() + ">");
+		synchronized (communicationThreadList) {
+			communicationThreadList.add(c);
+		}
 		c.start();
 		return c;
 	}
-	
-	public static synchronized int messageIDCounter(){
+
+	public static synchronized int messageIDCounter() {
 		return messageIDCounter++;
 	}
 
-	public static void deleteThread(CommunicationModuleThread c) {
-		communicationThreadList.remove(c);
+	public static void removeThreadFromList(CommunicationModuleThread c) {
+		synchronized (communicationThreadList) {
+			CommunicationModule
+					.debugPrint("mware_lib.CommunicationModule: remove CommunicatioModuleThread from list <"
+							+ c.getName() + ">");
+			communicationThreadList.remove(c);
+
+		}
 	}
 
 	public static InetAddress getLocalHost() {
@@ -119,12 +157,32 @@ public class CommunicationModule {
 
 	public void setAlive(boolean isAlive) {
 		this.isAlive = isAlive;
+		try {
+			this.serverSocket.close();
+		} catch (IOException e) {
+			CommunicationModule.debugPrint(this.getClass(),
+					"closed server socket");
+			// TODO
+			e.printStackTrace();
+		}
+		;
 	}
-	
-	public static void debugPrint(String text){
-		if(ObjectBroker.DEBUG){
+
+	public static void debugPrint(String text) {
+		if (ObjectBroker.DEBUG) {
 			System.out.println(text);
 		}
+	}
+
+	public static void debugPrint(Class<?> klasse, String text) {
+		if (ObjectBroker.DEBUG) {
+			System.out.println(klasse.getName() + ": " + text);
+		}
+	}
+
+	// TODO fuer lokales testen kann port geaendert werden
+	public static void setCommunicatiomoduleport(int port) {
+		COMMUNICATIONMODULEPORT = port;
 	}
 
 }
