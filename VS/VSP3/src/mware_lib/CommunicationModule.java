@@ -197,6 +197,7 @@ public class CommunicationModule extends Thread {
 	 * Schaltet das Kommunikations-Modul ab
 	 */
 	public void communicationModuleShutdown() {
+		this.isAlive = false;
 		try {
 			this.serverSocket.close();
 		} catch (IOException e) {
