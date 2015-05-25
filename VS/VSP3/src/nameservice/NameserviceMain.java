@@ -1,8 +1,8 @@
 package nameservice;
 
-public class Main {
+public class NameserviceMain {
 
-	public Main() {
+	public NameserviceMain() {
 		// TODO Auto-generated constructor stub
 	}
 

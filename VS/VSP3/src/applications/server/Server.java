@@ -22,8 +22,8 @@ public class Server {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		String address = null;
-		//int port = Integer.parseInt(args[0]);
-		int port = 50001;
+		int port = Integer.parseInt(args[0]);
+		//int port = 50001;
 		try {
 			address = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {

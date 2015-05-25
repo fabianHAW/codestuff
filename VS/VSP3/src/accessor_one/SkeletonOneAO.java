@@ -65,7 +65,7 @@ public class SkeletonOneAO extends Thread implements Skeleton{
 					message.getiNetAdrress(), 
 					message.getMessageID(), //alte MessageID zwecks Message-Zuordnung zu Proxy 
 					null, 
-					null, 
+					1, 
 					null, 
 					returnVal.getBytes(), 
 					null, 
@@ -77,7 +77,7 @@ public class SkeletonOneAO extends Thread implements Skeleton{
 					message.getiNetAdrress(), 
 					message.getMessageID(), //Alte MessageID zwecks Message-Zuordnung zu Proxy
 					null, 
-					null, 
+					1, 
 					null, 
 					null, 
 					null, 

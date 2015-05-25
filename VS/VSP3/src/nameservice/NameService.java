@@ -20,6 +20,8 @@ public class NameService {
 	private static HashMap<String, RemoteObjectRef> referenceObjects;
 
 	public void start(int port) {
+		System.out.println("NAMESERVICE START!!!!");
+		CommunicationModule.debugPrint(this.getClass(), " initialize... ");
 		try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
@@ -29,9 +31,11 @@ public class NameService {
 		referenceObjects = new HashMap<String, RemoteObjectRef>();
 		listenPort = port;
 		listen();
+		CommunicationModule.debugPrint(this.getClass(), " initialized! ");
 	}
 
 	public void listen() {
+		CommunicationModule.debugPrint(this.getClass(), " waiting for requests.");
 		while (true) {
 			Socket socket = null;
 			NameServiceRequest request = null;

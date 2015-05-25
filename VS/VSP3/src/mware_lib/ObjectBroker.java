@@ -7,6 +7,7 @@ public class ObjectBroker { // - Front-End der Middleware -
 	private String serviceHost;
 	private int listenPort;
 	public static boolean DEBUG;
+	private static ObjectBroker broker = null;
 
 	private ObjectBroker(String h, int p, boolean d) {
 		this.comModule = new CommunicationModule();
@@ -24,8 +25,13 @@ public class ObjectBroker { // - Front-End der Middleware -
 	// Middleware ein- oder ausgeschaltet werden können.
 	public static ObjectBroker init(String serviceHost, int listenPort,
 			boolean debug) {
-		CommunicationModule.debugPrint("mware_lib.ObjectBroker: initialized");
-		return new ObjectBroker(serviceHost, listenPort, debug);
+		if(broker == null){
+			CommunicationModule.debugPrint("mware_lib.ObjectBroker: initialized");
+			return new ObjectBroker(serviceHost, listenPort, debug);
+		}else{
+			CommunicationModule.debugPrint("mware_lib.ObjectBroker: returned Singleton Objectbroker");
+			return broker;
+		}
 	}
 
 	// Liefert den Namensdienst (Stellvetreterobjekt).
