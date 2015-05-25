@@ -1,5 +1,6 @@
 package accessor_two;
 
+import mware_lib.CommunicationModule;
 import mware_lib.ReferenceModule;
 import mware_lib.RemoteObjectRef;
 
@@ -17,16 +18,21 @@ public abstract class ClassOneImplBase {
 
 	// erzeugt neues Proxy-Objekt
 	public static ClassOneImplBase narrowCast(Object rawObjectRef) {
+
 		boolean inside = ReferenceModule.contains(rawObjectRef);
 		ClassOneImplBase remoteObj = null;
 
 		if (inside) {
 			remoteObj = (ClassOneImplBase) ReferenceModule
 					.getProxy((RemoteObjectRef) rawObjectRef);
+			CommunicationModule
+					.debugPrint("accessor_two.ClassOneImpleBase: got proxy from ReferenceModule");
 		} else {
 			remoteObj = new ClassOneImplBaseProxy(
 					(RemoteObjectRef) rawObjectRef);
 			ReferenceModule.add((RemoteObjectRef) rawObjectRef, remoteObj);
+			CommunicationModule
+					.debugPrint("accessor_two.ClassOneImpleBase: new proxy created");
 		}
 		return remoteObj;
 	}

@@ -19,6 +19,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 	private RemoteObjectRef rof;
 
 	public ClassOneImplBaseProxy(RemoteObjectRef rof) {
+		CommunicationModule.debugPrint(this.getClass(), "initialized");
 		this.rof = rof;
 	}
 
@@ -28,12 +29,14 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 				"methodOne");
 
 		List<Exception> exceptionList = m.getExceptionList();
-		if (exceptionList.size() != 0) {
+		if (exceptionList != null && exceptionList.size() != 0) {
 			for (Exception item : exceptionList) {
+				CommunicationModule.debugPrint(this.getClass(), "exception <"
+						+ item.getClass().getName() + "> found in MessageADT");
 				throw (SomeException112) item;
 			}
 		}
-
+		
 		return Double.parseDouble(new String(m.getReturnVal()));
 	}
 
@@ -43,11 +46,17 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 				"methodTwo");
 
 		List<Exception> exceptionList = m.getExceptionList();
-		if (exceptionList.size() != 0) {
+		if (exceptionList != null && exceptionList.size() != 0) {
 			for (Exception item : exceptionList) {
 				if (item instanceof SomeException112) {
+					CommunicationModule.debugPrint(this.getClass(),
+							"exception <" + item.getClass().getName()
+									+ "> found in MessageADT");
 					throw (SomeException112) item;
 				} else if (item instanceof SomeException304) {
+					CommunicationModule.debugPrint(this.getClass(),
+							"exception <" + item.getClass().getName()
+									+ "> found in MessageADT");
 					throw (SomeException304) item;
 				}
 			}
@@ -62,17 +71,28 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 		values.add(param1.getBytes());
 		values.add(String.valueOf(param2).getBytes());
 
-		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), CommunicationModule.messageIDCounter(),
-				mName, ClassOneImplBase.REQUEST, this.rof, null, values, null);
+		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(),
+				CommunicationModule.messageIDCounter(), mName,
+				ClassOneImplBase.REQUEST, this.rof, null, values, null);
 
+		CommunicationModule.debugPrint(this.getClass(),
+				"new MessageADT created");
+		
 		CommunicationModuleThread cT = CommunicationModule
 				.getNewCommunicationThread(m);
+		
+		CommunicationModule.debugPrint(this.getClass(),
+				"new CommunicationModuleThread created");
 
-		try {
-			cT.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		synchronized (cT) {
+			try {
+				CommunicationModule.debugPrint(this.getClass(),
+						"waiting for CommunicationModuleThread");
+				cT.wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		return cT.getReceivedMessage();

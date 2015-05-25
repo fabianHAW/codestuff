@@ -4,7 +4,7 @@ package util;
 //----- accessor_one -----------
 
 public class Werkzeug{
-	private static void printError(String packageAndClassName,
+	public static void printError(String packageAndClassName,
 			String remotetObjName, String methodName, String param1, int param2,
 			String exceptionPackageAndClassName, String message) {
 		System.out.println("--------------------------------------------------------------");
@@ -22,7 +22,7 @@ public class Werkzeug{
 		System.out.println("--------------------------------------------------------------");
 	}
 
-	private static void printError(String packageAndClassName,
+	public static void printError(String packageAndClassName,
 			String remotetObjName, String methodName, double param1,
 			String exceptionPackageAndClassName, String message) {
 		System.out.println("--------------------------------------------------------------");
@@ -33,7 +33,7 @@ public class Werkzeug{
 		System.out.println("--------------------------------------------------------------");
 	}
 	
-	private static void printError(String packageAndClassName,
+	public static void printError(String packageAndClassName,
 			String remotetObjName, String methodName,
 			String exceptionPackageAndClassName, String message) {
 		System.out.println("--------------------------------------------------------------");
@@ -45,7 +45,7 @@ public class Werkzeug{
 
 	//----- accessor_two -----------
 
-	private static void printError(String packageAndClassName,
+	public static void printError(String packageAndClassName,
 			String remotetObjName, String methodName, String param1, double param2,
 			String exceptionPackageAndClassName, String message) {
 		System.out.println("--------------------------------------------------------------");
@@ -68,7 +68,7 @@ public class Werkzeug{
 	
 	//----- accessor_one -----------
 
-	private static void printResult(String packageAndClassName,
+	public static void printResult(String packageAndClassName,
 			String remotetObjName, String methodName, String param1, int param2,
 			String result) {
 		System.out.println("--------------------------------------------------------------");
@@ -86,7 +86,7 @@ public class Werkzeug{
 		System.out.println("--------------------------------------------------------------");
 	}
 
-	private static void printResult(String packageAndClassName,
+	public static void printResult(String packageAndClassName,
 			String remotetObjName, String methodName, double param1,
 			int result) {
 		System.out.println("--------------------------------------------------------------");
@@ -97,7 +97,7 @@ public class Werkzeug{
 		System.out.println("--------------------------------------------------------------");
 	}
 
-	private static void printResult(String packageAndClassName,
+	public static void printResult(String packageAndClassName,
 			String remotetObjName, String methodName,
 			double result) {
 		System.out.println("--------------------------------------------------------------");
@@ -109,7 +109,7 @@ public class Werkzeug{
 
 	//----- accessor_two -----------
 
-	private static void printResult(String packageAndClassName,
+	public static void printResult(String packageAndClassName,
 			String remotetObjName, String methodName, String param1, double param2,
 			double result) {
 		System.out.println("--------------------------------------------------------------");

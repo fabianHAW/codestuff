@@ -1,10 +1,15 @@
 package mware_lib;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.List;
 
-public class RemoteObjectRef {
+public class RemoteObjectRef implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private InetAddress inetAddress;
 	private int port;
 	private long time;

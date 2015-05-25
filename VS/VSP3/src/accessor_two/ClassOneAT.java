@@ -1,17 +1,21 @@
 package accessor_two;
 
+import mware_lib.CommunicationModule;
+
 public class ClassOneAT extends ClassOneImplBase {
 
 	public ClassOneAT() {
-		// TODO Auto-generated constructor stub
+		CommunicationModule.debugPrint(this.getClass(), "Object initialized");
 	}
 
 	@Override
 	public double methodOne(String param1, double param2)
 			throws SomeException112 {
+		
 		if (param2 < 2) {
 			throw new SomeException112("param2 is less than 2");
 		}
+		CommunicationModule.debugPrint(this.getClass(), "methodOne called");
 		return 2.2;
 	}
 
@@ -23,6 +27,7 @@ public class ClassOneAT extends ClassOneImplBase {
 		} else if (param2 > 2) {
 			throw new SomeException112("param2 is greater than 2");
 		}
+		CommunicationModule.debugPrint(this.getClass(), "methodTwo called");
 		return 3.3;
 	}
 

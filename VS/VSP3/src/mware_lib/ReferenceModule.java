@@ -45,37 +45,53 @@ public class ReferenceModule {
 				port, System.currentTimeMillis(), objectNumber, interfaces);
 
 		servantToTable(rawObjRef, myObject);
+		CommunicationModule
+				.debugPrint("mware_lib.ReferenceModule: new RemoteObjectRef created an saved in servantlist.");
 		return rawObjRef;
 	}
 
 	private static void servantToTable(RemoteObjectRef rawObjRef,
 			Object myObject) {
+		CommunicationModule
+				.debugPrint("mware_lib.ReferenceModule: save new servant in servantlist.");
 		mapRemoteServant.put(rawObjRef, myObject);
 	}
 
 	public static boolean contains(Object rawObjRef) {
+		CommunicationModule
+				.debugPrint("mware_lib.ReferenceModule: check if proxy is in proxylist.");
 		return mapRemoteProxy.containsKey(rawObjRef);
 	}
 
 	public static Object getProxy(RemoteObjectRef rawObjRef) {
 		for (Entry<RemoteObjectRef, Object> item : mapRemoteProxy.entrySet()) {
 			if (item.getKey().equals(rawObjRef)) {
+				CommunicationModule
+						.debugPrint("mware_lib.ReferenceModule: return proxy from proxylist.");
 				return item.getValue();
 			}
 		}
+		CommunicationModule
+				.debugPrint("mware_lib.ReferenceModule: proxy not in proxylist.");
 		return null;
 	}
 
 	public static void add(RemoteObjectRef rawObj, Object remoteObj) {
+		CommunicationModule
+				.debugPrint("mware_lib.ReferenceModule: add new proxy to proxylist.");
 		mapRemoteProxy.put(rawObj, remoteObj);
 	}
 
-	public static Object getServant(RemoteObjectRef rawObjRef){
+	public static Object getServant(RemoteObjectRef rawObjRef) {
 		for (Entry<RemoteObjectRef, Object> item : mapRemoteServant.entrySet()) {
 			if (item.getKey().equals(rawObjRef)) {
+				CommunicationModule
+						.debugPrint("mware_lib.ReferenceModule: get servant from servantlist");
 				return item.getValue();
 			}
 		}
+		CommunicationModule
+				.debugPrint("mware_lib.ReferenceModule: servant not in servantlist.");
 		return null;
 	}
 }
