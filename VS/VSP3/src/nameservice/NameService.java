@@ -20,7 +20,7 @@ public class NameService {
 	private static HashMap<String, RemoteObjectRef> referenceObjects;
 
 	public void start(int port) {
-		System.out.println("NAMESERVICE START!!!!");
+
 		CommunicationModule.debugPrint(this.getClass(), " initialize... ");
 		try {
 			serverSocket = new ServerSocket(port);
@@ -40,8 +40,7 @@ public class NameService {
 			Socket socket = null;
 			NameServiceRequest request = null;
 			try {
-				System.out
-						.println(this.getClass() + "waiting for new requests");
+				
 
 				socket = serverSocket.accept();
 				input = new ObjectInputStream(socket.getInputStream());

@@ -7,6 +7,7 @@ import mware_lib.CommunicationModule;
 import mware_lib.NameService;
 import mware_lib.ObjectBroker;
 import accessor_one.ClassOneAO;
+import accessor_one.ClassTwoAO;
 
 public class ServerStart extends Thread{
 
@@ -20,27 +21,28 @@ public class ServerStart extends Thread{
 	
 	public void accessor_one_test(){
 
-		ClassOneAO servant = new ClassOneAO();
+		ClassOneAO c1 = new ClassOneAO();
+		ClassTwoAO c2 = new ClassTwoAO();
+		
 		CommunicationModule.setCommunicatiomoduleport(50001);
 	
 		String host = null;
+		
 		try {
 			host = InetAddress.getLocalHost().getCanonicalHostName();
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		System.out.println("host: " + host);
+		
 		ObjectBroker objBroker = ObjectBroker.init(host, 50000, true);
-
 		NameService nameSvc = objBroker.getNameService();
-	
-		nameSvc.rebind(servant, "test");
-
+		nameSvc.rebind(c1, "c1");
+		nameSvc.rebind(c2, "c2");
 		
 		try {
 			System.out.println("server: sleeping");
-			Thread.sleep(10000);
+			Thread.sleep(20000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

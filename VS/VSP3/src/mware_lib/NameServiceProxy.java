@@ -80,5 +80,6 @@ public class NameServiceProxy extends NameService {
 
 		return request.getObjectRef();
 	}
+	
 
 }
