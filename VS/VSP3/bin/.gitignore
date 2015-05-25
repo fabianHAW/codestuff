@@ -1,3 +1,7 @@
 /test/
 /accessor_one/
 /nameservice/
+/accessor_two/
+/mware_lib/
+*.class
+*.metadata
