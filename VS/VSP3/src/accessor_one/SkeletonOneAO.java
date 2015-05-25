@@ -32,12 +32,14 @@ public class SkeletonOneAO extends Thread implements Skeleton{
 	private ObjectOutputStream ooutput;
 	
 	public void run(){
+		CommunicationModule.debugPrint(this.getClass(), "run SkeletonOneAO");
 		MessageADT reply = invoke();
 		sendMessageBack(reply);
 	}
 	
 	private void sendMessageBack(MessageADT reply) {
 		// TODO Auto-generated method stub
+		CommunicationModule.debugPrint(this.getClass(), "send message back");
 		try {
 			socket = new Socket(reply.getiNetAdrress(), CommunicationModule.getCommunicationmoduleport());
 			output = socket.getOutputStream();
@@ -65,7 +67,7 @@ public class SkeletonOneAO extends Thread implements Skeleton{
 					message.getiNetAdrress(), 
 					message.getMessageID(), //alte MessageID zwecks Message-Zuordnung zu Proxy 
 					null, 
-					null, 
+					1, 
 					null, 
 					returnVal.getBytes(), 
 					null, 
@@ -77,7 +79,7 @@ public class SkeletonOneAO extends Thread implements Skeleton{
 					message.getiNetAdrress(), 
 					message.getMessageID(), //Alte MessageID zwecks Message-Zuordnung zu Proxy
 					null, 
-					null, 
+					1, 
 					null, 
 					null, 
 					null, 

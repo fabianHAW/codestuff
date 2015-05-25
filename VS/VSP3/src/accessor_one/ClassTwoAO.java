@@ -2,10 +2,13 @@ package accessor_one;
 
 import java.util.Random;
 
+import mware_lib.CommunicationModule;
+
 public class ClassTwoAO extends ClassTwoImplBase {
 
 	public ClassTwoAO() {
 		// TODO Auto-generated constructor stub
+		CommunicationModule.debugPrint(this.getClass(), "Object initialized");
 	}
 
 	@Override
@@ -19,6 +22,7 @@ public class ClassTwoAO extends ClassTwoImplBase {
 
 	@Override
 	public double methodTwo() throws SomeException112 {
+		CommunicationModule.debugPrint(this.getClass(), "methodOne called");
 		double max = Double.MAX_VALUE;
 		Random rand = new Random();
 		double result = 0 + (max * rand.nextDouble());

@@ -6,11 +6,12 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
-import com.sun.corba.se.pept.encoding.InputObject;
-
+import accessor_one.ClassOneAO;
 import accessor_two.ClassOneAT;
 import mware_lib.CommunicationModule;
 import mware_lib.NameService;
@@ -28,6 +29,11 @@ public class Server {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
+		//accessor_two_test();
+		accessor_one_test();
+	}
+	
+	public static void accessor_two_test(){
 		System.out.println("start server");
 		ClassOneAT servant = new ClassOneAT();
 		CommunicationModule.setCommunicatiomoduleport(50001);
@@ -94,5 +100,36 @@ public class Server {
 //		mySock.close();
 //		mySvrSocket.close();
 		
+	}
+	
+	public static void accessor_one_test(){
+		System.out.println("start server");
+		ClassOneAO servant = new ClassOneAO();
+		CommunicationModule.setCommunicatiomoduleport(50001);
+		System.out.println("server: set communicationmoduleport");
+		String host = null;
+		try {
+			host = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ObjectBroker objBroker = ObjectBroker.init(host, 50000, true);
+		System.out.println("server: got objBroker");
+		NameService nameSvc = objBroker.getNameService();
+		System.out.println("server: got NameServiceProxy");
+		nameSvc.rebind(servant, "test");
+		System.out.println("server: rebinded new servant");
+		
+		try {
+			System.out.println("server: sleeping");
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		objBroker.shutDown();
+		System.out.println("end server");
 	}
 }

@@ -56,13 +56,16 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase{
 //			e.printStackTrace();
 //		}
 		
-		//rueckgabewert empfangen		
+		//rueckgabewert empfangen
 		MessageADT received = sendRequest(m);
 		//MessageADT received = listenToSocket();
-		String result = unmarshals(received);
-		
-		
-		return result;
+		String result = null;
+		if(received.getReturnVal() != null){
+			return unmarshals(received);
+		}
+	
+		CommunicationModule.debugPrint(received.getExceptionList().get(0).getMessage());
+		return null;
 	}
 	
 //	

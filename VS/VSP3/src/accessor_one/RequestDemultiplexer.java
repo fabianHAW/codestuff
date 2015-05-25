@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import mware_lib.CommunicationModule;
 import mware_lib.MessageADT;
 import mware_lib.ObjectAdapter;
 
@@ -19,6 +20,8 @@ public class RequestDemultiplexer {
 				Arrays.asList(
 						new ObjectAdapterAO()
 						));
+		CommunicationModule.debugPrint(this.getClass(),
+				"initialized");
 	}
 	
 	public void pass(MessageADT m){
@@ -32,6 +35,8 @@ public class RequestDemultiplexer {
 				}
 			}
 			if(found){
+				CommunicationModule.debugPrint(this.getClass(),
+						"passed message to objectadapter " + o.getClass());
 				break;
 			}
 		}

@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
+import mware_lib.CommunicationModule;
 import mware_lib.NameServiceRequest;
 import mware_lib.RemoteObjectRef;
 
@@ -19,6 +20,8 @@ public class NameService {
 	private static HashMap<String, RemoteObjectRef> referenceObjects;
 
 	public void start(int port) {
+
+		CommunicationModule.debugPrint(this.getClass(), " initialize... ");
 		try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
@@ -28,15 +31,16 @@ public class NameService {
 		referenceObjects = new HashMap<String, RemoteObjectRef>();
 		listenPort = port;
 		listen();
+		CommunicationModule.debugPrint(this.getClass(), " initialized! ");
 	}
 
 	public void listen() {
+		CommunicationModule.debugPrint(this.getClass(), " waiting for requests.");
 		while (true) {
 			Socket socket = null;
 			NameServiceRequest request = null;
 			try {
-				System.out
-						.println(this.getClass() + "waiting for new requests");
+				
 
 				socket = serverSocket.accept();
 				input = new ObjectInputStream(socket.getInputStream());

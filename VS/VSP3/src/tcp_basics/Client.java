@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import util.Werkzeug;
 import accessor_two.ClassOneImplBase;
@@ -27,6 +29,11 @@ public class Client {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
+		//accessor_two_test();
+		accessor_one_test();
+	}
+	
+	public static void accessor_two_test(){
 		System.out.println("start client");
 		CommunicationModule.setCommunicatiomoduleport(50003);
 		System.out.println("client: set communicationmoduleport");
@@ -87,7 +94,41 @@ public class Client {
 //		
 //		output.close();
 //		mySock.close();
+	}
+	
+	public static void accessor_one_test(){
+		System.out.println("start client");
+		CommunicationModule.setCommunicatiomoduleport(50003);
+		System.out.println("client: set communicationmoduleport");
+		String host = null;
+		try {
+			host = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ObjectBroker objBroker = ObjectBroker.init(host, 50000, true);
+		System.out.println("client: got objBroker");
+		NameService nameSvc = objBroker.getNameService();
+		System.out.println("client: got NameServiceProxy");
+		Object rawObjRef = nameSvc.resolve("test");
+		System.out.println(rawObjRef);
+		System.out.println("client: got RemoteObjectRef");
+		accessor_one.ClassOneImplBase remoteObj = accessor_one.ClassOneImplBase.narrowCast(rawObjRef);
+		System.out.println("client: got new proxy");
+				
+		System.out.println("client: call remote method");
+		String s1 = "false";
+		try {
+			s1 = remoteObj.methodOne("test", 3);
+		} catch (accessor_one.SomeException112 e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(s1);
 		
+		objBroker.shutDown();
+		System.out.println("end client");
 	}
 
 }

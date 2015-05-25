@@ -33,10 +33,12 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 	public void run(){
 		MessageADT reply = invoke();
 		sendMessageBack(reply);
+		CommunicationModule.debugPrint(this.getClass(), "run SkeletonTwoAO");
 	}
 	
 	private void sendMessageBack(MessageADT reply) {
 		// TODO Auto-generated method stub
+		CommunicationModule.debugPrint(this.getClass(), "send message back");
 		try {
 			socket = new Socket(reply.getiNetAdrress(), CommunicationModule.getCommunicationmoduleport());
 			output = socket.getOutputStream();
@@ -72,7 +74,7 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 							message.getiNetAdrress(), 
 							message.getMessageID(), //Alte MessageID zwecks Message-Zuordnung zu Proxy
 							null, 
-							null, 
+							1, 
 							null, 
 							b, 
 							null, 
@@ -84,7 +86,7 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 							message.getiNetAdrress(), 
 							message.getMessageID(), //Alte MessageID zwecks Message-Zuordnung zu Proxy
 							null, 
-							null, 
+							1, 
 							null, 
 							null, 
 							null, 
@@ -109,7 +111,7 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 					message.getiNetAdrress(), 
 					message.getMessageID(), //Alte MessageID zwecks Message-Zuordnung zu Proxy
 					null, 
-					null, 
+					1, 
 					null, 
 					b, 
 					null, 
@@ -121,7 +123,7 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 					message.getiNetAdrress(), 
 					message.getMessageID(), //Alte MessageID zwecks Message-Zuordnung zu Proxy
 					null, 
-					null, 
+					1, 
 					null, 
 					null, 
 					null, 
