@@ -108,7 +108,7 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 	 * @param mReturn
 	 *            neu erzeugte MessageADT
 	 */
-	public void sendBack(MessageADT mReturn) {
+	private void sendBack(MessageADT mReturn) {
 		Socket s = null;
 		ObjectOutputStream o = null;
 		try {

@@ -8,6 +8,7 @@ import mware_lib.CommunicationModule;
 import mware_lib.MessageADT;
 import mware_lib.ObjectAdapter;
 
+@Deprecated
 public class RequestDemultiplexer {
 
 	ArrayList<ObjectAdapter> adapter;
