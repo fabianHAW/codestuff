@@ -1,5 +1,7 @@
 package accessor_one;
 
+import mware_lib.CommunicationModule;
+
 public class ClassOneAO extends ClassOneImplBase {
 
 	public ClassOneAO() {
@@ -9,6 +11,7 @@ public class ClassOneAO extends ClassOneImplBase {
 	@Override
 	public String methodOne(String param1, int param2) throws SomeException112 {
 		// TODO Auto-generated method stub
+		
 		if(param2 % 2 == 0){
 			return param1 + " " + param2 + " % 2 == 0"; 
 		}else{
