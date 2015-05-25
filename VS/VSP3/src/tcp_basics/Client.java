@@ -44,7 +44,7 @@ public class Client {
 			System.out.println("client: call remote method");
 			double d1 = remoteObj.methodOne("test", 3.2);
 			System.out.println(d1);
-			double d2 = remoteObj.methodTwo("beer", 2.3);
+			double d2 = remoteObj.methodTwo("the monkey without shoes", 2.3);
 			System.out.println(d2);
 		} catch (SomeException112 e) {
 			// TODO Auto-generated catch block

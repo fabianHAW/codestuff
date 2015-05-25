@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import mware_lib.CommunicationModule;
 import mware_lib.NameServiceRequest;
 import mware_lib.RemoteObjectRef;
 

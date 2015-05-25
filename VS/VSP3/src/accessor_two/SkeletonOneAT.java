@@ -15,8 +15,9 @@ import mware_lib.Skeleton;
 
 /**
  * 
- * @author Francis und Fabian
+ * @author Fabian
  * 
+ *         Implementierung des Skeletons
  */
 
 public class SkeletonOneAT extends Thread implements Skeleton {
@@ -34,6 +35,7 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 		sendBack(mReturn);
 	}
 
+	@Override
 	public MessageADT invoke() {
 		RemoteObjectRef r = this.m.getObjectRef();
 		Object s = null;
@@ -73,6 +75,16 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 		return generateNewMessage(returnVal, le);
 	}
 
+	/**
+	 * Verpacken aller Informationen in eine neue MessageADT die an Client
+	 * zurueck gesendet wird
+	 * 
+	 * @param returnVal
+	 *            der Return-Wert der aufgerufenen Methode
+	 * @param le
+	 *            eine Liste mit Exceptions die ggf. erzeugt wurden
+	 * @return neue MessageADT
+	 */
 	private MessageADT generateNewMessage(byte[] returnVal, List<Exception> le) {
 		if (le.size() != 0) {
 			CommunicationModule.debugPrint(this.getClass(),
@@ -90,6 +102,12 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 				this.m.getExceptionList());
 	}
 
+	/**
+	 * Sendet die neu erzeugte MessageADT an die Client-Seite zurueck
+	 * 
+	 * @param mReturn
+	 *            neu erzeugte MessageADT
+	 */
 	public void sendBack(MessageADT mReturn) {
 		Socket s = null;
 		ObjectOutputStream o = null;

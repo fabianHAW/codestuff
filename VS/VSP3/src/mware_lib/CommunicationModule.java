@@ -11,10 +11,11 @@ import java.util.List;
 
 /**
  * 
- * @author Francis und Fabian
+ * @author Fabian
  * 
- *         Stellt Request/Reply-Protokoll bereit und hat somit auch einen Socket
- *         bzw. Serversocket
+ *         Stellt Request/Reply-Protokoll bereit und dient als zentrale Einheit
+ *         um die Nachrichten von einer Client- zur Server-Seite zu
+ *         transferieren
  */
 
 public class CommunicationModule extends Thread {
@@ -88,21 +89,39 @@ public class CommunicationModule extends Thread {
 			}
 		}
 
+		/**
+		 * Wurde das Kommunikations-Modul gestoppt, so muss es auch die noch
+		 * laufenden Hilfs-Threads unterbrechen
+		 */
 		for (Thread item : communicationThreadList) {
 			((CommunicationModuleThread) item).interrupt();
-			CommunicationModule.debugPrint(this.getClass(), "interrupted other thread: <" + item.getName() + ">");
+			CommunicationModule.debugPrint(this.getClass(),
+					"interrupted other thread: <" + item.getName() + ">");
 		}
 
-		CommunicationModule
-				.debugPrint(this.getClass(),
-						"communication module was interrupted");
+		CommunicationModule.debugPrint(this.getClass(),
+				"communication module was interrupted");
 
 	}
 
+	/**
+	 * Server-Seite: Leitet einen empfangenen Request an den
+	 * Anforderungs-Demultiplexer weiter
+	 * 
+	 * @param m
+	 *            MessageADT mit allen notwendigen Informationen
+	 */
 	private void requestToServant(MessageADT m) {
 		this.demultiplexer.pass(m);
 	}
 
+	/**
+	 * Client-Seite: Sucht den zustaendigen Hilfs-Thread aus der Liste, teilt
+	 * ihm die empfangene Nachricht mit und weckt ihn auf
+	 * 
+	 * @param mReturn
+	 *            empfangene MessageADT
+	 */
 	private void replyToProxy(MessageADT mReturn) {
 		synchronized (communicationThreadList) {
 			CommunicationModule.debugPrint(this.getClass(),
@@ -120,6 +139,14 @@ public class CommunicationModule extends Thread {
 		}
 	}
 
+	/**
+	 * Erzeugt einen neuen Hilfs-Thread, fuegt ihn der Liste hinzu und startet
+	 * ihn
+	 * 
+	 * @param m
+	 *            MessageADT die an die Server-Seite weitergeleitet werden soll
+	 * @return neu erzeugten Hilfs-Thread
+	 */
 	public static CommunicationModuleThread getNewCommunicationThread(
 			MessageADT m) {
 		CommunicationModuleThread c = new CommunicationModuleThread(m);
@@ -133,10 +160,21 @@ public class CommunicationModule extends Thread {
 		return c;
 	}
 
+	/**
+	 * Zaehlt die eindeutige Nachrichtennummer hoch
+	 * 
+	 * @return neue Nachrichtennummer
+	 */
 	public static synchronized int messageIDCounter() {
 		return messageIDCounter++;
 	}
 
+	/**
+	 * Loescht einen Hilfs-Thread aus der Liste der Hilfs-Thread
+	 * 
+	 * @param c
+	 *            Hilfs-Thread der geloescht werden soll
+	 */
 	public static void removeThreadFromList(CommunicationModuleThread c) {
 		synchronized (communicationThreadList) {
 			CommunicationModule
@@ -155,8 +193,10 @@ public class CommunicationModule extends Thread {
 		return COMMUNICATIONMODULEPORT;
 	}
 
-	public void setAlive(boolean isAlive) {
-		this.isAlive = isAlive;
+	/**
+	 * Schaltet das Kommunikations-Modul ab
+	 */
+	public void communicationModuleShutdown() {
 		try {
 			this.serverSocket.close();
 		} catch (IOException e) {
@@ -168,12 +208,26 @@ public class CommunicationModule extends Thread {
 		;
 	}
 
+	/**
+	 * Erzeugt Debug-Ausgaben auf der Konsole, sofern Debug-Flag auf true
+	 * 
+	 * @param text
+	 *            Nachricht die ausgegeben werden soll
+	 */
 	public static void debugPrint(String text) {
 		if (ObjectBroker.DEBUG) {
 			System.out.println(text);
 		}
 	}
 
+	/**
+	 * Erzeugt Debug-Ausgaben auf der Konsole, sofern Debug-Flag auf true
+	 * 
+	 * @param klasse
+	 *            die Klasse die diese Methode aufruft
+	 * @param text
+	 *            Nachricht die ausgegeben werden soll
+	 */
 	public static void debugPrint(Class<?> klasse, String text) {
 		if (ObjectBroker.DEBUG) {
 			System.out.println(klasse.getName() + ": " + text);

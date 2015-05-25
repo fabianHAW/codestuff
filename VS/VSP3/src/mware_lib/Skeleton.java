@@ -1,16 +1,19 @@
 package mware_lib;
 
-
 /**
  * 
- * @author Francis und Fabian
- *
- * Stellt Methoden fuer die Skeletons (Serverseite) zur Verfuegung
+ * @author Francis
+ * 
+ *         Stellt die Schnittstellen des Skeletons auf der Server-Seite bereit
  */
 
 public interface Skeleton {
 
-	//ruft die Methoden des Servers auf
+	/**
+	 * Fuehrt ein unmarshaling des Requests durch
+	 * 
+	 * @return neu erzeugte MessageADT
+	 */
 	public MessageADT invoke();
-		
+
 }

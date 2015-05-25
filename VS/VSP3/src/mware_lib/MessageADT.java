@@ -4,6 +4,13 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.List;
 
+/**
+ * 
+ * @author Francis
+ * 
+ *         Die Nachrichten-ADT die zur internen Kommunikation der Middleware
+ *         verwendet wird
+ */
 public class MessageADT implements Serializable {
 
 	/**
@@ -19,6 +26,26 @@ public class MessageADT implements Serializable {
 	private List<byte[]> arguments;
 	private List<Exception> exceptionList;
 
+	/**
+	 * Copy-Konstruktor
+	 * 
+	 * @param iNetAddress
+	 *            Internetadresse des Senders
+	 * @param messageID
+	 *            eindeutige Nachrichtennummer
+	 * @param methodName
+	 *            Methodenname der aufgerufen werden soll
+	 * @param messageType
+	 *            Nachrichtentyp (0 := Request, 1 := Reply)
+	 * @param objectRef
+	 *            entfernte Objekt-Referenz des aufzurufenden Objektes
+	 * @param returnVal
+	 *            return-Wert der entfernten Methode
+	 * @param arguments
+	 *            Argumente der aufzurufenden Methode
+	 * @param exceptionList
+	 *            eine Liste von Exceptions die ggf. erzeugt werden
+	 */
 	public MessageADT(InetAddress iNetAddress, Integer messageID,
 			String methodName, Integer messageType, RemoteObjectRef objectRef,
 			byte[] returnVal, List<byte[]> arguments,

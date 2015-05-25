@@ -4,6 +4,15 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/**
+ * 
+ * @author Francis und Fabian
+ * 
+ *         Hilfs-Thread der verwendet wird um von der Client- zur Server-Seite
+ *         einen Request zu senden und sobald ein Reply zurueck kommt vom
+ *         lokalen Kommunikations-Modul geweckt wird, dass ein Reply
+ *         eingetroffen ist
+ */
 public class CommunicationModuleThread extends Thread {
 
 	private MessageADT sendMessage;
@@ -54,6 +63,12 @@ public class CommunicationModuleThread extends Thread {
 		return receivedMessage;
 	}
 
+	/**
+	 * Setzt die empfangene Nachricht die an den Proxy weitergeleitet wird
+	 * 
+	 * @param m
+	 *            empfangene MessageADT
+	 */
 	public void setReceivedMessage(MessageADT m) {
 		this.receivedMessage = m;
 	}

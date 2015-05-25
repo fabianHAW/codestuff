@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
-import mware_lib.CommunicationModule;
 import mware_lib.NameServiceRequest;
 import mware_lib.RemoteObjectRef;
 

@@ -2,6 +2,14 @@ package accessor_two;
 
 import mware_lib.CommunicationModule;
 
+/**
+ * 
+ * @author Fabian
+ * 
+ *         Servant-Klasse: Implementiert die eigentliche Funktionalität der
+ *         Methoden
+ */
+
 public class ClassOneAT extends ClassOneImplBase {
 
 	public ClassOneAT() {
@@ -11,7 +19,6 @@ public class ClassOneAT extends ClassOneImplBase {
 	@Override
 	public double methodOne(String param1, double param2)
 			throws SomeException112 {
-		
 		if (param2 < 2) {
 			throw new SomeException112("param2 is less than 2");
 		}
@@ -22,8 +29,8 @@ public class ClassOneAT extends ClassOneImplBase {
 	@Override
 	public double methodTwo(String param1, double param2)
 			throws SomeException112, SomeException304 {
-		if (param1.equals("beer")) {
-			throw new SomeException304("param1 is to much");
+		if (param1.equals("the monkey without shoes")) {
+			throw new SomeException304("wow nice monkey ;)");
 		} else if (param2 > 2) {
 			throw new SomeException112("param2 is greater than 2");
 		}

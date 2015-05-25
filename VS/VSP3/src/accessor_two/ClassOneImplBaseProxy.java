@@ -10,8 +10,10 @@ import mware_lib.RemoteObjectRef;
 
 /**
  * 
- * @author Francis und Fabian
+ * @author Fabian
  * 
+ *         Stellvertreter-Objekt, welches die Anfrage des Clients an das
+ *         Kommunikationsmodul weiterleitet
  */
 
 public class ClassOneImplBaseProxy extends ClassOneImplBase {
@@ -23,6 +25,9 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 		this.rof = rof;
 	}
 
+	/**
+	 * Implementierung der Methode auf Client-Seite
+	 */
 	public double methodOne(String param1, double param2)
 			throws SomeException112 {
 		MessageADT m = prepareMessageAndWaitForReply(param1, param2,
@@ -36,10 +41,13 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 				throw (SomeException112) item;
 			}
 		}
-		
+
 		return Double.parseDouble(new String(m.getReturnVal()));
 	}
 
+	/**
+	 * Implementierung der Methode auf Client-Seite
+	 */
 	public double methodTwo(String param1, double param2)
 			throws SomeException112, SomeException304 {
 		MessageADT m = prepareMessageAndWaitForReply(param1, param2,
@@ -65,9 +73,25 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 		return Double.parseDouble(new String(m.getReturnVal()));
 	}
 
+	/**
+	 * Erzeugt eine neue MessageADT und erzeugt einen neuen
+	 * Kommunikationsmodul-Thread, auf den er wartet bis ein Reply zurueck kommt
+	 * 
+	 * @param param1
+	 * @param param2
+	 * @param mName
+	 *            Methodenname der auf Server-Seite aufgerufen werden soll
+	 * @return Reply als MessageADT-Objekt
+	 */
 	private MessageADT prepareMessageAndWaitForReply(String param1,
 			double param2, String mName) {
 		List<byte[]> values = new ArrayList<byte[]>();
+
+		if (param1 == null)
+			param1 = "null is not fine";
+		if ((Double) param2 == null)
+			param2 = 2;
+
 		values.add(param1.getBytes());
 		values.add(String.valueOf(param2).getBytes());
 
@@ -77,10 +101,10 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 
 		CommunicationModule.debugPrint(this.getClass(),
 				"new MessageADT created");
-		
+
 		CommunicationModuleThread cT = CommunicationModule
 				.getNewCommunicationThread(m);
-		
+
 		CommunicationModule.debugPrint(this.getClass(),
 				"new CommunicationModuleThread created");
 
@@ -90,8 +114,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 						"waiting for CommunicationModuleThread");
 				cT.wait();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				CommunicationModule.debugPrint(this.getClass(), "someone interrupted me");
 			}
 		}
 

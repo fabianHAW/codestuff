@@ -7,6 +7,12 @@ import mware_lib.CommunicationModule;
 import mware_lib.MessageADT;
 import mware_lib.ObjectAdapter;
 
+/**
+ * 
+ * @author Fabian
+ * 
+ *         Implementierung des Objekt-Adapters
+ */
 public class ObjectAdapterAT implements ObjectAdapter {
 
 	public ObjectAdapterAT() {

@@ -33,7 +33,7 @@ public class AccessorTwoTest {
 	public void createServantsAndTestException304() throws SomeException112,
 			SomeException304 {
 		ClassOneAT coAT = new ClassOneAT();
-		assertEquals(2.2, coAT.methodTwo("beer", 1), 0);
+		assertEquals(2.2, coAT.methodTwo("the monkey without shoes", 1), 0);
 	}
 
 	@Test

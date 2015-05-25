@@ -4,6 +4,13 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.List;
 
+/**
+ * 
+ * @author Francis
+ *
+ * Entfernte Objekt-Referenz als ADT
+ */
+
 public class RemoteObjectRef implements Serializable{
 
 	/**

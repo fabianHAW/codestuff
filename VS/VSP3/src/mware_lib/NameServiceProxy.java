@@ -6,6 +6,12 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * 
+ * @author Fabian
+ * 
+ *         Ein Stellvertreter-Objekt des Namensdienstes
+ */
 public class NameServiceProxy extends NameService {
 
 	private ServerSocket serverSocket;

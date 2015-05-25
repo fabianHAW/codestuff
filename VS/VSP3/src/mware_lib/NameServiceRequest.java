@@ -2,7 +2,16 @@ package mware_lib;
 
 import java.io.Serializable;
 
-public class NameServiceRequest implements Serializable{
+/**
+ * 
+ * @author Francis
+ * 
+ *         Eine Nachrichen-ADT die fuer die Kommunikation zwischen
+ *         Namensdienst-Stellvertreter und dem eigentlichen Namensdienst genutzt
+ *         wird
+ */
+
+public class NameServiceRequest implements Serializable {
 
 	/**
 	 * 
@@ -49,7 +58,5 @@ public class NameServiceRequest implements Serializable{
 				+ ", serviceName=" + serviceName + ", objectRef=" + objectRef
 				+ "]";
 	}
-	
-	
 
 }
