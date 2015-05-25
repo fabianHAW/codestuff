@@ -1,16 +1,9 @@
 package accessor_one;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.Socket;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
 import mware_lib.CommunicationModule;
 import mware_lib.CommunicationModuleThread;
 import mware_lib.MessageADT;
@@ -26,18 +19,20 @@ import mware_lib.RemoteObjectRef;
 public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 
 	private final int REQUEST = 0;
-//	private final int REPLY = 1;
 	private RemoteObjectRef rawObjRef;
-//	private Socket socket;
-//	private InputStream input;
-//	private ObjectInputStream oinput;
-//	private OutputStream output;
-//	private ObjectOutputStream ooutput;
+
 	
 	public ClassTwoImplBaseProxy(RemoteObjectRef rawObj){
 		rawObjRef = rawObj;
 	}
 
+	/**
+	 * Erzeugt aus param1 ein byte-Array, legt es in einer Liste in die MessageADT
+	 * zusammen mit der Internetadresse des CommunicationModule, dem Methodennamen,
+	 * dem MessageTyp (Request) und der rawObjRef und sendet die MessageADT über das
+	 * Kommunikationsmodul an den Host auf dem das Objekt ist, dass diese Methode implementiert.
+	 * Wartet anschließend auf ein Ergebnis und liefert dieses zurück.
+	 */
 	public int methodOne(double param1) throws SomeException110 {
 		// TODO Auto-generated method stub
 		byte[] p1 = new byte[Double.BYTES];
@@ -45,44 +40,6 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 		ArrayList<byte[]> arguments = new ArrayList<byte[]>(Arrays.asList(p1));
 		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), CommunicationModule.messageIDCounter(),
 				"methodOne", REQUEST, rawObjRef, null, arguments, null);
-
-//		try {
-//			socket = new Socket(m.getObjectRef().getInetAddress(), m
-//					.getObjectRef().getPort());
-//			input = socket.getInputStream();
-//			oinput = new ObjectInputStream(input);
-//			output = socket.getOutputStream();
-//			ooutput = new ObjectOutputStream(output);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
-		MessageADT received = sendRequest(m);
-		//MessageADT received = listenToSocket();
-		int result = unmarshals(received);
-
-		return result;
-	}
-
-	public double methodTwo() throws SomeException112 {
-		// TODO Auto-generated method stub
-		// TODO Auto-generated method stub
-		
-		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), CommunicationModule.messageIDCounter(),
-				"methodTwo", REQUEST, rawObjRef, null, null, null);
-
-//		try {
-//			socket = new Socket(m.getObjectRef().getInetAddress(), m
-//					.getObjectRef().getPort());
-//			input = socket.getInputStream();
-//			oinput = new ObjectInputStream(input);
-//			output = socket.getOutputStream();
-//			ooutput = new ObjectOutputStream(output);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 
 		MessageADT received = sendRequest(m);
 		//MessageADT received = listenToSocket();
@@ -92,52 +49,38 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 	}
 
 	/**
-	 * Nicht implementiert.
-	 * @param o
-	 * @return
+	 * Erzeugt eine MessageADT mit der Internetadresse des CommunicationModule, dem Methodennamen,
+	 * dem MessageTyp (Request) und der rawObjRef und sendet die MessageADT über das
+	 * Kommunikationsmodul an den Host auf dem das Objekt ist, dass diese Methode implementiert.
+	 * Wartet anschließend auf ein Ergebnis und liefert dieses zurück.
 	 */
-	public byte[] valsToByte(List<Object> o) {
+	public double methodTwo() throws SomeException112 {
+		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), CommunicationModule.messageIDCounter(),
+				"methodTwo", REQUEST, rawObjRef, null, null, null);
 
-		return null;
+		MessageADT received = sendRequest(m);
+		//MessageADT received = listenToSocket();
+		int result = unmarshals(received);
+
+		return result;
 	}
 
-//	private MessageADT listenToSocket() {
-//		MessageADT receivedMessage = null;
-//		try {
-//			receivedMessage = (MessageADT) oinput.readObject();
-//		} catch (ClassNotFoundException | IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		return receivedMessage;
-//	}
-
+	/**
+	 * Entpackt den Rückgabewert aus der nachricht und liefert ihn zurück.
+	 * @param m Die Antwortnachricht.
+	 * @return r Das Ergebnis.
+	 */
 	private int unmarshals(MessageADT m) {
 		byte[] returnval = m.getReturnVal();
 		return ByteBuffer.wrap(returnval).getInt();
 	}
 
-//	private void sendRequest(MessageADT m) {
-//
-//		try {
-//			ooutput.writeObject(m);
-//
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		try {
-//			output.close();
-//			ooutput.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//	}
-	
+	/**
+	 * Sendet über das Kommunikationsmodul die Request-Nachricht an den Host,
+	 * auf dem das Objekt ist, das die Methode implementiert.
+	 * @param m Die zu versendende Nachricht.
+	 * @return m2 Die empfangene Nachricht.
+	 */
 	private MessageADT sendRequest(MessageADT m){
 		CommunicationModuleThread t = CommunicationModule.getNewCommunicationThread(m);
 		

@@ -4,6 +4,12 @@ import java.util.Random;
 
 import mware_lib.CommunicationModule;
 
+/**
+ * Servant Klasse - implementiert die eigentliche Funktionalität.
+ * @author Francis u. Fabian
+ * 
+ *
+ */
 public class ClassTwoAO extends ClassTwoImplBase {
 
 	public ClassTwoAO() {
