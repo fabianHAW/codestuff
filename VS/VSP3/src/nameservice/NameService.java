@@ -20,13 +20,13 @@ import mware_lib.RemoteObjectRef;
  */
 public class NameService {
 
-	private static Integer listenPort;
+	public static Integer listenPort;
 	private static ServerSocket serverSocket;
 	private static ObjectInputStream input;
 	private static HashMap<String, RemoteObjectRef> referenceObjects;
 
 	/**
-	 * Startet den Nameservice und lässt ihn auf dem entsprechenden Port lauschen.
+	 * Startet den Nameservice und lï¿½sst ihn auf dem entsprechenden Port lauschen.
 	 * 
 	 * @param port Ein freier Port.
 	 */
@@ -46,9 +46,9 @@ public class NameService {
 	}
 
 	/**
-	 * Lässt den Nameservice auf dem Port lauschen.
+	 * Lï¿½sst den Nameservice auf dem Port lauschen.
 	 * Wenn ein Objekt vom Typ NameserviceRequest auf dem Socket eintrifft, wird ein NameServiceThread
-	 * gestartet, der sich um die Anfrage kümmert. Anschließend wird wieder auf eintreffende Anfragen
+	 * gestartet, der sich um die Anfrage kï¿½mmert. Anschlieï¿½end wird wieder auf eintreffende Anfragen
 	 * gewartet.
 	 * 
 	 */
@@ -77,7 +77,7 @@ public class NameService {
 	}
 
 	/**
-	 * Fügt dem Nameservice eine neue Objektreferenz ref unter dem Namen name hinzu.
+	 * Fï¿½gt dem Nameservice eine neue Objektreferenz ref unter dem Namen name hinzu.
 	 * @param name Der Name des Service.
 	 * @param ref Die Objektreferenz.
 	 */

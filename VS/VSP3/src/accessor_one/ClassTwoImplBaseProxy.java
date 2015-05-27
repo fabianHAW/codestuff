@@ -38,9 +38,9 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 	 * 
 	 * Erzeugt aus param1 ein byte-Array, legt es in einer Liste in die MessageADT
 	 * zusammen mit der Internetadresse des CommunicationModule, dem Methodennamen,
-	 * dem MessageTyp (Request) und der rawObjRef und sendet die MessageADT über das
+	 * dem MessageTyp (Request) und der rawObjRef und sendet die MessageADT ï¿½ber das
 	 * Kommunikationsmodul an den Host auf dem das Objekt ist, dass diese Methode implementiert.
-	 * Wartet anschließend auf ein Ergebnis und liefert dieses zurück.
+	 * Wartet anschlieï¿½end auf ein Ergebnis und liefert dieses zurï¿½ck.
 	 */
 	public int methodOne(double param1) throws SomeException110 {
 		// TODO Auto-generated method stub
@@ -52,16 +52,24 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 
 		MessageADT received = sendRequest(m);
 		//MessageADT received = listenToSocket();
-		int result = (int) unmarshals(received, UNMARSHAL_TYPE.METHOD_ONE);
+		Integer result = null;
+		
+		if(received.getReturnVal() != null){
+			 result = (int) unmarshals(received, UNMARSHAL_TYPE.METHOD_ONE);
+		}else{
+			for(Exception e : received.getExceptionList()){
+				throw (SomeException110)e;
+			}
+		}
 
 		return result;
 	}
 
 	/**
 	 * Erzeugt eine MessageADT mit der Internetadresse des CommunicationModule, dem Methodennamen,
-	 * dem MessageTyp (Request) und der rawObjRef und sendet die MessageADT über das
+	 * dem MessageTyp (Request) und der rawObjRef und sendet die MessageADT ï¿½ber das
 	 * Kommunikationsmodul an den Host auf dem das Objekt ist, dass diese Methode implementiert.
-	 * Wartet anschließend auf ein Ergebnis und liefert dieses zurück.
+	 * Wartet anschlieï¿½end auf ein Ergebnis und liefert dieses zurï¿½ck.
 	 */
 	public double methodTwo() throws SomeException112 {
 		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), CommunicationModule.messageIDCounter(),
@@ -69,13 +77,22 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 
 		MessageADT received = sendRequest(m);
 		//MessageADT received = listenToSocket();
-		double result = (double) unmarshals(received, UNMARSHAL_TYPE.METHOD_TWO);
+		Double result = null;
+		
+		if(received.getReturnVal() != null){
+		  result = (double) unmarshals(received, UNMARSHAL_TYPE.METHOD_TWO);
+		}else{
+			for(Exception e : received.getExceptionList()){
+				throw (SomeException112)e;
+			}
+		}
+		
 
 		return result;
 	}
 
 	/**
-	 * Entpackt den Rückgabewert aus der nachricht und liefert ihn zurück.
+	 * Entpackt den Rï¿½ckgabewert aus der nachricht und liefert ihn zurï¿½ck.
 	 * @param m Die Antwortnachricht.
 	 * @return r Das Ergebnis.
 	 */
@@ -92,7 +109,7 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 	}
 	
 	/**
-	 * Sendet über das Kommunikationsmodul die Request-Nachricht an den Host,
+	 * Sendet ï¿½ber das Kommunikationsmodul die Request-Nachricht an den Host,
 	 * auf dem das Objekt ist, das die Methode implementiert.
 	 * @param m Die zu versendende Nachricht.
 	 * @return m2 Die empfangene Nachricht.

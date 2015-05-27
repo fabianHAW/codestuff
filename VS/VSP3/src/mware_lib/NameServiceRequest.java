@@ -19,12 +19,16 @@ public class NameServiceRequest implements Serializable {
 	private String requestType;
 	private String serviceName;
 	private RemoteObjectRef objectRef;
+	private String host;
+	private int port;
 
 	public NameServiceRequest(String requestType, String serviceName,
-			RemoteObjectRef objectRef) {
+			RemoteObjectRef objectRef, String host, int port) {
 		this.requestType = requestType;
 		this.serviceName = serviceName;
 		this.objectRef = objectRef;
+		this.host = host;
+		this.port = port;
 	}
 
 	public String getRequestType() {
@@ -49,6 +53,22 @@ public class NameServiceRequest implements Serializable {
 
 	public void setObjectRef(RemoteObjectRef objectRef) {
 		this.objectRef = objectRef;
+	}
+	
+	public void setHost(String h){
+		this.host = h;
+	}
+	
+	public String getHost(){
+		return host;
+	}
+	
+	public int getPort(){
+		return port;
+	}
+	
+	public void setPort(int p){
+		this.port = p;
 	}
 
 	@Override

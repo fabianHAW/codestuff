@@ -30,13 +30,13 @@ public class CommunicationModule extends Thread {
 	private ServerSocket serverSocket;
 	private ObjectInputStream input;
 	private static InetAddress localHost;
-	// private static final int COMMUNICATIONMODULEPORT = 50001;
-	// TODO zum lokalen Testen wird port in applikation gesetzt
-	private static int COMMUNICATIONMODULEPORT;
+	private static int COMMUNICATIONMODULEPORT = 50001;
 	private static final int REQUEST = 0;
 	private static final int REPLY = 1;
 	private boolean isAlive;
 	private static int messageIDCounter;
+
+	public static ReferenceModule refMod = new ReferenceModule();
 
 	private static List<Thread> communicationThreadList;
 	private RequestDemultiplexer demultiplexer;
@@ -48,12 +48,27 @@ public class CommunicationModule extends Thread {
 
 		try {
 			this.serverSocket = new ServerSocket(COMMUNICATIONMODULEPORT);
-			communicationThreadList = new ArrayList<Thread>();
-			localHost = InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			try {
+				/*
+				 * fuer lokales Testen muss nun ein vorhandener Port angelegt
+				 * werden
+				 */
+				COMMUNICATIONMODULEPORT = 50002;
+				this.serverSocket = new ServerSocket(COMMUNICATIONMODULEPORT);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+
+		communicationThreadList = new ArrayList<Thread>();
+		try {
+			localHost = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -110,10 +125,12 @@ public class CommunicationModule extends Thread {
 		 * Wurde das Kommunikations-Modul gestoppt, so muss es auch die noch
 		 * laufenden Hilfs-Threads unterbrechen
 		 */
-		for (Thread item : communicationThreadList) {
-			((CommunicationModuleThread) item).interrupt();
-			CommunicationModule.debugPrint(this.getClass(),
-					"interrupted other thread: <" + item.getName() + ">");
+		synchronized (communicationThreadList) {
+			for (Thread item : communicationThreadList) {
+				((CommunicationModuleThread) item).interrupt();
+				CommunicationModule.debugPrint(this.getClass(),
+						"interrupted other thread: <" + item.getName() + ">");
+			}
 		}
 
 		CommunicationModule.debugPrint(this.getClass(),
@@ -254,10 +271,9 @@ public class CommunicationModule extends Thread {
 			System.out.println(klasse.getName() + ": " + text);
 		}
 	}
-
-	// TODO fuer lokales testen kann port geaendert werden
-	public static void setCommunicatiomoduleport(int port) {
-		COMMUNICATIONMODULEPORT = port;
+	
+	public static ReferenceModule getRefMod(){
+		return refMod;
 	}
 
 }

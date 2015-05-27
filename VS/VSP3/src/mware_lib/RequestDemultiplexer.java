@@ -17,7 +17,7 @@ public class RequestDemultiplexer {
 
 	public RequestDemultiplexer() {
 		CommunicationModule.debugPrint(this.getClass(), "initialized");
-		adapter = new ArrayList<ObjectAdapter>(Arrays.asList(
+		this.adapter = new ArrayList<ObjectAdapter>(Arrays.asList(
 				new ObjectAdapterAO(), new ObjectAdapterAT()));
 	}
 

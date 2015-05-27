@@ -33,8 +33,7 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 	public void run() {
 		MessageADT mReturn = invoke();
 		/*
-		 * vsp3_sequ_server: 
-		 * 5: Nachricht zurücksenden
+		 * vsp3_sequ_server: 5: Nachricht zurücksenden
 		 */
 		sendBack(mReturn);
 	}
@@ -51,8 +50,7 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 		List<Exception> le = new ArrayList<Exception>();
 
 		/*
-		 * vsp3_sequ_server: 
-		 * 2: korrekten Servant holen
+		 * vsp3_sequ_server: 2: korrekten Servant holen 
 		 * 2.1: Servant erhalten
 		 */
 		s = ReferenceModule.getServant(r);
@@ -65,12 +63,11 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 				CommunicationModule.debugPrint(this.getClass(),
 						"call methodOne of skeleton");
 				/*
-				 * vsp3_sequ_server: 
-				 * 3: Methodenaufruf des Servants
-				 * 3.1: Return-Wert erhalten
+				 * vsp3_sequ_server: 3: Methodenaufruf des Servants 3.1:
+				 * Return-Wert erhalten
 				 */
 				returnVal = String.valueOf(
-						((ClassOneAT) s).methodOne(param1, param2)).getBytes();
+						((ClassOneImplBase) s).methodOne(param1, param2)).getBytes();
 			} catch (SomeException112 e) {
 				le.add(e);
 			}
@@ -79,7 +76,7 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 				CommunicationModule.debugPrint(this.getClass(),
 						"call methodTwo of skeleton");
 				returnVal = String.valueOf(
-						((ClassOneAT) s).methodTwo(param1, param2)).getBytes();
+						((ClassOneImplBase) s).methodTwo(param1, param2)).getBytes();
 			} catch (SomeException112 e) {
 				le.add(e);
 			} catch (SomeException304 e) {
@@ -87,8 +84,7 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 			}
 		}
 		/*
-		 * vsp3_sequ_server: 
-		 * 4: neue Nachricht generieren
+		 * vsp3_sequ_server: 4: neue Nachricht generieren
 		 */
 		return generateNewMessage(returnVal, le);
 	}
@@ -132,9 +128,9 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 		try {
 			// TODO zum lokalen testen hier der port des kommunikationsmoduls
 			// des clients
-			s = new Socket(mReturn.getiNetAdrress(), 50003);
-			// s = new Socket(mReturn.getiNetAdrress(),
-			// CommunicationModule.getCommunicationmoduleport());
+			// s = new Socket(mReturn.getiNetAdrress(), 50003);
+			s = new Socket(mReturn.getiNetAdrress(),
+					CommunicationModule.getCommunicationmoduleport());
 			o = new ObjectOutputStream(s.getOutputStream());
 
 			o.writeObject(mReturn);

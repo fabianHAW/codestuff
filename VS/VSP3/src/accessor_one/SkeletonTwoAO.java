@@ -4,7 +4,6 @@ package accessor_one;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -13,22 +12,24 @@ import java.util.List;
 
 import mware_lib.CommunicationModule;
 import mware_lib.MessageADT;
+import mware_lib.ReferenceModule;
+import mware_lib.RemoteObjectRef;
 import mware_lib.Skeleton;
 
 /**
  * Verweis zum Entwurf:
  * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - accessor_one.
  * 
- * Stellt das Skeleton dar, dass den angeforderten Methodenaufruf letzten Endes auf dem Objekt ausführt,
- * dass diese Methode implementiert. Sendet den Rückgabewert in einer Nachricht verpackt an den Absender
- * der Nachricht zurück.
+ * Stellt das Skeleton dar, dass den angeforderten Methodenaufruf letzten Endes auf dem Objekt ausfï¿½hrt,
+ * dass diese Methode implementiert. Sendet den Rï¿½ckgabewert in einer Nachricht verpackt an den Absender
+ * der Nachricht zurï¿½ck.
  * 
  * @author Francis
  */
 
 public class SkeletonTwoAO extends Thread implements Skeleton{
 
-	//Identifiziert dieses Skeleton als jenes, dass die Methodenaufrufe auf Objekten der ClassTwoImplBase ausführt.
+	//Identifiziert dieses Skeleton als jenes, dass die Methodenaufrufe auf Objekten der ClassTwoImplBase ausfï¿½hrt.
 	public static final int ID = ClassTwoImplBase.ID;
 	private MessageADT message;
 	private Socket socket;
@@ -42,7 +43,7 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 	}
 	
 	/**
-	 * Sendet die Antwortnachricht an den Absender zurück.
+	 * Sendet die Antwortnachricht an den Absender zurï¿½ck.
 	 * 
 	 * @param reply Die Antwortnachricht.
 	 */
@@ -64,7 +65,7 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 
 
 	/**
-	 * Entscheidet zunächst, welche der beiden angebotenen Methoden ausgeführt werden soll,
+	 * Entscheidet zunï¿½chst, welche der beiden angebotenen Methoden ausgefï¿½hrt werden soll,
 	 * und ruft dann die entsprechende Methode auf.
 	 * 
 	 * @return reply Die Antwortnachricht.
@@ -78,20 +79,24 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 	}
 	
 	/**
-	 * Führt danach auf einem Objekt der Klasse ClasseTwoAO die Methode auf und packt den Rückgabwert
-	 * in eine Antwortnachricht. Wenn das Objekt der Klasse ClassTwoAO eine Exception schmeißt,
-	 * wird die Exception statt des Rückgabewerts in die Nachricht gelegt.
+	 * Fï¿½hrt danach auf einem Objekt der Klasse ClasseTwoAO die Methode auf und packt den Rï¿½ckgabwert
+	 * in eine Antwortnachricht. Wenn das Objekt der Klasse ClassTwoAO eine Exception schmeiï¿½t,
+	 * wird die Exception statt des Rï¿½ckgabewerts in die Nachricht gelegt.
 	 * 
 	 * @return reply Die Antwortnachricht.
 	 */
 	private MessageADT callMethodTwo() {
 		// TODO Auto-generated method stub
-				ClassTwoAO servant = new ClassTwoAO();
+				//ClassTwoAO servant = new ClassTwoAO();
+		RemoteObjectRef r = this.message.getObjectRef();
+		Object servant = null;
 				double returnVal;
 				MessageADT reply;
 				
+				servant = ReferenceModule.getServant(r);
+				
 				try {
-					returnVal = servant.methodTwo();
+					returnVal = ((ClassTwoImplBase)servant).methodTwo();
 					byte[] b = new byte[Double.BYTES];
 					ByteBuffer.wrap(b).putDouble(returnVal);
 					reply = new MessageADT(
@@ -120,24 +125,27 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 	}
 
 	/**
-	 * Entpackt den Parameter der Methode methodOne und wandelt die byte-Repräsentationen dessen
+	 * Entpackt den Parameter der Methode methodOne und wandelt die byte-Reprï¿½sentationen dessen
 	 * in den entsprechenden Typ um.
-	 * Führt danach auf einem Objekt der Klasse ClasseTwoAO die Methode auf und packt den Rückgabwert
-	 * in eine Antwortnachricht. Wenn das Objekt der Klasse ClassTwoAO eine Exception schmeißt,
-	 * wird die Exception statt des Rückgabewerts in die Nachricht gelegt.
+	 * Fï¿½hrt danach auf einem Objekt der Klasse ClasseTwoAO die Methode auf und packt den Rï¿½ckgabwert
+	 * in eine Antwortnachricht. Wenn das Objekt der Klasse ClassTwoAO eine Exception schmeiï¿½t,
+	 * wird die Exception statt des Rï¿½ckgabewerts in die Nachricht gelegt.
 	 * 
 	 * @return reply Die Antwortnachricht.
 	 */
 	private MessageADT callMethodOne() {
 		// TODO Auto-generated method stub
-		ClassTwoAO servant = new ClassTwoAO();
+		Object servant = null;
+		RemoteObjectRef r = this.message.getObjectRef();
 		List<byte[]> args = message.getArguments();
 		double param1 = ByteBuffer.wrap(args.get(0)).getDouble();
 		int returnVal;
 		MessageADT reply;
 		
+		servant = ReferenceModule.getServant(r);
+		
 		try {
-			returnVal = servant.methodOne(param1);
+			returnVal = ((ClassTwoImplBase)servant).methodOne(param1);
 			byte[] b = new byte[Integer.BYTES];
 			ByteBuffer.wrap(b).putInt(returnVal);
 			reply = new MessageADT(
@@ -167,7 +175,7 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 
 	/**
 	 * Speichert die empfangene Nachricht, die die entsprechende Methodenbeschreibung der Methode
-	 * enthält, die ausgeführt werden soll, damit bei einem Aufruf von start() auf diesem Thread
+	 * enthï¿½lt, die ausgefï¿½hrt werden soll, damit bei einem Aufruf von start() auf diesem Thread
 	 * darauf zugegriffen werden kann.
 	 * @param m Die empfangene Nachricht.
 	 */

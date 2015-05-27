@@ -91,11 +91,6 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 			double param2, String mName) {
 		List<byte[]> values = new ArrayList<byte[]>();
 
-		if (param1 == null)
-			param1 = "null is not fine";
-		if ((Double) param2 == null)
-			param2 = 2;
-
 		values.add(param1.getBytes());
 		values.add(String.valueOf(param2).getBytes());
 

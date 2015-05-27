@@ -59,7 +59,10 @@ public abstract class ClassOneImplBase {
 	 * @return Stellvertreter-Objekt
 	 */
 	public static ClassOneImplBase narrowCast(Object rawObjectRef) {
-
+		if(rawObjectRef == null){
+			return null;
+		}
+		
 		boolean inside = ReferenceModule.contains(rawObjectRef);
 		ClassOneImplBase remoteObj = null;
 

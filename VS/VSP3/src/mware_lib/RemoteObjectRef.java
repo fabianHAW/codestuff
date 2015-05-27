@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * 
- * @author Francis
+ * @author Francis u. Fabian
  *
  * Entfernte Objekt-Referenz als ADT
  */

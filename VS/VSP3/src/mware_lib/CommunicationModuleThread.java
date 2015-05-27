@@ -25,10 +25,9 @@ public class CommunicationModuleThread extends Thread {
 		CommunicationModule.debugPrint(this.getClass(), "initialized");
 		this.sendMessage = m;
 		try {
-			// TODO zum lokalen testen hier der port des servers angegeben
-			this.socket = new Socket(m.getObjectRef().getInetAddress(), 50001);
-			// this.socket = new Socket(m.getObjectRef().getInetAddress(),
-			// CommunicationModule.getCommunicationmoduleport());
+
+			this.socket = new Socket(m.getObjectRef().getInetAddress(),
+					CommunicationModule.getCommunicationmoduleport());
 
 			this.output = new ObjectOutputStream(this.socket.getOutputStream());
 		} catch (IOException e) {

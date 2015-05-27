@@ -21,16 +21,16 @@ public abstract class ClassOneImplBase {
 	 * 
 	 * Identifiziert Objekte dieser Klasse und wird von den
 	 * Objektadaptern verwendet, um Objekte vom Typ RemoteObjectRef,
-	 * welche in der MessageADT sind, den zugehörigen Skeletons zuzuordnen.
-	 * Die Skeletons haben eine Liste mit IDs der Objekte, für die sie die
+	 * welche in der MessageADT sind, den zugehï¿½rigen Skeletons zuzuordnen.
+	 * Die Skeletons haben eine Liste mit IDs der Objekte, fï¿½r die sie die
 	 * Stellvertetermethoden implementieren. 
 	 */
 	public static final int ID = 1;
 	
 	/**
 	 * 
-	 * Prüft ob param2 % 2 == 0 ist und wenn dies so ist, 
-	 * liefert die Methode param1 + " " + param2 + " % 2 == 0" zurück,
+	 * Prï¿½ft ob param2 % 2 == 0 ist und wenn dies so ist, 
+	 * liefert die Methode param1 + " " + param2 + " % 2 == 0" zurï¿½ck,
 	 * sonst wirft sie die Exception. 
 	 * @param param1 Irgendein String.
 	 * @param param2 Irgendein int.
@@ -44,14 +44,17 @@ public abstract class ClassOneImplBase {
 	 * <Sequenzdiagramm client_reply> : Realiserung der Sequenznummern 5
 	 * 
 	 * Wenn der Proxy noch nicht im ReferenceModule ist:
-	 * Erzeugt ein neues Stellvertreterobjekt für ClassOneAO und bindet
+	 * Erzeugt ein neues Stellvertreterobjekt fï¿½r ClassOneAO und bindet
 	 * das rawObejctRef an das Prox, indem es dieses mit dem Objekt instanziiert.
 	 * Wenn der Proxy bereits im ReferenceModule ist:
-	 * Sucht diesen und liefert ihn zurück.
+	 * Sucht diesen und liefert ihn zurï¿½ck.
 	 * @param rawObjectRef Die Objektreferenz eines Objekts vom Typ ClassOneAO
 	 * @return proxy Das Stellvertreterobjekt
 	 */
 	public static ClassOneImplBase narrowCast(Object rawObjectRef) {
+		if(rawObjectRef == null){
+			return null;
+		}
 		//Verweis zum Entwurf:
 		//<Sequenzdiagramm client_reply> : Realiserung der Sequenznummern 5.3
 		ClassOneImplBaseProxy remoteObj = null;

@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import accessor_one.ClassOneAO;
-import accessor_one.ClassTwoAO;
-import accessor_two.ClassOneAT;
-
 /**
  * 
  * @author Fabian
@@ -38,15 +34,17 @@ public class ReferenceModule {
 	public static RemoteObjectRef createNewRemoteRef(Object myObject) {
 		int port = -1;
 		int objectNumber = -1;
+
 		List<String> interfaces = new ArrayList<String>();
-		if (myObject instanceof ClassOneAO) {
+
+		if (myObject instanceof accessor_one.ClassOneImplBase) {
 			objectNumber = 1;
 			interfaces.add("methodOne(String param1, int param2)");
-		} else if (myObject instanceof ClassTwoAO) {
+		} else if (myObject instanceof accessor_one.ClassTwoImplBase) {
 			objectNumber = 2;
 			interfaces.add("methodOne(double param1)");
 			interfaces.add("methodTwo()");
-		} else if (myObject instanceof ClassOneAT) {
+		} else if (myObject instanceof accessor_two.ClassOneImplBase) {
 			objectNumber = 3;
 			interfaces.add("methodOne(String param1, double param2)");
 			interfaces.add("methodTwo(String param1, double param2)");
@@ -81,6 +79,7 @@ public class ReferenceModule {
 			Object myObject) {
 		CommunicationModule
 				.debugPrint("mware_lib.ReferenceModule: save new servant in servantlist.");
+
 		mapRemoteServant.put(rawObjRef, myObject);
 	}
 

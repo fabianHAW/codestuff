@@ -54,13 +54,15 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase{
 		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), CommunicationModule.messageIDCounter(), "methodOne", REQUEST, rawObjRef, null, vals, null);
 		
 		MessageADT received = sendRequest(m);
-		//MessageADT received = listenToSocket();
-		String result = null;
 		
 		//Verweis zum Entwurf:
 		//<Sequenzdiagramm client_reply>  : Realisierung der Sequenznummer 4
 		if(received.getReturnVal() != null){
 			return unmarshals(received);
+		}else{
+			for(Exception e : received.getExceptionList()){
+				throw (SomeException112)e;
+			}
 		}
 	
 		CommunicationModule.debugPrint(received.getExceptionList().get(0).getMessage());
@@ -89,7 +91,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase{
 	 * Verweis zum Entwurf:
 	 * <Sequenzdiagramm client_reply> Sequenznummer 3
 	 * @param m Die Antwortnachricht.
-	 * @return s Der String-Rückgabewert der methodOne, welcher in der Nachricht ist.
+	 * @return s Der String-Rï¿½ckgabewert der methodOne, welcher in der Nachricht ist.
 	 */
 	private String unmarshals(MessageADT m){
 		byte[] returnval = m.getReturnVal();

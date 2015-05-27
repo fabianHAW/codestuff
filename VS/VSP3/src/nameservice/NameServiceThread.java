@@ -2,7 +2,9 @@ package nameservice;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import mware_lib.NameServiceRequest;
 import mware_lib.RemoteObjectRef;
@@ -42,22 +44,23 @@ public class NameServiceThread extends Thread {
 	}
 
 	/**
-	 * Bei einem resolve wird das gesuchte Objekt in einem NameServiceRequest zurückgeliefert.
+	 * Bei einem resolve wird das gesuchte Objekt in einem NameServiceRequest zurï¿½ckgeliefert.
 	 * 
 	 * @param type Der Typ der Nachricht.
 	 * @param name Der Name des Objekts.
 	 * @param o Die Objektreferenz.
 	 */
 	private void sendObject(String type, String name, Object o) {
-		NameServiceRequest request = new NameServiceRequest(type, name,
-				(RemoteObjectRef) o);
+		NameServiceRequest request = null;
 		try {
-			// TODO fuer lokale zwecke hier der listenport = 50004 und der
-			// lokale
-			// host. verteilt wird der socket genommen der dem thread uebergeben
-			// wurde -> folgende zeile loeschen
-			this.socket = new Socket(NameService.getLocalHost(), 50004);
-
+			request = new NameServiceRequest(type, name,
+					(RemoteObjectRef) o, InetAddress.getLocalHost().getCanonicalHostName(), NameService.listenPort);
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			this.socket = new Socket(this.request.getHost(), this.request.getPort());
 			ObjectOutputStream out = new ObjectOutputStream(
 					this.socket.getOutputStream());
 			out.writeObject(request);
@@ -74,18 +77,19 @@ public class NameServiceThread extends Thread {
 
 	/**
 	 * Speichert ein Objektreferenz unter dem Namen name ab.
-	 * Eine evtl. vorhandene andere Objektreferenz wird überschrieben.
+	 * Eine evtl. vorhandene andere Objektreferenz wird ï¿½berschrieben.
 	 * 
 	 * @param servant Die Objektreferenz.
 	 * @param name Der Name des Service der hinter der Objektreferenz steht.
 	 */
 	public void rebind(Object servant, String name) {
 		// TODO Auto-generated method stub
-		NameService.addService(name, (RemoteObjectRef) servant);
+		if(servant != null)
+			NameService.addService(name, (RemoteObjectRef) servant);
 	}
 
 	/**
-	 * Liefert die Objektreferenz die dem Namen zugehörig ist.
+	 * Liefert die Objektreferenz die dem Namen zugehï¿½rig ist.
 	 * 
 	 * @param name Der Name des Service der hinter der Objektreferenz steht.
 	 * @return ref Die Objektreferenz.
