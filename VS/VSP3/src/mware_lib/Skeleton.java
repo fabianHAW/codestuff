@@ -4,7 +4,10 @@ package mware_lib;
  * 
  * @author Francis
  * 
- *         Stellt die Schnittstellen des Skeletons auf der Server-Seite bereit
+ *         Als Thread implementiert, damit mehrere Anfragen des gleichen
+ *         Objektes durchgeführt werden können. Durch die entfernte
+ *         Objektreferenz in der empfangenen Nachricht, kann durch das
+ *         Referenzmodul auf das lokale Objekt geschlossen werden.
  */
 
 public interface Skeleton {

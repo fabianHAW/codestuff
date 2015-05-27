@@ -32,6 +32,10 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 
 	public void run() {
 		MessageADT mReturn = invoke();
+		/*
+		 * vsp3_sequ_server: 
+		 * 5: Nachricht zurücksenden
+		 */
 		sendBack(mReturn);
 	}
 
@@ -46,6 +50,11 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 		byte[] returnVal = null;
 		List<Exception> le = new ArrayList<Exception>();
 
+		/*
+		 * vsp3_sequ_server: 
+		 * 2: korrekten Servant holen
+		 * 2.1: Servant erhalten
+		 */
 		s = ReferenceModule.getServant(r);
 
 		CommunicationModule.debugPrint(this.getClass(),
@@ -55,6 +64,11 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 			try {
 				CommunicationModule.debugPrint(this.getClass(),
 						"call methodOne of skeleton");
+				/*
+				 * vsp3_sequ_server: 
+				 * 3: Methodenaufruf des Servants
+				 * 3.1: Return-Wert erhalten
+				 */
 				returnVal = String.valueOf(
 						((ClassOneAT) s).methodOne(param1, param2)).getBytes();
 			} catch (SomeException112 e) {
@@ -72,6 +86,10 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 				le.add(e);
 			}
 		}
+		/*
+		 * vsp3_sequ_server: 
+		 * 4: neue Nachricht generieren
+		 */
 		return generateNewMessage(returnVal, le);
 	}
 

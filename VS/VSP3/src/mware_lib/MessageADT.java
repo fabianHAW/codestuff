@@ -8,8 +8,14 @@ import java.util.List;
  * 
  * @author Francis
  * 
- *         Die Nachrichten-ADT die zur internen Kommunikation der Middleware
- *         verwendet wird
+ *         Dient als Kommunikationsobjekt zwischen den Komponenten. Für einen
+ *         Reqeust erzeugt der Proxy, auf Client-Seite, aus den gegebenen Daten
+ *         ein solches Objekt (Marshals Request). Das Skeleton, auf
+ *         Server-Seite, packt dieses Objekt aus (Unmarshals Request) und erhält
+ *         somit die nötigen Informationen. Für einen Reply erzeugt das
+ *         Skeleton, auf Server-Seite, ein neues MessageADT (Marshals Reply).
+ *         Auf der Client-Seite muss der Proxy dieses Objekt wieder entpacken
+ *         (Unmarshals Reply).
  */
 public class MessageADT implements Serializable {
 

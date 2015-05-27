@@ -10,8 +10,7 @@ import accessor_two.ObjectAdapterAT;
  * 
  * @author Fabian
  * 
- *         Ist fuer die Weiterleitung der MessageADT zum passenden
- *         Objekt-Adapter zustaendig
+ *         Teilt die Nachricht dem zugeordneten ObjektAdapter zu.
  */
 public class RequestDemultiplexer {
 	ArrayList<ObjectAdapter> adapter;
@@ -33,6 +32,9 @@ public class RequestDemultiplexer {
 		int objectNumber = m.getObjectRef().getObjectNumber();
 		for (ObjectAdapter item : this.adapter) {
 			if (item.getSkeletonIDs().contains(objectNumber)) {
+				/*
+				 * vsp3_sequ_server: 1.1.1: Skeleton initialisieren
+				 */
 				item.initSkeleton(m);
 				CommunicationModule.debugPrint(this.getClass(),
 						"found right skeleton and initialized");

@@ -6,8 +6,7 @@ import mware_lib.CommunicationModule;
  * 
  * @author Fabian
  * 
- *         Servant-Klasse: Implementiert die eigentliche Funktionalität der
- *         Methoden
+ *         Implementiert die eigentliche Methode auf der Serverseite.
  */
 
 public class ClassOneAT extends ClassOneImplBase {

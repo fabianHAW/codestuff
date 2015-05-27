@@ -129,50 +129,111 @@ public class ClientStart extends Thread{
 		double returnvalc3;
 		
 		/**Params c3 methodOne**/
-		String c3param1m1 = "test";
-		double c3param2m1 = 3.2;
+		String c3param1m1_1 = "cute sloth";
+		double c3param2m1_1 = 3.2;
+		String c3param1m1_2 = null;
+		double c3param2m1_2= 3.2;
+		String c3param1m1_3 = "cute sloth";
+		double c3param2m1_3= 1.9;
 		
 		/**Params c3 methodTwo**/
-		String c3param1m2 = "the monkey without shoes";
-		double c3param2m2 = 2.3;
+		String c3param1m2_1 = "the monkey with shoes";
+		double c3param2m2_1 = 1.9;
+		String c3param1m2_2 = null;
+		double c3param2m2_2 = 1.9;
+		String c3param1m2_3 = "the monkey with shoes";
+		double c3param2m2_3 = 2.3;
+		String c3param1m2_4 = "the monkey without shoes";
+		double c3param2m2_4 = 1.9;
 		
 		/**Test ClassOneAT methodOne**/
 		try {
-		
-			
-			returnvalc3 = remoteObj3.methodOne(c3param1m1, c3param2m1);
+			/**1.Test: normale-Test**/
+			returnvalc3 = remoteObj3.methodOne(c3param1m1_1, c3param2m1_1);
 			System.out.println("accessor_two.ClassOneImplBase (\"" + namec3 + "\")");
 			System.out.println("methodOne");
-			System.out.println("param1 = " + c3param1m1 + " param2 = " + c3param2m1);
+			System.out.println("param1 = " + c3param1m1_1 + " param2 = " + c3param2m1_1);
+			System.out.println("return value = " + returnvalc3);
+			
+			/**2.Test: null-Test**/
+			returnvalc3 = remoteObj3.methodOne(c3param1m1_2, c3param2m1_2);
+			System.out.println("accessor_two.ClassOneImplBase (\"" + namec3 + "\")");
+			System.out.println("methodOne");
+			System.out.println("param1 = " + c3param1m1_2 + " param2 = " + c3param2m1_2);
+			System.out.println("return value = " + returnvalc3);
+			
+			/**3.Test: Exception112-Test**/
+			returnvalc3 = remoteObj3.methodOne(c3param1m1_3, c3param2m1_3);
+			System.out.println("accessor_two.ClassOneImplBase (\"" + namec3 + "\")");
+			System.out.println("methodOne");
+			System.out.println("param1 = " + c3param1m1_3 + " param2 = " + c3param2m1_3);
 			System.out.println("return value = " + returnvalc3);
 		} catch (accessor_two.SomeException112 e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			System.out.println("accessor_one.ClassOneImplBase (\"" + namec3 + "\"");
 			System.out.println("methodOne");
-			System.out.println("param1 = \"" + c3param1m1 + "\" param2 = " + c3param2m1);
+			System.out.println("param1 = \"" + c3param1m1_3 + "\" param2 = " + c3param2m1_3);
 			System.out.println("accessor_one.SomeException112 with message \"" + e.getMessage() + "\"");
 		}
 		
 		/**Test ClassOneAT methodTwo**/
 		try {
-			returnvalc3 = remoteObj3.methodTwo(c3param1m2, c3param2m2);
+			/**1.Test: Normal-Test**/
+			returnvalc3 = remoteObj3.methodTwo(c3param1m2_1, c3param2m2_1);
 			System.out.println("accessor_two.ClassOneImplBase (\"" + namec3 + "\")");
 			System.out.println("methodOne");
-			System.out.println("param1 = " + c3param1m2 + " param2 = " + c3param2m2);
+			System.out.println("param1 = " + c3param1m2_1 + " param2 = " + c3param2m2_1);
 			System.out.println("return value = " + returnvalc3);
+			
+			/**2.Test: null-Test**/
+			returnvalc3 = remoteObj3.methodTwo(c3param1m2_2, c3param2m2_2);
+			System.out.println("accessor_two.ClassOneImplBase (\"" + namec3 + "\")");
+			System.out.println("methodOne");
+			System.out.println("param1 = " + c3param1m2_2 + " param2 = " + c3param2m2_2);
+			System.out.println("return value = " + returnvalc3);
+			
+			/**3.Test: Exception112-Test**/
+			returnvalc3 = remoteObj3.methodTwo(c3param1m2_3, c3param2m2_3);
+			System.out.println("accessor_two.ClassOneImplBase (\"" + namec3 + "\")");
+			System.out.println("methodOne");
+			System.out.println("param1 = " + c3param1m2_3 + " param2 = " + c3param2m2_3);
+			System.out.println("return value = " + returnvalc3);
+			
 		} catch (accessor_two.SomeException112 e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			System.out.println("accessor_two.ClassOneImplBase (\"" + namec3 + "\"");
 			System.out.println("methodOne");
-			System.out.println("param1 = \"" + c3param1m1 + "\" param2 = " + c3param2m1);
+			System.out.println("param1 = \"" + c3param1m2_3 + "\" param2 = " + c3param2m2_3);
 			System.out.println("accessor_two.SomeException112 with message \"" + e.getMessage() + "\"");
 		} catch (accessor_two.SomeException304 e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			System.out.println("accessor_two.ClassOneImplBase (\"" + namec3 + "\"");
 			System.out.println("methodOne");
-			System.out.println("param1 = \"" + c3param1m1 + "\" param2 = " + c3param2m1);
+			System.out.println("param1 = \"" + c3param1m2_4 + "\" param2 = " + c3param2m2_4);
 			System.out.println("accessor_two.SomeException304 with message \"" + e.getMessage() + "\"");
 		}
+		
+		try{
+			/**4.Test: Exception304-Test**/
+			returnvalc3 = remoteObj3.methodTwo(c3param1m2_4, c3param2m2_4);
+			System.out.println("accessor_two.ClassOneImplBase (\"" + namec3 + "\")");
+			System.out.println("methodOne");
+			System.out.println("param1 = " + c3param1m2_4 + " param2 = " + c3param2m2_4);
+			System.out.println("return value = " + returnvalc3);
+		} catch (accessor_two.SomeException112 e) {
+			//e.printStackTrace();
+			System.out.println("accessor_two.ClassOneImplBase (\"" + namec3 + "\"");
+			System.out.println("methodOne");
+			System.out.println("param1 = \"" + c3param1m2_3 + "\" param2 = " + c3param2m2_3);
+			System.out.println("accessor_two.SomeException112 with message \"" + e.getMessage() + "\"");
+		} catch (accessor_two.SomeException304 e) {
+			//e.printStackTrace();
+			System.out.println("accessor_two.ClassOneImplBase (\"" + namec3 + "\"");
+			System.out.println("methodOne");
+			System.out.println("param1 = \"" + c3param1m2_4 + "\" param2 = " + c3param2m2_4);
+			System.out.println("accessor_two.SomeException304 with message \"" + e.getMessage() + "\"");
+		}
+		
 
 		objBroker.shutDown();
 		

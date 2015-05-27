@@ -8,10 +8,11 @@ import java.net.Socket;
  * 
  * @author Francis und Fabian
  * 
- *         Hilfs-Thread der verwendet wird um von der Client- zur Server-Seite
- *         einen Request zu senden und sobald ein Reply zurueck kommt vom
- *         lokalen Kommunikations-Modul geweckt wird, dass ein Reply
- *         eingetroffen ist
+ *         Dieser Thread wird vom Proxy (Client-Seite) erzeugt. Der Proxy teilt
+ *         ihm mit welche Nachricht er über das Netzwerk auf die Server-Seite
+ *         versenden muss. Danach wartet der jeweilige Thread auf die Antwort.
+ *         Trifft diese beim Kommunikationsmodul ein, so wird der Thread geweckt
+ *         und kann dem Proxy das Ergebnis (MessageADT) zurück liefern.
  */
 public class CommunicationModuleThread extends Thread {
 
