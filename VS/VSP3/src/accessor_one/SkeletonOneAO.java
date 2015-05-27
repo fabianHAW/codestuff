@@ -17,14 +17,19 @@ import mware_lib.MessageADT;
 import mware_lib.Skeleton;
 
 /**
+ * Verweis zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - accessor_one.
  * 
- * @author Francis und Fabian
- *
- * Stellt das Skeleton dar -> Objekte seitens des Servers greifen darauf zu
+ * Stellt das Skeleton dar, dass den angeforderten Methodenaufruf letzten Endes auf dem Objekt ausführt,
+ * dass diese Methode implementiert. Sendet den Rückgabewert in einer Nachricht verpackt an den Absender
+ * der Nachricht zurück.
+ * 
+ * @author Francis
  */
 
 public class SkeletonOneAO extends Thread implements Skeleton{
 
+	//Identifiziert dieses Skeleton als jenes, dass die Methodenaufrufe auf Objekten der ClassOneImplBase ausführt.
 	public static final int ID = ClassOneImplBase.ID;
 	private MessageADT message;
 	private Socket socket;
@@ -37,6 +42,11 @@ public class SkeletonOneAO extends Thread implements Skeleton{
 		sendMessageBack(reply);
 	}
 	
+	/**
+	 * Sendet die Antwortnachricht an den Absender zurück.
+	 * 
+	 * @param reply Die Antwortnachricht.
+	 */
 	private void sendMessageBack(MessageADT reply) {
 		// TODO Auto-generated method stub
 		CommunicationModule.debugPrint(this.getClass(), "send message back");
@@ -53,6 +63,13 @@ public class SkeletonOneAO extends Thread implements Skeleton{
 		}
 	}
 
+	/**
+	 * Entpackt die Parameter der Methode methodOne und wandelt die byte-Repräsentationen dieser
+	 * in die entsprechenden Typen um.
+	 * Führt danach auf einem Objekt der Klasse ClasseOneAO die Methode auf und packt den Rückgabwert
+	 * in eine Antwortnachricht. Wenn das Objekt dre Klasse ClassOneAO eine Exception schmeißt,
+	 * wird die Exception statt des Rückgabewerts in die Nachricht gelegt.
+	 */
 	public MessageADT invoke() {
 		ClassOneAO servant = new ClassOneAO();
 		List<byte[]> args = message.getArguments();
@@ -91,6 +108,12 @@ public class SkeletonOneAO extends Thread implements Skeleton{
 		
 	}
 	
+	/**
+	 * Speichert die empfangene Nachricht, die die entsprechende Methodenbeschreibung der Methode
+	 * enthält, die ausgeführt werden soll, damit bei einem Aufruf von start() auf diesem Thread
+	 * darauf zugegriffen werden kann.
+	 * @param m Die empfangene Nachricht.
+	 */
 	public SkeletonOneAO(MessageADT m){
 		this.message = m;
 	}

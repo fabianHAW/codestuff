@@ -11,7 +11,13 @@ import java.util.HashMap;
 import mware_lib.CommunicationModule;
 import mware_lib.NameServiceRequest;
 import mware_lib.RemoteObjectRef;
-
+/**
+ * Verweis zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - accessor_one.
+ * 
+ * @author Francis u. Fabian.
+ *
+ */
 public class NameService {
 
 	private static Integer listenPort;
@@ -19,6 +25,11 @@ public class NameService {
 	private static ObjectInputStream input;
 	private static HashMap<String, RemoteObjectRef> referenceObjects;
 
+	/**
+	 * Startet den Nameservice und lässt ihn auf dem entsprechenden Port lauschen.
+	 * 
+	 * @param port Ein freier Port.
+	 */
 	public void start(int port) {
 
 		CommunicationModule.debugPrint(this.getClass(), " initialize... ");
@@ -34,6 +45,13 @@ public class NameService {
 		CommunicationModule.debugPrint(this.getClass(), " initialized! ");
 	}
 
+	/**
+	 * Lässt den Nameservice auf dem Port lauschen.
+	 * Wenn ein Objekt vom Typ NameserviceRequest auf dem Socket eintrifft, wird ein NameServiceThread
+	 * gestartet, der sich um die Anfrage kümmert. Anschließend wird wieder auf eintreffende Anfragen
+	 * gewartet.
+	 * 
+	 */
 	public void listen() {
 		CommunicationModule.debugPrint(this.getClass(), " waiting for requests.");
 		while (true) {
@@ -58,18 +76,37 @@ public class NameService {
 		}
 	}
 
+	/**
+	 * Fügt dem Nameservice eine neue Objektreferenz ref unter dem Namen name hinzu.
+	 * @param name Der Name des Service.
+	 * @param ref Die Objektreferenz.
+	 */
 	public static void addService(String name, RemoteObjectRef ref) {
 		referenceObjects.put(name, ref);
 	}
 
+	/**
+	 * Liefert den Service, der unter dem Namen name abgespeichert ist.
+	 * 
+	 * @param name Der Name des Service.
+	 * @return service Der Service mit dem Namen name.
+	 */
 	public static synchronized RemoteObjectRef getService(String name) {
 		return referenceObjects.get(name);
 	}
 
+	/**
+	 * Liefert den Port, auf dem der Nameservice lauscht.
+	 * @return port der entsprechende Port.
+	 */
 	public static int getListenPort() {
 		return listenPort;
 	}
 
+	/**
+	 * Liefert den localhost des Nameservice.
+	 * @return localhost Der localhost des Nameservice.
+	 */
 	public static synchronized InetAddress getLocalHost() {
 		try {
 			return InetAddress.getLocalHost();

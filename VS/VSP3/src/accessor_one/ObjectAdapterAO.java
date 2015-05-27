@@ -1,6 +1,5 @@
 package accessor_one;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -8,6 +7,15 @@ import mware_lib.CommunicationModule;
 import mware_lib.MessageADT;
 import mware_lib.ObjectAdapter;
 
+/**
+ * Verweis zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - accessor_one.
+ * 
+ * Erhält eine Nachricht und entscheidet auf Grundlage der Skeleton-ID und
+ * der ObjectNumber welcher Skeleton diese Nachricht erhalten soll.
+ * @author Francis
+ *
+ */
 public class ObjectAdapterAO implements ObjectAdapter {
 
 	public ObjectAdapterAO() {
@@ -31,6 +39,9 @@ public class ObjectAdapterAO implements ObjectAdapter {
 		}
 	}
 	
+	/**
+	 * Liefert dem Requestdemultiplexer die IDs der Skeletons, für die dieser Objektadapter verantwortlich ist.
+	 */
 	public ArrayList<Integer> getSkeletonIDs(){
 		return new ArrayList<Integer>(Arrays.asList(SkeletonOneAO.ID, SkeletonTwoAO.ID));
 	}

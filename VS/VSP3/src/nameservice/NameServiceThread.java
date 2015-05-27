@@ -7,6 +7,12 @@ import java.net.Socket;
 import mware_lib.NameServiceRequest;
 import mware_lib.RemoteObjectRef;
 
+/**
+ * Behandelt den NameserviceRequest.
+ * 
+ * @author Francis
+ *
+ */
 public class NameServiceThread extends Thread {
 
 	private NameServiceRequest request;
@@ -19,6 +25,10 @@ public class NameServiceThread extends Thread {
 
 	}
 
+	/**
+	 * Entscheidet auf Grundlage  des Typs des NameserviceRequest, ob ein rebind oder ein
+	 * resolve angefordert wurde, und ruft die entsprechende Methode auf.
+	 */
 	public void run() {
 		String type = request.getRequestType().toLowerCase();
 		if (type.equals("rebind")) {
@@ -31,6 +41,13 @@ public class NameServiceThread extends Thread {
 		}
 	}
 
+	/**
+	 * Bei einem resolve wird das gesuchte Objekt in einem NameServiceRequest zurückgeliefert.
+	 * 
+	 * @param type Der Typ der Nachricht.
+	 * @param name Der Name des Objekts.
+	 * @param o Die Objektreferenz.
+	 */
 	private void sendObject(String type, String name, Object o) {
 		NameServiceRequest request = new NameServiceRequest(type, name,
 				(RemoteObjectRef) o);
@@ -55,17 +72,24 @@ public class NameServiceThread extends Thread {
 		}
 	}
 
-	// - Schnittstelle zum Namensdienst -
-
-	// Meldet ein Objekt (servant) beim Namensdienst an.
-	// Eine eventuell schon vorhandene Objektreferenz gleichen Namens
-	// soll Ã¼berschrieben werden.
+	/**
+	 * Speichert ein Objektreferenz unter dem Namen name ab.
+	 * Eine evtl. vorhandene andere Objektreferenz wird überschrieben.
+	 * 
+	 * @param servant Die Objektreferenz.
+	 * @param name Der Name des Service der hinter der Objektreferenz steht.
+	 */
 	public void rebind(Object servant, String name) {
 		// TODO Auto-generated method stub
 		NameService.addService(name, (RemoteObjectRef) servant);
 	}
 
-	// Liefert eine generische Objektreferenz zu einem Namen. (vgl. unten)
+	/**
+	 * Liefert die Objektreferenz die dem Namen zugehörig ist.
+	 * 
+	 * @param name Der Name des Service der hinter der Objektreferenz steht.
+	 * @return ref Die Objektreferenz.
+	 */
 	public Object resolve(String name) {
 		// TODO Auto-generated method stub
 		return NameService.getService(name);

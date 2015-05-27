@@ -1,5 +1,12 @@
 package accessor_one;
 
+/**
+ * Verweis zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Exception in Nr. 3 (d) - accessor_one.
+ * 
+ * @author Francis
+ *
+ */
 public class SomeException110 extends Exception{
 
 	/**

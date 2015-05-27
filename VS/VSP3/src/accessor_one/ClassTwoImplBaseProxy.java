@@ -10,8 +10,11 @@ import mware_lib.MessageADT;
 import mware_lib.RemoteObjectRef;
 
 /**
+ * Verweis zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - accessor_one.
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in accessor_one - ClassTwoImplBaseProxy
  * 
- * @author Francis und Fabian Stellt den Stub dar -> Objekte seitens des Clients
+ * @author Francis Stellt den Stub dar -> Objekte seitens des Clients
  *         greifen darauf zu
  *
  */
@@ -22,11 +25,17 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 	private RemoteObjectRef rawObjRef;
 
 	
+	/**
+	 * Speichert die RemoteObjectRef in der Instanzvariablen rawObjRef.
+	 * @param rawObj Die Objekt-Referenz vom Nameservice
+	 */
 	public ClassTwoImplBaseProxy(RemoteObjectRef rawObj){
 		rawObjRef = rawObj;
 	}
 
 	/**
+	 * 
+	 * 
 	 * Erzeugt aus param1 ein byte-Array, legt es in einer Liste in die MessageADT
 	 * zusammen mit der Internetadresse des CommunicationModule, dem Methodennamen,
 	 * dem MessageTyp (Request) und der rawObjRef und sendet die MessageADT über das
@@ -43,7 +52,7 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 
 		MessageADT received = sendRequest(m);
 		//MessageADT received = listenToSocket();
-		int result = unmarshals(received);
+		int result = (int) unmarshals(received, UNMARSHAL_TYPE.METHOD_ONE);
 
 		return result;
 	}
@@ -60,7 +69,7 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 
 		MessageADT received = sendRequest(m);
 		//MessageADT received = listenToSocket();
-		int result = unmarshals(received);
+		double result = (double) unmarshals(received, UNMARSHAL_TYPE.METHOD_TWO);
 
 		return result;
 	}
@@ -70,11 +79,18 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 	 * @param m Die Antwortnachricht.
 	 * @return r Das Ergebnis.
 	 */
-	private int unmarshals(MessageADT m) {
+	private Object unmarshals(MessageADT m, UNMARSHAL_TYPE type) {
+		if(type == UNMARSHAL_TYPE.METHOD_ONE){
 		byte[] returnval = m.getReturnVal();
 		return ByteBuffer.wrap(returnval).getInt();
+		}else if(type == UNMARSHAL_TYPE.METHOD_TWO){
+			byte[] returnval = m.getReturnVal();
+			return ByteBuffer.wrap(returnval).getDouble();
+		}
+		
+		return null;
 	}
-
+	
 	/**
 	 * Sendet über das Kommunikationsmodul die Request-Nachricht an den Host,
 	 * auf dem das Objekt ist, das die Methode implementiert.
@@ -93,6 +109,16 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 		}
 		
 		return t.getReceivedMessage();
+	}
+	
+	/**
+	 * Identifiziert die aufrufende Methode, damit entschieden werden kann,
+	 * ob der Return-Wert aus der Antwortnachricht als int oder double gelesen wird.
+	 * @author Francis
+	 *
+	 */
+	private enum UNMARSHAL_TYPE{
+		METHOD_ONE, METHOD_TWO;
 	}
 
 }

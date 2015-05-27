@@ -6,6 +6,16 @@ import mware_lib.CommunicationModule;
 import mware_lib.ReferenceModule;
 import mware_lib.RemoteObjectRef;
 
+/**
+ *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - accessor_one.
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in accessor_one - ClassTwoImplBase
+ * 
+ * @author Fabian
+ * 
+ *         Stellt den Proxies und den Skeletons die noetigen Methoden zur
+ *         Verfuegung
+ */
 public abstract class ClassTwoImplBase {
 
 	/**
