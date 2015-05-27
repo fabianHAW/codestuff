@@ -26,6 +26,10 @@ public class ObjectAdapterAT implements ObjectAdapter {
 		case SkeletonOneAT.ID:
 			CommunicationModule.debugPrint(this.getClass(),
 					"new skeleton created");
+			/*
+			 * vsp3_sequ_server: 
+			 * 1.1.1.1: neues Skeleton erzeugen
+			 */
 			SkeletonOneAT s = new SkeletonOneAT(m);
 			s.start();
 			break;

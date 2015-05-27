@@ -13,9 +13,16 @@ import java.util.List;
  * 
  * @author Fabian
  * 
- *         Stellt Request/Reply-Protokoll bereit und dient als zentrale Einheit
- *         um die Nachrichten von einer Client- zur Server-Seite zu
- *         transferieren
+ *         Lauscht auf einem Socket auf eingehende Nachrichten von entfernten
+ *         Kommunikationsmodulen (Request (Server-Seite) und Reply
+ *         (Client-Seite)) und realisiert so die Umsetzung des
+ *         Request-/Reply-Protokolls. Ob eine Nachricht ein Request oder ein
+ *         Reply ist, wird anhand des Nachrichtentyps (Request oder Reply)
+ *         ermittelt, der als Parameter in MessageADT enthalten ist. Bei einem
+ *         Request muss auf Client-Seite ermittelt werden, auf welchem Host der
+ *         Servant zu finden ist. Bei einem Reply muss auf Server-Seite, die
+ *         Ursprungsadresse des Requests aus der MessageADT ermittelt werden, um
+ *         den Reply zum Client zurück senden zu können.
  */
 
 public class CommunicationModule extends Thread {
@@ -62,22 +69,32 @@ public class CommunicationModule extends Thread {
 								+ getCommunicationmoduleport());
 
 				socket = this.serverSocket.accept();
+				/*
+				 * vsp3_sequ_server: 1. MessageADT m received
+				 */
 				this.input = new ObjectInputStream(socket.getInputStream());
 				MessageADT m = (MessageADT) this.input.readObject();
 
 				CommunicationModule.debugPrint(this.getClass(),
 						"received new MessageADT");
 
-				// Request
+				/*
+				 * vsp3_sequ_server: MessageType == Request
+				 */
 				if (m.getMessageType() == REQUEST) {
 					CommunicationModule.debugPrint(this.getClass(),
 							"REQUEST received");
 					requestToServant(m);
 				}
-				// Reply
+				/*
+				 * vsp3_sequ_server: MessageType == Reply
+				 */
 				else if (m.getMessageType() == REPLY) {
 					CommunicationModule.debugPrint(this.getClass(),
 							"REPLY received");
+					/*
+					 * vsp3_sequ_server: 1.3: Reply zum Proxy weitergeben
+					 */
 					replyToProxy(m);
 				}
 			} catch (IOException e) {
@@ -112,6 +129,9 @@ public class CommunicationModule extends Thread {
 	 *            MessageADT mit allen notwendigen Informationen
 	 */
 	private void requestToServant(MessageADT m) {
+		/*
+		 * vsp3_sequ_server: 1.1: weiterleiten des Requests
+		 */
 		this.demultiplexer.pass(m);
 	}
 

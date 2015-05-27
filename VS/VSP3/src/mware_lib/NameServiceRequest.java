@@ -6,9 +6,8 @@ import java.io.Serializable;
  * 
  * @author Francis
  * 
- *         Eine Nachrichen-ADT die fuer die Kommunikation zwischen
- *         Namensdienst-Stellvertreter und dem eigentlichen Namensdienst genutzt
- *         wird
+ *         Dieses Objekt wird an den entfernten Namensdienst geschickt, um
+ *         entweder ein rebind oder ein resolve durchzuführen.
  */
 
 public class NameServiceRequest implements Serializable {

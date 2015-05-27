@@ -14,9 +14,12 @@ import accessor_two.ClassOneAT;
  * 
  * @author Fabian
  * 
- *         Ist fuer die angelegten Objekt-Referenzen zustaendig und fuehrt 2
- *         Tabellen: eine fuer die erzeugten Servants und eine fuer die
- *         erzeugten Proxies
+ *         Führt je eine Tabelle (Key-Value) in der Key die entfernte
+ *         Objektreferenz darstellt und der Value die lokale Objektreferenz
+ *         (Proxy bzw. Servant). Dieses Modul erzeugt beim Anmelden eines
+ *         entfernten Objektes beim Namensdienst eine entfernte Objektreferenz.
+ *         Realisiert wird das über die Implementierung von hashcode und equals
+ *         auf Seiten der entfernten Objektreferenz.
  */
 
 public class ReferenceModule {
@@ -51,9 +54,15 @@ public class ReferenceModule {
 
 		RemoteObjectRef rawObjRef = null;
 
+		/*
+		 * vsp3_sequ_server_start: 3.2.1.1.1: Neue Referenz erzeugen
+		 */
 		rawObjRef = new RemoteObjectRef(CommunicationModule.getLocalHost(),
 				port, System.currentTimeMillis(), objectNumber, interfaces);
 
+		/*
+		 * vsp3_sequ_server_start: 3.2.1.1.2: Servant in Tabelle abspeichern
+		 */
 		servantToTable(rawObjRef, myObject);
 		CommunicationModule
 				.debugPrint("mware_lib.ReferenceModule: new RemoteObjectRef created an saved in servantlist.");

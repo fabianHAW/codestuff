@@ -12,8 +12,8 @@ import mware_lib.RemoteObjectRef;
  * 
  * @author Fabian
  * 
- *         Stellvertreter-Objekt, welches die Anfrage des Clients an das
- *         Kommunikationsmodul weiterleitet
+ *         Stellen die Proxies auf Client-Seite dar und führen Marshals Request
+ *         und Unmarshals Reply durch.
  */
 
 public class ClassOneImplBaseProxy extends ClassOneImplBase {
@@ -30,6 +30,8 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 	 */
 	public double methodOne(String param1, double param2)
 			throws SomeException112 {
+		if(param1 == null) param1 = "null is not fine dude";
+		
 		MessageADT m = prepareMessageAndWaitForReply(param1, param2,
 				"methodOne");
 
@@ -50,6 +52,8 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 	 */
 	public double methodTwo(String param1, double param2)
 			throws SomeException112, SomeException304 {
+		if(param1 == null) param1 = "null is not fine dude";
+		
 		MessageADT m = prepareMessageAndWaitForReply(param1, param2,
 				"methodTwo");
 
@@ -114,7 +118,8 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 						"waiting for CommunicationModuleThread");
 				cT.wait();
 			} catch (InterruptedException e) {
-				CommunicationModule.debugPrint(this.getClass(), "someone interrupted me");
+				CommunicationModule.debugPrint(this.getClass(),
+						"someone interrupted me");
 			}
 		}
 
