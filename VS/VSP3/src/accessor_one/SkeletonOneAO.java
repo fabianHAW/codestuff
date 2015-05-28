@@ -50,7 +50,7 @@ public class SkeletonOneAO extends Thread implements Skeleton{
 		// TODO Auto-generated method stub
 		CommunicationModule.debugPrint(this.getClass(), "send message back");
 		try {
-			socket = new Socket(reply.getiNetAdrress(), CommunicationModule.getCommunicationmoduleport());
+			socket = new Socket(reply.getiNetAdrress(), reply.getPort());
 			output = socket.getOutputStream();
 			ooutput = new ObjectOutputStream(output);
 			ooutput.writeObject(reply);
@@ -83,6 +83,7 @@ public class SkeletonOneAO extends Thread implements Skeleton{
 			returnVal = ((ClassOneImplBase)servant).methodOne(param1, param2);
 			reply = new MessageADT(
 					message.getiNetAdrress(), 
+					message.getPort(),
 					message.getMessageID(), //alte MessageID zwecks Message-Zuordnung zu Proxy 
 					null, 
 					1, 
@@ -95,6 +96,7 @@ public class SkeletonOneAO extends Thread implements Skeleton{
 			//e.printStackTrace();
 			reply = new MessageADT(
 					message.getiNetAdrress(), 
+					message.getPort(),
 					message.getMessageID(), //Alte MessageID zwecks Message-Zuordnung zu Proxy
 					null, 
 					1, 

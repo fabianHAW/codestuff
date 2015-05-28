@@ -30,7 +30,7 @@ public class CommunicationModule extends Thread {
 	private ServerSocket serverSocket;
 	private ObjectInputStream input;
 	private static InetAddress localHost;
-	private static int COMMUNICATIONMODULEPORT = 50001;
+	private static int COMMUNICATIONMODULEPORT;
 	private static final int REQUEST = 0;
 	private static final int REPLY = 1;
 	private boolean isAlive;
@@ -47,29 +47,18 @@ public class CommunicationModule extends Thread {
 		messageIDCounter = 0;
 
 		try {
-			this.serverSocket = new ServerSocket(COMMUNICATIONMODULEPORT);
+			this.serverSocket = new ServerSocket(0);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			try {
-				/*
-				 * fuer lokales Testen muss nun ein vorhandener Port angelegt
-				 * werden
-				 */
-				COMMUNICATIONMODULEPORT = 50002;
-				this.serverSocket = new ServerSocket(COMMUNICATIONMODULEPORT);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			e.printStackTrace();
 		}
 
+		COMMUNICATIONMODULEPORT = this.serverSocket.getLocalPort();
 		communicationThreadList = new ArrayList<Thread>();
 		try {
 			localHost = InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -113,10 +102,9 @@ public class CommunicationModule extends Thread {
 					replyToProxy(m);
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				// e.printStackTrace();
+				CommunicationModule
+						.debugPrint(this.getClass(), "Socket closed");
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -240,10 +228,7 @@ public class CommunicationModule extends Thread {
 		} catch (IOException e) {
 			CommunicationModule.debugPrint(this.getClass(),
 					"closed server socket");
-			// TODO
-			e.printStackTrace();
 		}
-		;
 	}
 
 	/**
@@ -271,9 +256,4 @@ public class CommunicationModule extends Thread {
 			System.out.println(klasse.getName() + ": " + text);
 		}
 	}
-	
-	public static ReferenceModule getRefMod(){
-		return refMod;
-	}
-
 }

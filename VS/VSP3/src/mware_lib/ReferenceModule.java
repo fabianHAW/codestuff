@@ -22,7 +22,7 @@ public class ReferenceModule {
 
 	private static Map<RemoteObjectRef, Object> mapRemoteServant = new HashMap<RemoteObjectRef, Object>();
 	private static Map<RemoteObjectRef, Object> mapRemoteProxy = new HashMap<RemoteObjectRef, Object>();
-
+	
 	/**
 	 * Erzeugt eine neue entfernte Objekt-Referenz zu einem gegebenen Servant
 	 * 
@@ -32,7 +32,7 @@ public class ReferenceModule {
 	 * @return neue entfernte Objekt-Referenz
 	 */
 	public static RemoteObjectRef createNewRemoteRef(Object myObject) {
-		int port = -1;
+		int port = CommunicationModule.getCommunicationmoduleport();
 		int objectNumber = -1;
 
 		List<String> interfaces = new ArrayList<String>();

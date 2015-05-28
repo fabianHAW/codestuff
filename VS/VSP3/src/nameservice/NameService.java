@@ -36,7 +36,6 @@ public class NameService {
 		try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		referenceObjects = new HashMap<String, RemoteObjectRef>();
@@ -70,7 +69,6 @@ public class NameService {
 				NameServiceThread t = new NameServiceThread(request, socket);
 				t.start();
 			} catch (IOException | ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -111,7 +109,6 @@ public class NameService {
 		try {
 			return InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

@@ -39,7 +39,8 @@ public class NameServiceProxy extends NameService {
 			 * vsp3_sequ_server_start: 3.2.1.1: neue entfernte Objekt-Referenz
 			 * erzeugen 3.2.1.1.3: entfernte Objekt-Referenz erhalten
 			 */
-			//RemoteObjectRef rof = ReferenceModule.createNewRemoteRef(servant);
+			// RemoteObjectRef rof =
+			// ReferenceModule.createNewRemoteRef(servant);
 			RemoteObjectRef rof = ReferenceModule.createNewRemoteRef(servant);
 			/*
 			 * vsp3_sequ_server_start: 3.2.1.2: Neue Nachricht fuer Nameservice
@@ -51,7 +52,6 @@ public class NameServiceProxy extends NameService {
 						.getLocalHost().getCanonicalHostName(),
 						this.servicePort);
 			} catch (UnknownHostException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			try {
@@ -82,11 +82,16 @@ public class NameServiceProxy extends NameService {
 		NameServiceRequest request = null;
 		NameServiceRequest n = null;
 		try {
+			this.serverSocket = new ServerSocket(0);
+
 			n = new NameServiceRequest("resolve", name, null, InetAddress
-					.getLocalHost().getCanonicalHostName(), this.servicePort);
+					.getLocalHost().getCanonicalHostName(),
+					this.serverSocket.getLocalPort());
+			
 		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		try {
 			this.socket = new Socket(this.serviceHost, this.servicePort);
@@ -94,8 +99,6 @@ public class NameServiceProxy extends NameService {
 			CommunicationModule.debugPrint(this.getClass(),
 					"send request (resolve) to nameservice");
 			this.output.writeObject(n);
-
-			this.serverSocket = new ServerSocket(this.servicePort);
 
 			this.socket = this.serverSocket.accept();
 			this.input = new ObjectInputStream(this.socket.getInputStream());

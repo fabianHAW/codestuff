@@ -1,7 +1,8 @@
 package test;
 
 
-
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import mware_lib.NameService;
 import mware_lib.ObjectBroker;
@@ -25,16 +26,16 @@ public class ServerStart extends Thread{
 		ClassTwoAO c2 = new ClassTwoAO();
 		ClassOneAT c3 = new ClassOneAT();
 	
-		String host = "lab35.cpt.haw-hamburg.de";
+		String host = null;//"lab35.cpt.haw-hamburg.de";
 		
-//		try {
-//			host = InetAddress.getLocalHost().getCanonicalHostName();
-//		} catch (UnknownHostException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
+		try {
+			host = InetAddress.getLocalHost().getCanonicalHostName();
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
-		ObjectBroker objBroker = ObjectBroker.init(host, 50000, false);
+		ObjectBroker objBroker = ObjectBroker.init(host, 50000, true);
 		NameService nameSvc = objBroker.getNameService();
 		nameSvc.rebind(c1, "c1");
 		nameSvc.rebind(c2, "c2");

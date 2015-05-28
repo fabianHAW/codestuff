@@ -2,6 +2,9 @@ package test;
 
 
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import accessor_one.SomeException110;
 import accessor_one.SomeException112;
 import mware_lib.NameService;
@@ -20,13 +23,13 @@ public class ClientStart extends Thread{
 	
 	public void accessor_one_test(){
 	
-		String host = "lab35.cpt.haw-hamburg.de";
-//		try {
-//			host = InetAddress.getLocalHost().getCanonicalHostName();
-//		} catch (UnknownHostException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
+		String host = null;//"lab35.cpt.haw-hamburg.de";
+		try {
+			host = InetAddress.getLocalHost().getCanonicalHostName();
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		ObjectBroker objBroker = ObjectBroker.init(host, 50000, false);
 	
 		NameService nameSvc = objBroker.getNameService();
@@ -123,14 +126,14 @@ public class ClientStart extends Thread{
 	
 	public void accessor_two_test(){
 		
-		String host = "lab35.cpt.haw-hamburg.de";
-//		try {
-//			host = InetAddress.getLocalHost().getCanonicalHostName();
-//		} catch (UnknownHostException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-		ObjectBroker objBroker = ObjectBroker.init(host, 50000, false);
+		String host = null;//"lab35.cpt.haw-hamburg.de";
+		try {
+			host = InetAddress.getLocalHost().getCanonicalHostName();
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ObjectBroker objBroker = ObjectBroker.init(host, 50000, true);
 	
 		NameService nameSvc = objBroker.getNameService();
 		String namec3 = "c3";

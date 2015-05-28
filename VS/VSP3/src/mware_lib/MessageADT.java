@@ -24,6 +24,7 @@ public class MessageADT implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private InetAddress iNetAdrress;
+	private int port;
 	private int messageID;
 	private String methodName;
 	private int messageType;
@@ -52,11 +53,12 @@ public class MessageADT implements Serializable {
 	 * @param exceptionList
 	 *            eine Liste von Exceptions die ggf. erzeugt werden
 	 */
-	public MessageADT(InetAddress iNetAddress, Integer messageID,
+	public MessageADT(InetAddress iNetAddress, int port, Integer messageID,
 			String methodName, Integer messageType, RemoteObjectRef objectRef,
 			byte[] returnVal, List<byte[]> arguments,
 			List<Exception> exceptionList) {
 		this.iNetAdrress = iNetAddress;
+		this.port = port;
 		this.messageID = messageID;
 		this.methodName = methodName;
 		this.messageType = messageType;
@@ -72,6 +74,14 @@ public class MessageADT implements Serializable {
 
 	public void setiNetAdrress(InetAddress iNetAdrress) {
 		this.iNetAdrress = iNetAdrress;
+	}
+	
+	public int getPort() {
+		return port;
+	}
+
+	public void setport(int port) {
+		this.port = port;
 	}
 
 	public int getMessageID() {

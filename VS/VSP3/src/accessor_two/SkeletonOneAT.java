@@ -50,8 +50,7 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 		List<Exception> le = new ArrayList<Exception>();
 
 		/*
-		 * vsp3_sequ_server: 2: korrekten Servant holen 
-		 * 2.1: Servant erhalten
+		 * vsp3_sequ_server: 2: korrekten Servant holen 2.1: Servant erhalten
 		 */
 		s = ReferenceModule.getServant(r);
 
@@ -67,7 +66,8 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 				 * Return-Wert erhalten
 				 */
 				returnVal = String.valueOf(
-						((ClassOneImplBase) s).methodOne(param1, param2)).getBytes();
+						((ClassOneImplBase) s).methodOne(param1, param2))
+						.getBytes();
 			} catch (SomeException112 e) {
 				le.add(e);
 			}
@@ -76,7 +76,8 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 				CommunicationModule.debugPrint(this.getClass(),
 						"call methodTwo of skeleton");
 				returnVal = String.valueOf(
-						((ClassOneImplBase) s).methodTwo(param1, param2)).getBytes();
+						((ClassOneImplBase) s).methodTwo(param1, param2))
+						.getBytes();
 			} catch (SomeException112 e) {
 				le.add(e);
 			} catch (SomeException304 e) {
@@ -103,17 +104,17 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 		if (le.size() != 0) {
 			CommunicationModule.debugPrint(this.getClass(),
 					"new MessageADT generated with exception");
-			return new MessageADT(this.m.getiNetAdrress(),
+			return new MessageADT(this.m.getiNetAdrress(), this.m.getPort(),
 					this.m.getMessageID(), this.m.getMethodName(),
 					ClassOneImplBase.REPLY, this.m.getObjectRef(), returnVal,
 					this.m.getArguments(), le);
 		}
 		CommunicationModule.debugPrint(this.getClass(),
 				"new MessageADT generated without exception");
-		return new MessageADT(this.m.getiNetAdrress(), this.m.getMessageID(),
-				this.m.getMethodName(), ClassOneImplBase.REPLY,
-				this.m.getObjectRef(), returnVal, this.m.getArguments(),
-				this.m.getExceptionList());
+		return new MessageADT(this.m.getiNetAdrress(), this.m.getPort(),
+				this.m.getMessageID(), this.m.getMethodName(),
+				ClassOneImplBase.REPLY, this.m.getObjectRef(), returnVal,
+				this.m.getArguments(), this.m.getExceptionList());
 	}
 
 	/**
@@ -126,11 +127,9 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 		Socket s = null;
 		ObjectOutputStream o = null;
 		try {
-			// TODO zum lokalen testen hier der port des kommunikationsmoduls
-			// des clients
-			// s = new Socket(mReturn.getiNetAdrress(), 50003);
 			s = new Socket(mReturn.getiNetAdrress(),
-					CommunicationModule.getCommunicationmoduleport());
+					mReturn.getPort());
+
 			o = new ObjectOutputStream(s.getOutputStream());
 
 			o.writeObject(mReturn);
@@ -140,10 +139,8 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 			o.close();
 			s.close();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

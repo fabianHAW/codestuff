@@ -26,12 +26,11 @@ public class CommunicationModuleThread extends Thread {
 		this.sendMessage = m;
 		try {
 
-			this.socket = new Socket(m.getObjectRef().getInetAddress(),
-					CommunicationModule.getCommunicationmoduleport());
+			this.socket = new Socket(m.getObjectRef().getInetAddress(), m
+					.getObjectRef().getPort());
 
 			this.output = new ObjectOutputStream(this.socket.getOutputStream());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -48,7 +47,6 @@ public class CommunicationModuleThread extends Thread {
 						"waiting for reply of own communication module");
 				this.wait();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InterruptedException e) {
 				CommunicationModule.debugPrint(this.getClass(),
