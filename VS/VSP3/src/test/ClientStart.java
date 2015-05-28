@@ -1,10 +1,5 @@
 package test;
 
-
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import accessor_one.SomeException110;
 import accessor_one.SomeException112;
 import mware_lib.NameService;
@@ -12,8 +7,12 @@ import mware_lib.ObjectBroker;
 
 public class ClientStart extends Thread{
 
-	public ClientStart() {
-		// TODO Auto-generated constructor stub
+	private String nameserviceHost;
+	private int nameservicePort;
+	
+	public ClientStart(String nameserviceHost, int nameservicePort) {
+		this.nameserviceHost = nameserviceHost;
+		this.nameservicePort = nameservicePort;
 	}
 	
 	public void run(){
@@ -23,14 +22,7 @@ public class ClientStart extends Thread{
 	
 	public void accessor_one_test(){
 	
-		String host = null;//"lab35.cpt.haw-hamburg.de";
-		try {
-			host = InetAddress.getLocalHost().getCanonicalHostName();
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		ObjectBroker objBroker = ObjectBroker.init(host, 50000, false);
+		ObjectBroker objBroker = ObjectBroker.init(this.nameserviceHost, this.nameservicePort, false);
 	
 		NameService nameSvc = objBroker.getNameService();
 		String namec1 = "c1";
@@ -126,15 +118,8 @@ public class ClientStart extends Thread{
 	
 	public void accessor_two_test(){
 		
-		String host = null;//"lab35.cpt.haw-hamburg.de";
-		try {
-			host = InetAddress.getLocalHost().getCanonicalHostName();
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		ObjectBroker objBroker = ObjectBroker.init(host, 50000, true);
-	
+		ObjectBroker objBroker = ObjectBroker.init(this.nameserviceHost, this.nameservicePort, false);
+		
 		NameService nameSvc = objBroker.getNameService();
 		String namec3 = "c3";
 		Object rawObjRef3 = nameSvc.resolve(namec3);
