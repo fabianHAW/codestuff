@@ -65,7 +65,6 @@ public class NameServiceThread extends Thread {
 			e1.printStackTrace();
 		}
 		try {
-			System.out.println(this.request.getHost() + this.request.getPort());
 			this.socket = new Socket(this.request.getHost(),
 					this.request.getPort());
 			ObjectOutputStream out = new ObjectOutputStream(
