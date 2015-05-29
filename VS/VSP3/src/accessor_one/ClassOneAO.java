@@ -3,7 +3,7 @@ package accessor_one;
 import mware_lib.CommunicationModule;
 
 /**
- * Servant Klasse - implementiert die eigentliche Funktionalität der Methode methodOne.
+ * Servant Klasse - implementiert die eigentliche Funktionalitï¿½t der Methode methodOne.
  * @author Francis u. Fabian
  * 
  *

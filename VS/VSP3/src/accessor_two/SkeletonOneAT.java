@@ -62,6 +62,15 @@ public class SkeletonOneAT extends Thread implements Skeleton {
 				CommunicationModule.debugPrint(this.getClass(),
 						"call methodOne of skeleton");
 				/*
+				 * Fuer Nebenlaeufigkeits-Test wartet diese Methode einen Moment
+				 */
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				/*
 				 * vsp3_sequ_server: 3: Methodenaufruf des Servants 3.1:
 				 * Return-Wert erhalten
 				 */

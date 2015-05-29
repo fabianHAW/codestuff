@@ -5,7 +5,7 @@ import java.util.Random;
 import mware_lib.CommunicationModule;
 
 /**
- * Servant Klasse - implementiert die eigentliche Funktionalität.
+ * Servant Klasse - implementiert die eigentliche Funktionalitï¿½t.
  * @author Francis u. Fabian
  * 
  *
@@ -20,6 +20,16 @@ public class ClassTwoAO extends ClassTwoImplBase {
 	@Override
 	public int methodOne(double param1) throws SomeException110 {
 		// TODO Auto-generated method stub
+		/*
+		 * Fuer Nebenlaeufigkeits-Test wartet diese Methode einen Moment
+		 */
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		if((param1 / 2) > (Integer.MAX_VALUE / 2)){
 			throw new SomeException110("ClassTwoAO-methodOne-SomeException110:::(param1 / 2) > (Integer.MAX_VALUE / 2)");
 		}

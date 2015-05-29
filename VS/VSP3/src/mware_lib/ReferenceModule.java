@@ -31,7 +31,7 @@ public class ReferenceModule {
 	 *            werden soll
 	 * @return neue entfernte Objekt-Referenz
 	 */
-	public static RemoteObjectRef createNewRemoteRef(Object myObject) {
+	public static synchronized RemoteObjectRef createNewRemoteRef(Object myObject) {
 		int port = CommunicationModule.getCommunicationmoduleport();
 		int objectNumber = -1;
 
@@ -75,7 +75,7 @@ public class ReferenceModule {
 	 * @param myObject
 	 *            Servant
 	 */
-	private static void servantToTable(RemoteObjectRef rawObjRef,
+	private static synchronized void servantToTable(RemoteObjectRef rawObjRef,
 			Object myObject) {
 		CommunicationModule
 				.debugPrint("mware_lib.ReferenceModule: save new servant in servantlist.");
@@ -90,7 +90,7 @@ public class ReferenceModule {
 	 *            Proxy
 	 * @return wenn Proxy in Tabell true, sonst false
 	 */
-	public static boolean contains(Object rawObjRef) {
+	public static synchronized boolean contains(Object rawObjRef) {
 		CommunicationModule
 				.debugPrint("mware_lib.ReferenceModule: check if proxy is in proxylist.");
 		return mapRemoteProxy.containsKey(rawObjRef);
@@ -104,7 +104,7 @@ public class ReferenceModule {
 	 *            entfernte Objekt-Referenz zu einem Proxy
 	 * @return Proxy wenn dieser in der Liste ist, sonst null
 	 */
-	public static Object getProxy(RemoteObjectRef rawObjRef) {
+	public static synchronized Object getProxy(RemoteObjectRef rawObjRef) {
 		for (Entry<RemoteObjectRef, Object> item : mapRemoteProxy.entrySet()) {
 			if (item.getKey().equals(rawObjRef)) {
 				CommunicationModule
@@ -125,7 +125,7 @@ public class ReferenceModule {
 	 * @param remoteObj
 	 *            Proxy
 	 */
-	public static void add(RemoteObjectRef rawObj, Object remoteObj) {
+	public static synchronized void add(RemoteObjectRef rawObj, Object remoteObj) {
 		CommunicationModule
 				.debugPrint("mware_lib.ReferenceModule: add new proxy to proxylist.");
 		mapRemoteProxy.put(rawObj, remoteObj);
@@ -139,7 +139,7 @@ public class ReferenceModule {
 	 *            entfernte Objekt-Referenz zum Servant
 	 * @return Servant, wenn dieser in der Tabelle ist, sonst null
 	 */
-	public static Object getServant(RemoteObjectRef rawObjRef) {
+	public static synchronized Object getServant(RemoteObjectRef rawObjRef) {
 		for (Entry<RemoteObjectRef, Object> item : mapRemoteServant.entrySet()) {
 			if (item.getKey().equals(rawObjRef)) {
 				CommunicationModule

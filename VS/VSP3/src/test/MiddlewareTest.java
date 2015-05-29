@@ -21,9 +21,14 @@ public class MiddlewareTest {
 		case 1:
 			ClientStart client = new ClientStart(args[1],
 					Integer.valueOf(args[2]));
+			client.setName("0");
 			client.start();
 			ClientStart client2 = new ClientStart(args[1],Integer.valueOf(args[2]));
-			client2.start();
+			client2.setName("1");
+			client2.start();	
+			ClientStart client3 = new ClientStart(args[1],Integer.valueOf(args[2]));
+			client3.setName("1");
+			client3.start();
 			break;
 		}
 	}

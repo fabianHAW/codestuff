@@ -96,7 +96,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 		values.add(param1.getBytes());
 		values.add(String.valueOf(param2).getBytes());
 
-		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), CommunicationModule.getCommunicationmoduleport(),
+		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), -1,
 				CommunicationModule.messageIDCounter(), mName,
 				ClassOneImplBase.REQUEST, this.rof, null, values, null);
 

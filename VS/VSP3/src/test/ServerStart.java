@@ -23,14 +23,18 @@ public class ServerStart extends Thread{
 	public void accessor_one_and_accessor_two_test(){
 
 		ClassOneAO c1 = new ClassOneAO();
-		ClassTwoAO c2 = new ClassTwoAO();
-		ClassOneAT c3 = new ClassOneAT();
+		ClassTwoAO c21 = new ClassTwoAO();
+		ClassTwoAO c22 = new ClassTwoAO();
+		ClassOneAT c31 = new ClassOneAT();
+		ClassOneAT c32 = new ClassOneAT();
 
 		ObjectBroker objBroker = ObjectBroker.init(this.nameserviceHost, this.nameservicePort, true);
 		NameService nameSvc = objBroker.getNameService();
 		nameSvc.rebind(c1, "c1");
-		nameSvc.rebind(c2, "c2");
-		nameSvc.rebind(c3, "c3");
+		nameSvc.rebind(c21, "c21");
+		nameSvc.rebind(c22, "c22");
+		nameSvc.rebind(c31, "c31");
+		nameSvc.rebind(c32, "c32");
 		
 		try {
 			System.out.println("server: sleeping");

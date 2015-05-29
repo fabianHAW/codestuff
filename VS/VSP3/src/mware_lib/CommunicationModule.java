@@ -93,14 +93,14 @@ public class CommunicationModule extends Thread {
 				/*
 				 * vsp3_sequ_server: MessageType == Reply
 				 */
-				else if (m.getMessageType() == REPLY) {
-					CommunicationModule.debugPrint(this.getClass(),
-							"REPLY received");
-					/*
-					 * vsp3_sequ_server: 1.3: Reply zum Proxy weitergeben
-					 */
-					replyToProxy(m);
-				}
+//				else if (m.getMessageType() == REPLY) {
+//					CommunicationModule.debugPrint(this.getClass(),
+//							"REPLY received");
+//					/*
+//					 * vsp3_sequ_server: 1.3: Reply zum Proxy weitergeben
+//					 */
+//					replyToProxy(m);
+//				}
 			} catch (IOException e) {
 				CommunicationModule
 						.debugPrint(this.getClass(), "Socket closed");
@@ -123,7 +123,6 @@ public class CommunicationModule extends Thread {
 
 		CommunicationModule.debugPrint(this.getClass(),
 				"communication module was interrupted");
-
 	}
 
 	/**

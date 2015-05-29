@@ -55,8 +55,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 
 		// Verweis zum Entwurf:
 		// <Sequenzdiagramm client_request> : Realisierung der Sequenznummer 11
-		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(),
-				CommunicationModule.getCommunicationmoduleport(),
+		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), -1,
 				CommunicationModule.messageIDCounter(), "methodOne", REQUEST,
 				rawObjRef, null, vals, null);
 

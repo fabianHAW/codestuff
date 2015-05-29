@@ -54,7 +54,6 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 				rawObjRef, null, arguments, null);
 
 		MessageADT received = sendRequest(m);
-		// MessageADT received = listenToSocket();
 		Integer result = null;
 
 		if (received.getReturnVal() != null) {
@@ -76,14 +75,11 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 	 * Ergebnis und liefert dieses zur�ck.
 	 */
 	public double methodTwo() throws SomeException112 {
-		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(),
-				CommunicationModule.getCommunicationmoduleport(),
+		MessageADT m = new MessageADT(CommunicationModule.getLocalHost(), -1,
 				CommunicationModule.messageIDCounter(), "methodTwo", REQUEST,
 				rawObjRef, null, null, null);
 
 		MessageADT received = sendRequest(m);
-		System.out.println("received: " + received);
-		// MessageADT received = listenToSocket();
 		Double result = null;
 
 		if (received.getReturnVal() != null) {
