@@ -22,6 +22,8 @@ public class MiddlewareTest {
 			ClientStart client = new ClientStart(args[1],
 					Integer.valueOf(args[2]));
 			client.start();
+			ClientStart client2 = new ClientStart(args[1],Integer.valueOf(args[2]));
+			client2.start();
 			break;
 		}
 	}

@@ -82,6 +82,7 @@ public class ClassTwoImplBaseProxy extends ClassTwoImplBase {
 				rawObjRef, null, null, null);
 
 		MessageADT received = sendRequest(m);
+		System.out.println("received: " + received);
 		// MessageADT received = listenToSocket();
 		Double result = null;
 

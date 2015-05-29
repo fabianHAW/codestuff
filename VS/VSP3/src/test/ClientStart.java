@@ -21,7 +21,7 @@ public class ClientStart extends Thread{
 	}
 	
 	public void accessor_one_test(){
-	
+		System.out.println("CLIENT: " + this.getName());
 		ObjectBroker objBroker = ObjectBroker.init(this.nameserviceHost, this.nameservicePort, false);
 	
 		NameService nameSvc = objBroker.getNameService();
@@ -36,12 +36,17 @@ public class ClientStart extends Thread{
 		accessor_one.ClassTwoImplBase remoteObj2 = accessor_one.ClassTwoImplBase.narrowCast(rawObjRef2);
 		accessor_one.ClassTwoImplBase remoteObj4 = accessor_one.ClassTwoImplBase.narrowCast(rawObjRef4);
 		
+		/****
+		 * Test eines Methoenaufrufs auf einem Objekt, das nicht existiert.
+		 * Soll NullPointerException schmeiﬂen
+		 */
 		try {
 			remoteObj4.methodTwo();
 		} catch (SomeException112 e1) {
 			e1.printStackTrace();
 		}
 		catch(NullPointerException e){
+			System.out.println("CLIENT: " + this.getName());
 			System.out.println("your servant is not registered");
 			System.out.println("------------------------------------------------------------------------------------");
 		}
@@ -50,16 +55,27 @@ public class ClientStart extends Thread{
 		String returnvalc1 = null;
 		String c1param1 = "test";
 		int c1param2 = 4;
+		String returnvalc1Wrong = null;
+		String c1param1Wrong = "test";
+		int c1param2Wrong = 5;
 		
 		/**Params c2 methodOne**/
 		double c2param1 = 2.0;
 		int returnvalc2m1;
+		double c2param1Wrong = Double.MAX_VALUE;
+		int returnvalc2m1Wrong;
 		
 		/**Params c2 methodTwo**/
 		double returnvalc2m2;
 		/**Test ClassOneAO methodOne**/
+		
+		/*****
+		 * Test accessor_one.ClassOneImplBase methodOne
+		 * Keine Exception
+		 */
 		try {
-			
+			System.out.println("------------------------------------------------------------------------------------");
+			System.out.println("CLIENT: " + this.getName());
 			returnvalc1 = remoteObj1.methodOne(c1param1, c1param2);
 			System.out.println("accessor_one.ClassOneImplBase (\"" + namec1 + "\")");
 			System.out.println("methodOne");
@@ -68,7 +84,7 @@ public class ClientStart extends Thread{
 			System.out.println("------------------------------------------------------------------------------------");
 		} catch (accessor_one.SomeException112 e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("------------------------------------------------------------------------------------");
 			System.out.println("accessor_one.ClassOneImplBase (\"" + namec1 + "\"");
 			System.out.println("methodOne");
 			System.out.println("param1 = \"" + c1param1 + "\" param2 = " + c1param2);
@@ -76,9 +92,38 @@ public class ClientStart extends Thread{
 			System.out.println("------------------------------------------------------------------------------------");
 		}
 		
-		/**Test ClassTwoAO methodOne**/
+		/*****
+		 * Test accessor_one.ClassOneImplBase methodOne
+		 * Exception
+		 */
 		try {
-			returnvalc2m1 = remoteObj2.methodOne(2.0);
+			System.out.println("------------------------------------------------------------------------------------");
+			
+			returnvalc1 = remoteObj1.methodOne(c1param1Wrong, c1param2Wrong);
+			System.out.println("accessor_one.ClassOneImplBase (\"" + namec1 + "\")");
+			System.out.println("methodOne");
+			System.out.println("param1 = " + c1param1Wrong + " param2 = " + c1param2Wrong);
+			System.out.println("return value = " + returnvalc1Wrong);
+			System.out.println("------------------------------------------------------------------------------------");
+		} catch (accessor_one.SomeException112 e) {
+			// TODO Auto-generated catch block
+			System.out.println("------------------------------------------------------------------------------------");
+			System.out.println("CLIENT: " + this.getName());
+			System.out.println("accessor_one.ClassOneImplBase (\"" + namec1 + "\"");
+			System.out.println("methodOne");
+			System.out.println("param1 = \"" + c1param1Wrong + "\" param2 = " + c1param2Wrong);
+			System.out.println("accessor_one.SomeException112 with message \"" + e.getMessage() + "\"");
+			System.out.println("------------------------------------------------------------------------------------");
+		}
+		
+		/*****
+		 * Test accessor_one.ClassTwoImplBase methodOne
+		 * Keine Exception
+		 */
+		try {
+			System.out.println("------------------------------------------------------------------------------------");
+			System.out.println("CLIENT: " + this.getName());
+			returnvalc2m1 = remoteObj2.methodOne(c2param1);
 			System.out.println("accessor_one.ClassTwoImplBase (\"" + namec2 + "\")");
 			System.out.println("methodOne");
 			System.out.println("param1 = " + c2param1);
@@ -86,7 +131,8 @@ public class ClientStart extends Thread{
 			System.out.println("------------------------------------------------------------------------------------");
 		} catch (SomeException110 e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("------------------------------------------------------------------------------------");
+			
 			System.out.println("accessor_one.ClassTwoImplBase (\"" + namec2 + "\"");
 			System.out.println("methodOne");
 			System.out.println("param1 = " + c2param1);
@@ -94,8 +140,38 @@ public class ClientStart extends Thread{
 			System.out.println("------------------------------------------------------------------------------------");
 		}
 		
-		/**Test ClassTwoAO methodTwo**/
+		/*****
+		 * Test accessor_one.ClassTwoImplBase methodOne
+		 *  Exception
+		 */
 		try {
+			System.out.println("------------------------------------------------------------------------------------");
+			
+			returnvalc2m1 = remoteObj2.methodOne(c2param1Wrong);
+			System.out.println("accessor_one.ClassTwoImplBase (\"" + namec2 + "\")");
+			System.out.println("methodOne");
+			System.out.println("param1 = " + c2param1Wrong);
+			System.out.println("return value = " + returnvalc2m1);
+			System.out.println("------------------------------------------------------------------------------------");
+		} catch (SomeException110 e) {
+			// TODO Auto-generated catch block
+			System.out.println("------------------------------------------------------------------------------------");
+			System.out.println("CLIENT: " + this.getName());
+			System.out.println("accessor_one.ClassTwoImplBase (\"" + namec2 + "\"");
+			System.out.println("methodOne");
+			System.out.println("param1 = " + c2param1Wrong);
+			System.out.println("accessor_one.SomeException110 with message \"" + e.getMessage() + "\"");
+			System.out.println("------------------------------------------------------------------------------------");
+		}
+		
+		
+		/*****
+		 * Test accessor_one.ClassTwoImplBase methodTwo
+		 * Keine Exception
+		 */
+		try {
+			System.out.println("------------------------------------------------------------------------------------");
+			System.out.println("CLIENT: " + this.getName());
 			returnvalc2m2 = remoteObj2.methodTwo();
 			System.out.println("accessor_one.ClassTwoImplBase (\"" + namec2 + "\")");
 			System.out.println("methodTwo");
@@ -104,7 +180,8 @@ public class ClientStart extends Thread{
 			System.out.println("------------------------------------------------------------------------------------");
 		} catch (SomeException112 e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("------------------------------------------------------------------------------------");
+
 			System.out.println("accessor_one.ClassTwoImplBase (\"" + namec2 + "\"");
 			System.out.println("methodTwo");
 			System.out.println("no params");
@@ -114,6 +191,15 @@ public class ClientStart extends Thread{
 
 		objBroker.shutDown();
 	
+	}
+	
+	public void accessor_two_parallel(){
+		ClientStart t1 = new ClientStart(nameserviceHost, nameservicePort);
+		ClientStart t2 = new ClientStart(nameserviceHost, nameservicePort);
+		t1.setName("Alpha");
+		t1.start();
+		t2.setName("Beta");
+		t2.start();
 	}
 	
 	public void accessor_two_test(){
