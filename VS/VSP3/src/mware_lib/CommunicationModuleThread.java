@@ -11,10 +11,10 @@ import java.net.Socket;
  * @author Francis und Fabian
  * 
  *         Dieser Thread wird vom Proxy (Client-Seite) erzeugt. Der Proxy teilt
- *         ihm mit welche Nachricht er über das Netzwerk auf die Server-Seite
+ *         ihm mit welche Nachricht er �ber das Netzwerk auf die Server-Seite
  *         versenden muss. Danach wartet der jeweilige Thread auf die Antwort.
  *         Trifft diese beim Kommunikationsmodul ein, so wird der Thread geweckt
- *         und kann dem Proxy das Ergebnis (MessageADT) zurück liefern.
+ *         und kann dem Proxy das Ergebnis (MessageADT) zur�ck liefern.
  */
 public class CommunicationModuleThread extends Thread {
 
@@ -32,7 +32,6 @@ public class CommunicationModuleThread extends Thread {
 
 			this.serversocket = new ServerSocket(0);
 			this.sendMessage.setport(this.serversocket.getLocalPort());
-
 			this.socket = new Socket(m.getObjectRef().getInetAddress(), m
 					.getObjectRef().getPort());
 
@@ -57,17 +56,16 @@ public class CommunicationModuleThread extends Thread {
 			this.input = new ObjectInputStream(this.socket.getInputStream());
 			this.setReceivedMessage((MessageADT) this.input.readObject());
 
-			CommunicationModule.debugPrint(this.getClass(), "REPLY received");
-
-		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		// } catch (InterruptedException e) {
-		// CommunicationModule.debugPrint(this.getClass(),
-		// "someone interrupted me");
-		// notify();
-		// }
-		// }
+			CommunicationModule.debugPrint(this.getClass(), "REPLY received");	
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		
+//			} catch (InterruptedException e) {
+//				CommunicationModule.debugPrint(this.getClass(),
+//						"someone interrupted me");
+//				notify();
+//			}
 		CommunicationModule.removeThreadFromList(this);
 	}
 
