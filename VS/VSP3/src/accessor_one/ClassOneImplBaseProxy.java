@@ -51,6 +51,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 	 */
 	public String methodOne(String param1, int param2) throws SomeException112 {
 		// TODO Auto-generated method stub
+		
 		ArrayList<byte[]> vals = valsToByte(param1, param2);
 
 		// Verweis zum Entwurf:

@@ -51,7 +51,10 @@ public class SkeletonTwoAO extends Thread implements Skeleton{
 		// TODO Auto-generated method stub
 		CommunicationModule.debugPrint(this.getClass(), "send message back");
 		try {
+			System.out.println("JOOO " + reply.getiNetAdrress().getCanonicalHostName() 
+					 + " " + reply.getPort());
 			socket = new Socket(reply.getiNetAdrress(), reply.getPort());
+			System.out.println("JOOO " + socket.isConnected());
 			output = socket.getOutputStream();
 			ooutput = new ObjectOutputStream(output);
 			ooutput.writeObject(reply);

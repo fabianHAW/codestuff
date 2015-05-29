@@ -31,7 +31,7 @@ public class ClientStart extends Thread{
 		Object rawObjRef1 = nameSvc.resolve(namec1);
 		Object rawObjRef2 = nameSvc.resolve(namec2);
 		Object rawObjRef4 = nameSvc.resolve(namec4);
-	
+		
 		accessor_one.ClassOneImplBase remoteObj1 = accessor_one.ClassOneImplBase.narrowCast(rawObjRef1);
 		accessor_one.ClassTwoImplBase remoteObj2 = accessor_one.ClassTwoImplBase.narrowCast(rawObjRef2);
 		accessor_one.ClassTwoImplBase remoteObj4 = accessor_one.ClassTwoImplBase.narrowCast(rawObjRef4);
