@@ -35,7 +35,7 @@ public class ClientStart extends Thread{
 		accessor_one.ClassOneImplBase remoteObj1 = accessor_one.ClassOneImplBase.narrowCast(rawObjRef1);
 		accessor_one.ClassTwoImplBase remoteObj2 = accessor_one.ClassTwoImplBase.narrowCast(rawObjRef2);
 		accessor_one.ClassTwoImplBase remoteObj4 = accessor_one.ClassTwoImplBase.narrowCast(rawObjRef4);
-		
+
 		/****
 		 * Test eines Methoenaufrufs auf einem Objekt, das nicht existiert.
 		 * Soll NullPointerException schmeiﬂen
