@@ -22,12 +22,15 @@ public class CommunicationModuleThread extends Thread {
 	private MessageADT receivedMessage;
 	private ServerSocket serversocket;
 	private Socket socket;
+	private static final int REPLY = 1;
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
+	private boolean isAlive;
 
 	public CommunicationModuleThread(MessageADT m) {
 		CommunicationModule.debugPrint(this.getClass(), "initialized");
 		this.sendMessage = m;
+		this.isAlive = true;
 		try {
 
 			this.serversocket = new ServerSocket(0);
@@ -41,31 +44,43 @@ public class CommunicationModuleThread extends Thread {
 		}
 	}
 
+	/**
+	 * Der Thread ist nun dafuer zustaendig den Reply von der Server-Seite
+	 * entgegen zu nehmen. Daher nutzt dieser hier einen eigenen ServerSocket
+	 * auf dem er wartet.
+	 */
 	public void run() {
-		// synchronized (this) {
-		try {
-			CommunicationModule.debugPrint(this.getClass(),
-					"send message to remote server");
+		synchronized (this) {
+			try {
+				CommunicationModule.debugPrint(this.getClass(),
+						"send message to remote server");
 
-			this.output.writeObject(sendMessage);
+				this.output.writeObject(sendMessage);
 
-			CommunicationModule.debugPrint(this.getClass(),
-					"waiting for reply of own communication module");
-			// this.wait();
-			this.socket = this.serversocket.accept();
-			this.input = new ObjectInputStream(this.socket.getInputStream());
-			this.setReceivedMessage((MessageADT) this.input.readObject());
+				CommunicationModule.debugPrint(this.getClass(),
+						"waiting for reply of own communication module");
 
-			CommunicationModule.debugPrint(this.getClass(), "REPLY received");	
+				while (this.isAlive) {
+					this.socket = this.serversocket.accept();
+					this.input = new ObjectInputStream(
+							this.socket.getInputStream());
+					MessageADT m = (MessageADT) this.input.readObject();
+
+					if (m.getMessageType() == REPLY) {
+						this.setReceivedMessage(m);
+						CommunicationModule.debugPrint(this.getClass(),
+								"REPLY received");
+						this.isAlive = false;
+						notify();
+					}
+				}
 			} catch (IOException | ClassNotFoundException e) {
 				e.printStackTrace();
 			}
-		
-//			} catch (InterruptedException e) {
-//				CommunicationModule.debugPrint(this.getClass(),
-//						"someone interrupted me");
-//				notify();
-//			}
+		}
+		CommunicationModule.debugPrint(this.getClass(),
+				"nobody needs me anymore...bye");
+
 		CommunicationModule.removeThreadFromList(this);
 	}
 

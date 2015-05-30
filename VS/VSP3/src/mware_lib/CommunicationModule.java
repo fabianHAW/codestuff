@@ -32,7 +32,6 @@ public class CommunicationModule extends Thread {
 	private static InetAddress localHost;
 	private static int COMMUNICATIONMODULEPORT;
 	private static final int REQUEST = 0;
-	private static final int REPLY = 1;
 	private boolean isAlive;
 	private static int messageIDCounter;
 
@@ -91,16 +90,18 @@ public class CommunicationModule extends Thread {
 					requestToServant(m);
 				}
 				/*
-				 * vsp3_sequ_server: MessageType == Reply
+				 * vsp3_sequ_server: MessageType == Reply Der Reply wird nun
+				 * direkt an den zustaendigen Thread weitergeleitet und nicht
+				 * mehr an das Kommunikations-Modul
 				 */
-//				else if (m.getMessageType() == REPLY) {
-//					CommunicationModule.debugPrint(this.getClass(),
-//							"REPLY received");
-//					/*
-//					 * vsp3_sequ_server: 1.3: Reply zum Proxy weitergeben
-//					 */
-//					replyToProxy(m);
-//				}
+				// else if (m.getMessageType() == REPLY) {
+				// CommunicationModule.debugPrint(this.getClass(),
+				// "REPLY received");
+				// /*
+				// * vsp3_sequ_server: 1.3: Reply zum Proxy weitergeben
+				// */
+				// replyToProxy(m);
+				// }
 			} catch (IOException e) {
 				CommunicationModule
 						.debugPrint(this.getClass(), "Socket closed");
@@ -143,9 +144,14 @@ public class CommunicationModule extends Thread {
 	 * Client-Seite: Sucht den zustaendigen Hilfs-Thread aus der Liste, teilt
 	 * ihm die empfangene Nachricht mit und weckt ihn auf
 	 * 
+	 * Wird nun nicht mehr verwendet, da ein Reply der vom Server kommt, nun
+	 * direkt an den zustaendigen Thread geht der fuer die Weiterleitung an den
+	 * Proxy zustaendig ist
+	 * 
 	 * @param mReturn
 	 *            empfangene MessageADT
 	 */
+	@Deprecated
 	private void replyToProxy(MessageADT mReturn) {
 		synchronized (communicationThreadList) {
 			CommunicationModule.debugPrint(this.getClass(),
