@@ -52,6 +52,7 @@ public class ClientStartExpanded extends Thread{
 			}
 			
 		}
+		objBroker.shutDown();
 		
 	}
 	
