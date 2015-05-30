@@ -33,27 +33,30 @@ public class ServerStartExpanded extends Thread{
 		
 		Random classid = new Random();
 		ArrayList<Integer> counts = new ArrayList<Integer>();
-		counts.add(classid.nextInt(10)); //counts(0) = ClassOneAO
-		counts.add(classid.nextInt(10)); //counts(1) = ClassTwoAO
-		counts.add(classid.nextInt(10)); //counts(2) = ClassOneAT
+		counts.add( 1 + classid.nextInt(10)); //counts(0) = ClassOneAO
+		counts.add(1 + classid.nextInt(10)); //counts(1) = ClassTwoAO
+		counts.add(1 + classid.nextInt(10)); //counts(2) = ClassOneAT
 		
 		//Generates a random number of servants
 		for(int i = 0; i < counts.get(0); i++){
 			String name = "1_classOneAO-" + i;
 			nameSvc.rebind(new ClassOneAO(), name);
 			servants.add(name);
+			System.out.println("name: " + name);
 		}
 		
 		for(int i = 0; i < counts.get(1); i++){
 			String name = "2_classTwoAO-" + i;
 			nameSvc.rebind(new ClassTwoAO(), name);
 			servants.add(name);
+			System.out.println("name: " + name);
 		}
 		
 		for(int i = 0; i < counts.get(1); i++){
 			String name = "3_classOneAT-" + i;
 			nameSvc.rebind(new ClassOneAT(), name);
 			servants.add(name);
+			System.out.println("name: " + name);
 		}
 
 		
@@ -69,6 +72,7 @@ public class ServerStartExpanded extends Thread{
 	}
 	
 	public ArrayList<String> getServantNames(){
+		System.out.println("servants size: " + servants.size());
 		return servants;
 	}
 

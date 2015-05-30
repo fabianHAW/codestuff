@@ -20,6 +20,7 @@ public class ClientStartExpanded extends Thread{
 		nameservicePort = nsport;
 		nameserviceHost = nshost;
 		this.servantnames = servantnames;
+		System.out.println("sernvantnames: " + servantnames.size());
 		this.objectcalls = objectcalls;
 	}
 	
