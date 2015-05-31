@@ -51,6 +51,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 	 */
 	public String methodOne(String param1, int param2) throws SomeException112 {
 		// TODO Auto-generated method stub
+		if(param1 != null){
 		ArrayList<byte[]> vals = valsToByte(param1, param2);
 
 		// Verweis zum Entwurf:
@@ -73,6 +74,7 @@ public class ClassOneImplBaseProxy extends ClassOneImplBase {
 
 		CommunicationModule.debugPrint(received.getExceptionList().get(0)
 				.getMessage());
+		}
 		return null;
 	}
 

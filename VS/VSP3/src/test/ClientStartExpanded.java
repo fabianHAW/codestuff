@@ -41,6 +41,7 @@ public class ClientStartExpanded extends Thread{
 			if(servantid == 1){
 				accessor_one.ClassOneImplBase remoteObj = accessor_one.ClassOneImplBase.narrowCast(rawOb);
 				accessor_one_class_one(remoteObj, servant);
+				accessor_one_class_one_null(remoteObj, servant);
 			}else if(servantid == 2){
 				accessor_one.ClassTwoImplBase remoteObj = accessor_one.ClassTwoImplBase.narrowCast(rawOb);
 				accessor_one_class_two(remoteObj, servant);
@@ -54,6 +55,28 @@ public class ClientStartExpanded extends Thread{
 		}
 		objBroker.shutDown();
 		
+	}
+	
+	public void accessor_one_class_one_null(accessor_one.ClassOneImplBase remoteObj, String name){
+		String param1 = null;
+	
+			Random r = new Random();
+			int param2 = r.nextInt()*2;
+		try {
+			String returnval= remoteObj.methodOne(param1, param2);
+			System.out.println("accessor_one.ClassOneImplBase (\"" + name + "\")");
+			System.out.println("methodOne");
+			System.out.println("param1 = \"" + param1 + "\" param2 = " + param2);
+			System.out.println("return value = " + returnval);
+			System.out.println("------------------------------------------------------------------------------------");
+		} catch (accessor_one.SomeException112 e) {
+			System.out.println("accessor_one.ClassOneImplBase (\"" + name + "\"");
+			System.out.println("methodOne");
+			System.out.println("param1 = \"" + param1 + "\" param2 = " + param2);
+			System.out.println("accessor_one.SomeException112 with message \"" + e.getMessage() + "\"");
+			System.out.println("------------------------------------------------------------------------------------");
+		
+		}
 	}
 	
 	public void accessor_one_class_one(accessor_one.ClassOneImplBase remoteObj, String name){
@@ -96,6 +119,7 @@ public class ClientStartExpanded extends Thread{
 			}
 		}
 	}
+	
 	
 	public void accessor_one_class_two(accessor_one.ClassTwoImplBase remoteObj, String name){
 		Random rand = new Random();
