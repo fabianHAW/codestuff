@@ -8,6 +8,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import shared_types.NameServiceRequest;
+import shared_types.RemoteObjectRef;
+
 /**
  * 
  * @author Fabian

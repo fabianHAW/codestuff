@@ -8,9 +8,10 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
-import mware_lib.CommunicationModule;
-import mware_lib.NameServiceRequest;
-import mware_lib.RemoteObjectRef;
+import shared_types.NameServiceRequest;
+import shared_types.RemoteObjectRef;
+
+
 /**
  * Verweis zum Entwurf:
  * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - accessor_one.
@@ -32,7 +33,7 @@ public class NameService {
 	 */
 	public void start(int port) {
 
-		CommunicationModule.debugPrint(this.getClass(), " initialize... ");
+		DebugPrinter.debugPrint(this.getClass(), " initialize... ");
 		try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
@@ -41,7 +42,7 @@ public class NameService {
 		referenceObjects = new HashMap<String, RemoteObjectRef>();
 		listenPort = port;
 		listen();
-		CommunicationModule.debugPrint(this.getClass(), " initialized! ");
+		DebugPrinter.debugPrint(this.getClass(), " initialized! ");
 	}
 
 	/**
@@ -52,7 +53,7 @@ public class NameService {
 	 * 
 	 */
 	public void listen() {
-		CommunicationModule.debugPrint(this.getClass(), " waiting for requests.");
+		DebugPrinter.debugPrint(this.getClass(), " waiting for requests.");
 		while (true) {
 			Socket socket = null;
 			NameServiceRequest request = null;

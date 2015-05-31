@@ -1,5 +1,7 @@
-package accessor_one;
+package test;
 
+import accessor_one.ClassOneImplBase;
+import accessor_one.SomeException112;
 import mware_lib.CommunicationModule;
 
 /**

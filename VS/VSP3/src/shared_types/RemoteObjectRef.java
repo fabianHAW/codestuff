@@ -1,4 +1,4 @@
-package mware_lib;
+package shared_types;
 
 import java.io.Serializable;
 import java.net.InetAddress;

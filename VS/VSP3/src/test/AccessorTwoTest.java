@@ -2,11 +2,10 @@ package test;
 
 import static org.junit.Assert.*;
 import mware_lib.ReferenceModule;
-import mware_lib.RemoteObjectRef;
 
 import org.junit.Test;
 
-import accessor_two.ClassOneAT;
+import shared_types.RemoteObjectRef;
 import accessor_two.ClassOneImplBase;
 import accessor_two.SomeException112;
 import accessor_two.SomeException304;

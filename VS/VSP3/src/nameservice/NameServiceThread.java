@@ -6,8 +6,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import mware_lib.NameServiceRequest;
-import mware_lib.RemoteObjectRef;
+import shared_types.NameServiceRequest;
+import shared_types.RemoteObjectRef;
+
 
 /**
  * Behandelt den NameserviceRequest.

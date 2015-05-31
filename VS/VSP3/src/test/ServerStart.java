@@ -2,9 +2,6 @@ package test;
 
 import mware_lib.NameService;
 import mware_lib.ObjectBroker;
-import accessor_one.ClassOneAO;
-import accessor_one.ClassTwoAO;
-import accessor_two.ClassOneAT;
 
 public class ServerStart extends Thread{
 

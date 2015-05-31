@@ -4,10 +4,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import shared_types.RemoteObjectRef;
 import mware_lib.CommunicationModule;
 import mware_lib.CommunicationModuleThread;
 import mware_lib.MessageADT;
-import mware_lib.RemoteObjectRef;
 
 /**
  * Verweise zum Entwurf: <Entwurfsdokument> : Implementierung der vorgegebenen

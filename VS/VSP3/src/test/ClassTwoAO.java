@@ -1,7 +1,10 @@
-package accessor_one;
+package test;
 
 import java.util.Random;
 
+import accessor_one.ClassTwoImplBase;
+import accessor_one.SomeException110;
+import accessor_one.SomeException112;
 import mware_lib.CommunicationModule;
 
 /**

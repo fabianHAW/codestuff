@@ -7,10 +7,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import shared_types.RemoteObjectRef;
 import mware_lib.CommunicationModule;
 import mware_lib.MessageADT;
 import mware_lib.ReferenceModule;
-import mware_lib.RemoteObjectRef;
 import mware_lib.Skeleton;
 
 /**
