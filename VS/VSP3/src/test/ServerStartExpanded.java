@@ -24,7 +24,7 @@ public class ServerStartExpanded extends Thread{
 	}
 	
 	public void accessor_one_two_test(){
-		ObjectBroker objBroker = ObjectBroker.init(this.nameserviceHost, this.nameservicePort, true);
+		ObjectBroker objBroker = ObjectBroker.init(this.nameserviceHost, this.nameservicePort, false);
 		NameService nameSvc = objBroker.getNameService();
 	
 		
@@ -39,26 +39,27 @@ public class ServerStartExpanded extends Thread{
 			String name = "1_classOneAO-" + i;
 			nameSvc.rebind(new ClassOneAO(), name);
 			servants.add(name);
-			System.out.println("name: " + name);
+			System.out.println("Registered Servant: " + name);
 		}
 		
 		for(int i = 0; i < counts.get(1); i++){
 			String name = "2_classTwoAO-" + i;
 			nameSvc.rebind(new ClassTwoAO(), name);
 			servants.add(name);
-			System.out.println("name: " + name);
+			System.out.println("Registered Servant: " + name);
 		}
 		
 		for(int i = 0; i < counts.get(2); i++){
 			String name = "3_classOneAT-" + i;
 			nameSvc.rebind(new ClassOneAT(), name);
 			servants.add(name);
-			System.out.println("name: " + name);
+			System.out.println("Registered Servant: " + name);
 		}
 
 		
 		try {
 			System.out.println("server: sleeping");
+			System.out.println("------------------------------------------------------------------------------------");
 			Thread.sleep(40000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -69,7 +70,6 @@ public class ServerStartExpanded extends Thread{
 	}
 	
 	public ArrayList<String> getServantNames(){
-		System.out.println("servants size: " + servants.size());
 		return servants;
 	}
 

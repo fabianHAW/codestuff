@@ -10,6 +10,8 @@ import shared_types.NameServiceRequest;
 import shared_types.RemoteObjectRef;
 
 
+
+
 /**
  * Behandelt den NameserviceRequest.
  * 

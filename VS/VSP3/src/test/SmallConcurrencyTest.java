@@ -6,11 +6,9 @@ import java.util.Random;
 public class SmallConcurrencyTest {
 
 	public SmallConcurrencyTest() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		
 		if (args.length != 4) {
 			usage();
@@ -37,7 +35,6 @@ public class SmallConcurrencyTest {
 		try {
 			Thread.sleep(1000*server.size());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		for(ClientStartExpanded c : clients){
@@ -57,8 +54,6 @@ public class SmallConcurrencyTest {
 		ArrayList<ClientStartExpanded> clients = new ArrayList<ClientStartExpanded>();
 		Random rand = new Random();
 		for(int i = 0; i < clientcount; i++){
-			System.out.println("Servantid: " + rand.nextInt(servers.size()));
-			System.out.println("Servantnames: "  + servers.get(rand.nextInt(servers.size())).getServantNames());
 			clients.add(new ClientStartExpanded(nsport, nshost, servers.get(rand.nextInt(servers.size())).getServantNames()));
 		}
 		return clients;

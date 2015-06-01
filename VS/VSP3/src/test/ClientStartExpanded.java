@@ -15,11 +15,9 @@ public class ClientStartExpanded extends Thread{
 	private ArrayList<String> servantnames;
 
 	public ClientStartExpanded(int nsport, String nshost, ArrayList<String> servantnames) {
-		// TODO Auto-generated constructor stub
 		nameservicePort = nsport;
 		nameserviceHost = nshost;
 		this.servantnames = servantnames;
-		System.out.println("sernvantnames: " + servantnames.size());
 	}
 	
 	public void run(){
@@ -29,7 +27,6 @@ public class ClientStartExpanded extends Thread{
 	public void accessor_one_two_test(){
 		ObjectBroker objBroker = ObjectBroker.init(this.nameserviceHost, this.nameservicePort, false);
 		NameService nameSvc = objBroker.getNameService();
-		Random rand = new Random();
 		
 		for(int i = 0; i < servantnames.size(); i++){
 			String servant = servantnames.get(i);

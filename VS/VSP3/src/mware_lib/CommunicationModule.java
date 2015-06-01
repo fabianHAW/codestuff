@@ -211,7 +211,6 @@ public class CommunicationModule extends Thread {
 					.debugPrint("mware_lib.CommunicationModule: remove CommunicatioModuleThread from list <"
 							+ c.getName() + ">");
 			communicationThreadList.remove(c);
-
 		}
 	}
 

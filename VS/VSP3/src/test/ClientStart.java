@@ -101,7 +101,7 @@ public class ClientStart extends Thread{
 			System.out.println("return value = " + returnvalc1Wrong);
 			System.out.println("------------------------------------------------------------------------------------");
 		} catch (accessor_one.SomeException112 e) {
-			System.out.println("accessor_one.ClassOneImplBase (\"" + namec1 + "\"");
+			System.out.println("accessor_one.ClassOneImplBase (\"" + namec1 + "\")");
 			System.out.println("methodOne");
 			System.out.println("param1 = \"" + c1param1Wrong + "\" param2 = " + c1param2Wrong);
 			System.out.println("accessor_one.SomeException112 with message \"" + e.getMessage() + "\"");
@@ -120,7 +120,7 @@ public class ClientStart extends Thread{
 			System.out.println("return value = " + returnvalc2m1);
 			System.out.println("------------------------------------------------------------------------------------");
 		} catch (SomeException110 e) {
-			System.out.println("accessor_one.ClassTwoImplBase (\"" + namec2 + "\"");
+			System.out.println("accessor_one.ClassTwoImplBase (\"" + namec2 + "\")");
 			System.out.println("methodOne");
 			System.out.println("param1 = " + c21param1);
 			System.out.println("accessor_one.SomeException110 with message \"" + e.getMessage() + "\"");
@@ -139,7 +139,7 @@ public class ClientStart extends Thread{
 			System.out.println("return value = " + returnvalc2m1Wrong);
 			System.out.println("------------------------------------------------------------------------------------");
 		} catch (SomeException110 e) {
-			System.out.println("accessor_one.ClassTwoImplBase (\"" + namec2 + "\"");
+			System.out.println("accessor_one.ClassTwoImplBase (\"" + namec2 + "\")");
 			System.out.println("methodOne");
 			System.out.println("param1 = " + c21param1Wrong);
 			System.out.println("accessor_one.SomeException110 with message \"" + e.getMessage() + "\"");
@@ -159,7 +159,7 @@ public class ClientStart extends Thread{
 			System.out.println("return value = " + returnvalc2m2);
 			System.out.println("------------------------------------------------------------------------------------");
 		} catch (SomeException112 e) {
-			System.out.println("accessor_one.ClassTwoImplBase (\"" + namec2 + "\"");
+			System.out.println("accessor_one.ClassTwoImplBase (\"" + namec2 + "\")");
 			System.out.println("methodTwo");
 			System.out.println("no params");
 			System.out.println("accessor_one.SomeException112 with message \"" + e.getMessage() + "\"");
