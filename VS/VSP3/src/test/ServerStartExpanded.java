@@ -49,7 +49,7 @@ public class ServerStartExpanded extends Thread{
 			System.out.println("name: " + name);
 		}
 		
-		for(int i = 0; i < counts.get(1); i++){
+		for(int i = 0; i < counts.get(2); i++){
 			String name = "3_classOneAT-" + i;
 			nameSvc.rebind(new ClassOneAT(), name);
 			servants.add(name);

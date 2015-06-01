@@ -35,7 +35,7 @@ public class SmallConcurrencyTest {
 			s.start();
 		}
 		try {
-			Thread.sleep(500*server.size());
+			Thread.sleep(1000*server.size());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -59,7 +59,7 @@ public class SmallConcurrencyTest {
 		for(int i = 0; i < clientcount; i++){
 			System.out.println("Servantid: " + rand.nextInt(servers.size()));
 			System.out.println("Servantnames: "  + servers.get(rand.nextInt(servers.size())).getServantNames());
-			clients.add(new ClientStartExpanded(nsport, nshost, servers.get(rand.nextInt(servers.size())).getServantNames(), 5));
+			clients.add(new ClientStartExpanded(nsport, nshost, servers.get(rand.nextInt(servers.size())).getServantNames()));
 		}
 		return clients;
 	}

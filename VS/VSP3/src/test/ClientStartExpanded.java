@@ -13,15 +13,13 @@ public class ClientStartExpanded extends Thread{
 	private int nameservicePort;
 	private String nameserviceHost;
 	private ArrayList<String> servantnames;
-	private int objectcalls;
 
-	public ClientStartExpanded(int nsport, String nshost, ArrayList<String> servantnames, int objectcalls) {
+	public ClientStartExpanded(int nsport, String nshost, ArrayList<String> servantnames) {
 		// TODO Auto-generated constructor stub
 		nameservicePort = nsport;
 		nameserviceHost = nshost;
 		this.servantnames = servantnames;
 		System.out.println("sernvantnames: " + servantnames.size());
-		this.objectcalls = objectcalls;
 	}
 	
 	public void run(){
@@ -33,8 +31,8 @@ public class ClientStartExpanded extends Thread{
 		NameService nameSvc = objBroker.getNameService();
 		Random rand = new Random();
 		
-		for(int i = 0; i < objectcalls; i++){
-			String servant = servantnames.get(rand.nextInt(servantnames.size()));
+		for(int i = 0; i < servantnames.size(); i++){
+			String servant = servantnames.get(i);
 			Object rawOb = nameSvc.resolve(servant);
 			int servantid = Integer.parseInt(servant.substring(0, 1));
 			
@@ -124,8 +122,6 @@ public class ClientStartExpanded extends Thread{
 	public void accessor_one_class_two(accessor_one.ClassTwoImplBase remoteObj, String name){
 		Random rand = new Random();
 		int testkind = rand.nextInt(2); //0 = Methodentest korrekt, 1 = Methodentest Exception
-		int method = rand.nextInt(2); //0 = methodOne, 1 = methodTwo
-		if(method == 0){
 		if(testkind == 0){
 			double param1 = Integer.MAX_VALUE / 4;
 		try {
@@ -158,7 +154,8 @@ public class ClientStartExpanded extends Thread{
 				System.out.println("accessor_one.SomeException110 with message \"" + e.getMessage() + "\"");
 				System.out.println("------------------------------------------------------------------------------------");
 			}
-		}}else{
+		}
+		
 			try {
 				double returnval = remoteObj.methodTwo();
 				System.out.println("accessor_one.ClassTwoImplBase (\"" + name + "\")");
@@ -173,15 +170,12 @@ public class ClientStartExpanded extends Thread{
 				System.out.println("accessor_one.SomeException112 with message \"" + e.getMessage() + "\"");
 				System.out.println("------------------------------------------------------------------------------------");
 			}
-		}
+		
 		
 		
 	}
 	
 	public void accessor_two_class_one(accessor_two.ClassOneImplBase remoteObj, String name){
-		Random rand = new Random();
-		int methodKind = rand.nextInt(2);//0 = methodOne, 1 = methodTwo
-		if(methodKind == 0){
 				double returnval;
 				String param1 = name;
 				double param2 = 3;
@@ -198,7 +192,7 @@ public class ClientStartExpanded extends Thread{
 				returnval = remoteObj.methodOne(null, param2);
 				System.out.println("accessor_two.ClassOneImplBase (\"" + name + "\")");
 				System.out.println("methodOne");
-				System.out.println("param1 = \"" + param1 + "\" param2 = " + param2);
+				System.out.println("param1 = \"" + null + "\" param2 = " + param2);
 				System.out.println("return value = " + returnval);
 				System.out.println("------------------------------------------------------------------------------------");
 				
@@ -217,10 +211,10 @@ public class ClientStartExpanded extends Thread{
 				System.out.println("accessor_one.SomeException112 with message \"" + e.getMessage() + "\"");
 				System.out.println("------------------------------------------------------------------------------------");
 			}
-		}else{
-			double returnval;
-			String param1 = name;
-			double param2 = 1; 
+		
+		
+			 param1 = name;
+			 param2 = 1; 
 			try {
 				/**1.Test: Normal-Test**/
 				returnval = remoteObj.methodTwo(param1, param2);
@@ -283,7 +277,7 @@ public class ClientStartExpanded extends Thread{
 				System.out.println("param1 = \"" + param1 + "\" param2 = " + param2);
 				System.out.println("accessor_two.SomeException304 with message \"" + e.getMessage() + "\"");
 				System.out.println("------------------------------------------------------------------------------------");
-			}	
+				
 		}
 	}
 
