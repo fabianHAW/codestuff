@@ -17,13 +17,6 @@ public class NameServiceThread extends Thread {
 	private String[] request;
 	private Socket socket;
 
-	// public NameServiceThread(NameServiceRequest r, Socket s) {
-	// System.out.println(this.getClass() + "initialized");
-	// request = r;
-	// this.socket = s;
-	//
-	// }
-
 	public NameServiceThread(String[] r, Socket s) {
 		System.out.println(this.getClass() + "initialized");
 		request = r;
@@ -46,16 +39,6 @@ public class NameServiceThread extends Thread {
 			RemoteObjectRef o = resolve(request[1]);
 			sendObject(request, o);
 		}
-
-		// String type = request.getRequestType().toLowerCase();
-		// if (type.equals("rebind")) {
-		// System.out.println(this.getClass() + "call rebind");
-		// rebind(request.getObjectRef(), request.getServiceName());
-		// } else if (type.equals("resolve")) {
-		// System.out.println(this.getClass() + "call resolve");
-		// Object o = resolve(request.getServiceName());
-		// sendObject(type, request.getServiceName(), o);
-		// }
 	}
 
 	/**
