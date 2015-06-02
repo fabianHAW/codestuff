@@ -8,10 +8,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import shared_types.NameServiceRequest;
-import shared_types.RemoteObjectRef;
-
-
 /**
  * 
  * @author Fabian
@@ -43,21 +39,18 @@ public class NameServiceProxy extends NameService {
 			 * vsp3_sequ_server_start: 3.2.1.1: neue entfernte Objekt-Referenz
 			 * erzeugen 3.2.1.1.3: entfernte Objekt-Referenz erhalten
 			 */
-			// RemoteObjectRef rof =
-			// ReferenceModule.createNewRemoteRef(servant);
 			RemoteObjectRef rof = ReferenceModule.createNewRemoteRef(servant);
 			/*
 			 * vsp3_sequ_server_start: 3.2.1.2: Neue Nachricht fuer Nameservice
 			 * erzeugen
 			 */
-			NameServiceRequest n = null;
-			try {
-				n = new NameServiceRequest("rebind", name, rof, InetAddress
-						.getLocalHost().getCanonicalHostName(),
-						this.servicePort);
-			} catch (UnknownHostException e1) {
-				e1.printStackTrace();
-			}
+
+			String[] message = new String[] { "rebind", name,
+					rof.getInetAddress().getHostName(),
+					String.valueOf(rof.getPort()),
+					String.valueOf(rof.getTime()),
+					String.valueOf(rof.getObjectNumber()) };
+
 			try {
 				this.socket = new Socket(this.serviceHost, this.servicePort);
 				this.output = new ObjectOutputStream(
@@ -65,7 +58,7 @@ public class NameServiceProxy extends NameService {
 				/*
 				 * vsp3_sequ_server_start: 4: Nachricht an Nameservice senden
 				 */
-				this.output.writeObject(n);
+				this.output.writeObject(message);
 
 				CommunicationModule.debugPrint(this.getClass(),
 						"send request (rebind) to nameservice");
@@ -83,30 +76,30 @@ public class NameServiceProxy extends NameService {
 
 	@Override
 	public Object resolve(String name) {
-		NameServiceRequest request = null;
-		NameServiceRequest n = null;
+		String[] message = null;
+		String[] request = null;
 		try {
 			this.serverSocket = new ServerSocket(0);
-
-			n = new NameServiceRequest("resolve", name, null, InetAddress
-					.getLocalHost().getCanonicalHostName(),
-					this.serverSocket.getLocalPort());
-			
-		} catch (UnknownHostException e1) {
-			e1.printStackTrace();
+			message = new String[] { "resolve", name,
+					InetAddress.getLocalHost().getCanonicalHostName(),
+					String.valueOf(this.serverSocket.getLocalPort()) };
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		try {
 			this.socket = new Socket(this.serviceHost, this.servicePort);
 			this.output = new ObjectOutputStream(this.socket.getOutputStream());
 			CommunicationModule.debugPrint(this.getClass(),
 					"send request (resolve) to nameservice");
-			this.output.writeObject(n);
+			this.output.writeObject(message);
 
 			this.socket = this.serverSocket.accept();
 			this.input = new ObjectInputStream(this.socket.getInputStream());
-			request = (NameServiceRequest) this.input.readObject();
+			request = (String[]) this.input.readObject();
 
 			this.input.close();
 			this.output.close();
@@ -123,10 +116,16 @@ public class NameServiceProxy extends NameService {
 		CommunicationModule.debugPrint(this.getClass(), "Service: " + name
 				+ " resolved");
 
-		if (request.getObjectRef() != null) {
-			return request.getObjectRef();
+		if (request[2] != null) {
+			try {
+				return new RemoteObjectRef(InetAddress.getByName(request[2]),
+						Integer.valueOf(request[3]), Long.valueOf(request[4]),
+						Integer.valueOf(request[5]));
+			} catch (NumberFormatException | UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
-
 }

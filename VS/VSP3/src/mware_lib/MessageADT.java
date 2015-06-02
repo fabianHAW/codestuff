@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.List;
 
-import shared_types.RemoteObjectRef;
-
 
 /**
  * 

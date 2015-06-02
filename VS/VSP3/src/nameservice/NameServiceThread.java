@@ -6,12 +6,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import shared_types.NameServiceRequest;
-import shared_types.RemoteObjectRef;
-
-
-
-
 /**
  * Behandelt den NameserviceRequest.
  * 
@@ -20,10 +14,17 @@ import shared_types.RemoteObjectRef;
  */
 public class NameServiceThread extends Thread {
 
-	private NameServiceRequest request;
+	private String[] request;
 	private Socket socket;
 
-	public NameServiceThread(NameServiceRequest r, Socket s) {
+	// public NameServiceThread(NameServiceRequest r, Socket s) {
+	// System.out.println(this.getClass() + "initialized");
+	// request = r;
+	// this.socket = s;
+	//
+	// }
+
+	public NameServiceThread(String[] r, Socket s) {
 		System.out.println(this.getClass() + "initialized");
 		request = r;
 		this.socket = s;
@@ -36,15 +37,25 @@ public class NameServiceThread extends Thread {
 	 * auf.
 	 */
 	public void run() {
-		String type = request.getRequestType().toLowerCase();
-		if (type.equals("rebind")) {
+		if (request[0].equals("rebind")) {
 			System.out.println(this.getClass() + "call rebind");
-			rebind(request.getObjectRef(), request.getServiceName());
-		} else if (type.equals("resolve")) {
+			RemoteObjectRef rof = newRemoteRef(request);
+			rebind(rof, request[1]);
+		} else if (request[0].equals("resolve")) {
 			System.out.println(this.getClass() + "call resolve");
-			Object o = resolve(request.getServiceName());
-			sendObject(type, request.getServiceName(), o);
+			RemoteObjectRef o = resolve(request[1]);
+			sendObject(request, o);
 		}
+
+		// String type = request.getRequestType().toLowerCase();
+		// if (type.equals("rebind")) {
+		// System.out.println(this.getClass() + "call rebind");
+		// rebind(request.getObjectRef(), request.getServiceName());
+		// } else if (type.equals("resolve")) {
+		// System.out.println(this.getClass() + "call resolve");
+		// Object o = resolve(request.getServiceName());
+		// sendObject(type, request.getServiceName(), o);
+		// }
 	}
 
 	/**
@@ -58,18 +69,20 @@ public class NameServiceThread extends Thread {
 	 * @param o
 	 *            Die Objektreferenz.
 	 */
-	private void sendObject(String type, String name, Object o) {
-		NameServiceRequest request = null;
-		try {
-			request = new NameServiceRequest(type, name, (RemoteObjectRef) o,
-					InetAddress.getLocalHost().getCanonicalHostName(),
-					NameService.listenPort);
-		} catch (UnknownHostException e1) {
-			e1.printStackTrace();
+	private void sendObject(String[] message, RemoteObjectRef o) {
+		String[] request = null;
+		if (o == null) {
+			request = new String[] { "resolve", message[1], null, null, null,
+					null };
+		} else {
+			request = new String[] { "resolve", message[1],
+					o.getInetAddress().getHostName(),
+					String.valueOf(o.getPort()), String.valueOf(o.getTime()),
+					String.valueOf(o.getObjectNumber()) };
 		}
 		try {
-			this.socket = new Socket(this.request.getHost(),
-					this.request.getPort());
+			this.socket = new Socket(InetAddress.getByName(message[2]),
+					Integer.valueOf(message[3]));
 			ObjectOutputStream out = new ObjectOutputStream(
 					this.socket.getOutputStream());
 			out.writeObject(request);
@@ -83,6 +96,18 @@ public class NameServiceThread extends Thread {
 		}
 	}
 
+	private static RemoteObjectRef newRemoteRef(String[] message) {
+		try {
+			return new RemoteObjectRef(InetAddress.getByName(message[2]),
+					Integer.valueOf(message[3]), Long.valueOf(message[4]),
+					Integer.valueOf(message[5]));
+		} catch (NumberFormatException | UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	/**
 	 * Speichert ein Objektreferenz unter dem Namen name ab. Eine evtl.
 	 * vorhandene andere Objektreferenz wird �berschrieben.
@@ -92,9 +117,9 @@ public class NameServiceThread extends Thread {
 	 * @param name
 	 *            Der Name des Service der hinter der Objektreferenz steht.
 	 */
-	public void rebind(Object servant, String name) {
+	public void rebind(RemoteObjectRef servant, String name) {
 		if (servant != null)
-			NameService.addService(name, (RemoteObjectRef) servant);
+			NameService.addService(name, servant);
 	}
 
 	/**
@@ -104,7 +129,7 @@ public class NameServiceThread extends Thread {
 	 *            Der Name des Service der hinter der Objektreferenz steht.
 	 * @return ref Die Objektreferenz.
 	 */
-	public Object resolve(String name) {
+	public RemoteObjectRef resolve(String name) {
 		return NameService.getService(name);
 	}
 }

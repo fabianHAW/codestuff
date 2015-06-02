@@ -7,7 +7,7 @@ import java.util.Arrays;
 import mware_lib.CommunicationModule;
 import mware_lib.CommunicationModuleThread;
 import mware_lib.MessageADT;
-import shared_types.RemoteObjectRef;
+import mware_lib.RemoteObjectRef;
 
 /**
  * Verweis zum Entwurf: <Entwurfsdokument> : Implementierung der vorgegebenen

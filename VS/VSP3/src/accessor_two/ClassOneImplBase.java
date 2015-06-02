@@ -2,7 +2,7 @@ package accessor_two;
 
 import mware_lib.CommunicationModule;
 import mware_lib.ReferenceModule;
-import shared_types.RemoteObjectRef;
+import mware_lib.RemoteObjectRef;
 
 /**
  * 

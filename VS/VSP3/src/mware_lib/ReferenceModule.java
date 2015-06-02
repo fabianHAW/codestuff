@@ -1,12 +1,8 @@
 package mware_lib;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import shared_types.RemoteObjectRef;
 
 
 /**
@@ -38,19 +34,12 @@ public class ReferenceModule {
 		int port = CommunicationModule.getCommunicationmoduleport();
 		int objectNumber = -1;
 
-		List<String> interfaces = new ArrayList<String>();
-
 		if (myObject instanceof accessor_one.ClassOneImplBase) {
 			objectNumber = 1;
-			interfaces.add("methodOne(String param1, int param2)");
 		} else if (myObject instanceof accessor_one.ClassTwoImplBase) {
 			objectNumber = 2;
-			interfaces.add("methodOne(double param1)");
-			interfaces.add("methodTwo()");
 		} else if (myObject instanceof accessor_two.ClassOneImplBase) {
 			objectNumber = 3;
-			interfaces.add("methodOne(String param1, double param2)");
-			interfaces.add("methodTwo(String param1, double param2)");
 		}
 
 		RemoteObjectRef rawObjRef = null;
@@ -59,7 +48,7 @@ public class ReferenceModule {
 		 * vsp3_sequ_server_start: 3.2.1.1.1: Neue Referenz erzeugen
 		 */
 		rawObjRef = new RemoteObjectRef(CommunicationModule.getLocalHost(),
-				port, System.currentTimeMillis(), objectNumber, interfaces);
+				port, System.currentTimeMillis(), objectNumber);
 
 		/*
 		 * vsp3_sequ_server_start: 3.2.1.1.2: Servant in Tabelle abspeichern

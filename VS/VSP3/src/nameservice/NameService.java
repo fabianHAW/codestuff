@@ -8,13 +8,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
-import shared_types.NameServiceRequest;
-import shared_types.RemoteObjectRef;
-
-
 /**
- * Verweis zum Entwurf:
- * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - accessor_one.
+ * Verweis zum Entwurf: <Entwurfsdokument> : Implementierung der vorgegebenen
+ * Methoden in Nr. 3 (d) - accessor_one.
  * 
  * @author Francis u. Fabian.
  *
@@ -27,9 +23,11 @@ public class NameService {
 	private static HashMap<String, RemoteObjectRef> referenceObjects;
 
 	/**
-	 * Startet den Nameservice und l�sst ihn auf dem entsprechenden Port lauschen.
+	 * Startet den Nameservice und l�sst ihn auf dem entsprechenden Port
+	 * lauschen.
 	 * 
-	 * @param port Ein freier Port.
+	 * @param port
+	 *            Ein freier Port.
 	 */
 	public void start(int port) {
 
@@ -46,39 +44,46 @@ public class NameService {
 	}
 
 	/**
-	 * L�sst den Nameservice auf dem Port lauschen.
-	 * Wenn ein Objekt vom Typ NameserviceRequest auf dem Socket eintrifft, wird ein NameServiceThread
-	 * gestartet, der sich um die Anfrage k�mmert. Anschlie�end wird wieder auf eintreffende Anfragen
-	 * gewartet.
+	 * L�sst den Nameservice auf dem Port lauschen. Wenn ein Objekt vom Typ
+	 * NameserviceRequest auf dem Socket eintrifft, wird ein NameServiceThread
+	 * gestartet, der sich um die Anfrage k�mmert. Anschlie�end wird wieder auf
+	 * eintreffende Anfragen gewartet.
 	 * 
 	 */
 	public void listen() {
 		DebugPrinter.debugPrint(this.getClass(), " waiting for requests.");
 		while (true) {
 			Socket socket = null;
-			NameServiceRequest request = null;
+			String[] request = null;
 			try {
 				
 
 				socket = serverSocket.accept();
 				input = new ObjectInputStream(socket.getInputStream());
-				request = (NameServiceRequest) input.readObject();
+				request = (String[]) input.readObject();
 
 				System.out.println(this.getClass()
 						+ "start new thread to handle request");
 
 				NameServiceThread t = new NameServiceThread(request, socket);
 				t.start();
-			} catch (IOException | ClassNotFoundException e) {
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
 
 	/**
-	 * F�gt dem Nameservice eine neue Objektreferenz ref unter dem Namen name hinzu.
-	 * @param name Der Name des Service.
-	 * @param ref Die Objektreferenz.
+	 * F�gt dem Nameservice eine neue Objektreferenz ref unter dem Namen name
+	 * hinzu.
+	 * 
+	 * @param name
+	 *            Der Name des Service.
+	 * @param ref
+	 *            Die Objektreferenz.
 	 */
 	public static void addService(String name, RemoteObjectRef ref) {
 		referenceObjects.put(name, ref);
@@ -87,7 +92,8 @@ public class NameService {
 	/**
 	 * Liefert den Service, der unter dem Namen name abgespeichert ist.
 	 * 
-	 * @param name Der Name des Service.
+	 * @param name
+	 *            Der Name des Service.
 	 * @return service Der Service mit dem Namen name.
 	 */
 	public static synchronized RemoteObjectRef getService(String name) {
@@ -96,6 +102,7 @@ public class NameService {
 
 	/**
 	 * Liefert den Port, auf dem der Nameservice lauscht.
+	 * 
 	 * @return port der entsprechende Port.
 	 */
 	public static int getListenPort() {
@@ -104,6 +111,7 @@ public class NameService {
 
 	/**
 	 * Liefert den localhost des Nameservice.
+	 * 
 	 * @return localhost Der localhost des Nameservice.
 	 */
 	public static synchronized InetAddress getLocalHost() {

@@ -13,7 +13,7 @@ import java.util.List;
 import mware_lib.CommunicationModule;
 import mware_lib.MessageADT;
 import mware_lib.ReferenceModule;
-import shared_types.RemoteObjectRef;
+import mware_lib.RemoteObjectRef;
 import mware_lib.Skeleton;
 
 /**
