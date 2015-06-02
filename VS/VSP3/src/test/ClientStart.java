@@ -6,6 +6,14 @@ import accessor_two.SomeException304;
 import mware_lib.NameService;
 import mware_lib.ObjectBroker;
 
+/**
+ *  *  *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) im Package "test".
+ * <Klassendiagramm> : Implementierung der Klasse im Package test
+ * 
+ * @author Francis
+ *
+ */
 public class ClientStart extends Thread{
 
 	private String nameserviceHost;
@@ -170,6 +178,10 @@ public class ClientStart extends Thread{
 	
 	}
 	
+	/**
+	 * Testet die Methoden des accessor_one
+	 * @param clientName
+	 */
 	public void accessor_one_concurrencyTest(int clientName){	
 		String namec22 = "c22";	
 		

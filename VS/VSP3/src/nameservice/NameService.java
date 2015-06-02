@@ -9,9 +9,11 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 
 /**
- * Verweis zum Entwurf: <Entwurfsdokument> : Implementierung der vorgegebenen
- * Methoden in Nr. 3 (d) - accessor_one.
+ *  *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegeben Methoden
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in nameservice - NameService
  * 
+ 
  * @author Francis u. Fabian.
  *
  */

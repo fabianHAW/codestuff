@@ -9,7 +9,9 @@ import mware_lib.MessageADT;
 import mware_lib.RemoteObjectRef;
 
 /**
- * 
+ *  *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - accessor_two.
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in accessor_two - ClassOneImplBaseProxy
  * @author Fabian
  * 
  *         Stellen die Proxies auf Client-Seite dar und führen Marshals Request

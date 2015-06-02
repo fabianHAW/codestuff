@@ -2,7 +2,10 @@ package test;
 
 import mware_lib.NameService;
 import mware_lib.ObjectBroker;
-
+/**
+* Verweise zum Entwurf:
+* <Klassendiagramm> : Implementierung der Klasse im Package test
+*/
 public class ServerStart extends Thread{
 
 	private String nameserviceHost;
@@ -11,12 +14,16 @@ public class ServerStart extends Thread{
 	public ServerStart(String nameserviceHost, int nameservicePort) {
 		this.nameserviceHost = nameserviceHost;
 		this.nameservicePort = nameservicePort;
+		
 	}
 	
 	public void run(){
 		accessor_one_and_accessor_two_test();
 	}
 	
+	/**
+	 * Erzeugt 5 Objekte und testet Methodenaufrufe auf ihnen.
+	 */
 	public void accessor_one_and_accessor_two_test(){
 
 		ClassOneAO c1 = new ClassOneAO();

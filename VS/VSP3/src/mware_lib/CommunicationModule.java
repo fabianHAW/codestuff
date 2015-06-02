@@ -10,7 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - mware_lib.
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in mware_lib - CommunicationModule
+ * <Sequenzdiagramm vsp3_sequ_server> : Realiserung der Sequenznummer 1, 1.1
+ *
+ 
  * @author Fabian
  * 
  *         Lauscht auf einem Socket auf eingehende Nachrichten von entfernten
@@ -82,7 +87,9 @@ public class CommunicationModule extends Thread {
 						"received new MessageADT");
 
 				/*
+				 * 
 				 * vsp3_sequ_server: MessageType == Request
+				 * Sequenznummer 1
 				 */
 				if (m.getMessageType() == REQUEST) {
 					CommunicationModule.debugPrint(this.getClass(),

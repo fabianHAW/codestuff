@@ -6,7 +6,10 @@ import java.util.List;
 
 
 /**
- * 
+ *  *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (c) - Zusätzliche ADTs.
+ * <Klassendiagramm> : Implementierung durch Methoden zur Realisierung der in Nr. 3c definierten Anforderungen.
+
  * @author Francis
  * 
  *         Dient als Kommunikationsobjekt zwischen den Komponenten. FÃ¼r einen

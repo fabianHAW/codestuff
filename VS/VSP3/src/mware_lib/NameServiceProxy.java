@@ -9,7 +9,12 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- * 
+ * Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - mware_lib.
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in mware_lib - NameServiceProxy
+ * <Sequenzdiagramm vsp3_sequ_server_start> : Realiserung der Sequenznummer 3.1, 3.2.1, 3.2.1.1, 3.2.1.1.3
+ * 3.2.1.2, 4
+
  * @author Fabian
  * 
  *         Ist der Stellvertreter des Namensdienstes. Dieser bekommt durch die
@@ -26,6 +31,13 @@ public class NameServiceProxy extends NameService {
 	private String serviceHost;
 	private int servicePort;
 
+	/**
+	 * Verweis zum Entwurf
+	 * <Sequenzdiagramm vsp3_sequ_server_start> 3.1
+	 * 
+	 * @param serviceHost
+	 * @param port
+	 */
 	public NameServiceProxy(String serviceHost, int port) {
 		this.serviceHost = serviceHost;
 		this.servicePort = port;

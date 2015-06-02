@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.net.InetAddress;
 
 /**
+ *  * Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegeben Methoden
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in nameservice - RemoteObjectRef
  * 
  * @author Francis u. Fabian
  *
@@ -21,6 +24,16 @@ public class RemoteObjectRef implements Serializable{
 	private long time;
 	private int objectNumber;
 
+	/**
+	 * Verweis zum Entwurf
+	 *  <Sequenzdiagramm vsp3_sequ_server:_start> : Realiserung der Sequenznummer 3.2.1.1.1
+	 *  
+	 * @param inetAddress Die InetAddress des Objekts das über diese Objektreferenz referenziert werden soll.
+	 * @param port Der Port des Objkets das über diese Objektreferenz referenziert werden soll.
+	 * @param time Die aktuelle Zeit.
+	 * @param objectNumber Die Objektnummer der Klasse, deren Instanz das Objekt ist, das über diese 
+	 * Objektreferenz refernziert werden soll.
+	 */
 	public RemoteObjectRef(InetAddress inetAddress, int port, long time,
 			int objectNumber) {
 		this.inetAddress = inetAddress;

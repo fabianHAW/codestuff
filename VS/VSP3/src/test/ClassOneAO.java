@@ -5,6 +5,10 @@ import accessor_one.SomeException112;
 import mware_lib.CommunicationModule;
 
 /**
+ *  *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) im Package "test".
+ * <Klassendiagramm> : Implementierung der Klasse im Package test
+ * 
  * Servant Klasse - implementiert die eigentliche Funktionalit�t der Methode methodOne.
  * @author Francis u. Fabian
  * 

@@ -6,6 +6,9 @@ import accessor_two.SomeException304;
 import mware_lib.CommunicationModule;
 
 /**
+ *  *  *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - Package "test".
+ * <Klassendiagramm> : Implementierung der Klasse im Package test
  * 
  * @author Fabian
  * 

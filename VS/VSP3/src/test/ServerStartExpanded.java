@@ -5,7 +5,19 @@ import java.util.Random;
 
 import mware_lib.NameService;
 import mware_lib.ObjectBroker;
-
+/**
+ *  Verweise zum Entwurf:
+ * <Klassendiagramm> : Implementierung der Klasse im Package test
+ * 
+ * Erzeugt von jedem Objekt der Typen ClassOneImplBase aus accessor_one und accessor_two
+ * sowie ClassTwoImplBase aus accessor_two jeweils mindestens 1 und höchstens 10 Objekt/e.
+ * Registriert diese im Nameservice in der Form 1_xxxx für Objekte von ClassOneImplBase aus accessor_one,
+ * 2_xxxx für Objekte von ClassTwoImplBase aus accessor_one und 3_xxxx für Objekte von
+ * ClassOneImplBase aus accessor_two
+ * 
+ * @author Francis
+ *
+ */
 public class ServerStartExpanded extends Thread{
 
 	private int nameservicePort;

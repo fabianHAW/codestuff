@@ -5,7 +5,10 @@ import mware_lib.ReferenceModule;
 import mware_lib.RemoteObjectRef;
 
 /**
- * 
+ *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - accessor_two.
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in accessor_two - ClassOneImplBase
+
  * @author Fabian
  * 
  *         Bietet den Proxies und den Skeletons die noetigen Methoden zur

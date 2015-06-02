@@ -1,6 +1,10 @@
 package mware_lib;
 
 /**
+ *  *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - mware_lib.
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in mware_lib - Skeleton Interface
+
  * 
  * @author Francis
  * 

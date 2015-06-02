@@ -8,7 +8,9 @@ import mware_lib.MessageADT;
 import mware_lib.ObjectAdapter;
 
 /**
- * 
+ *  *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - accessor_two.
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in accessor_two - ObjectAdapterAT
  * @author Fabian
  * 
  *         Implementierung des Objekt-Adapters

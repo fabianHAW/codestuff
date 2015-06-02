@@ -8,12 +8,25 @@ import accessor_one.SomeException112;
 import mware_lib.NameService;
 import mware_lib.ObjectBroker;
 
+/**
+ * Verweise zum Entwurf:
+ * <Klassendiagramm> : Implementierung der Klasse im Package test
+ * 
+ * @author Francis
+ *
+ */
 public class ClientStartExpanded extends Thread{
 
 	private int nameservicePort;
 	private String nameserviceHost;
 	private ArrayList<String> servantnames;
 
+	/**
+	 * 
+	 * @param nsport Port des Nameservice
+	 * @param nshost Host des Nameservice
+	 * @param servantnames Liste mit Namen der beim Nameservice registrierten Objekten.
+	 */
 	public ClientStartExpanded(int nsport, String nshost, ArrayList<String> servantnames) {
 		nameservicePort = nsport;
 		nameserviceHost = nshost;
@@ -24,6 +37,11 @@ public class ClientStartExpanded extends Thread{
 		accessor_one_two_test();
 	}
 	
+	/**
+	 * Testet die Objekte des accessor_one unter dem Aspekt der Nebenläufigkeit.
+	 * Es werden für alle Objektnamen in servantnames Objektreferenzen vom Nameservice geholt und dann
+	 * Methoden darauf aufgerufen.
+	 */
 	public void accessor_one_two_test(){
 		ObjectBroker objBroker = ObjectBroker.init(this.nameserviceHost, this.nameservicePort, false);
 		NameService nameSvc = objBroker.getNameService();
@@ -52,6 +70,11 @@ public class ClientStartExpanded extends Thread{
 		
 	}
 	
+	/**
+	 * Testet die Methoden der Objekte aus accessor_one auf Verhalten bei Übergabe des null Parameters.
+	 * @param remoteObj
+	 * @param name
+	 */
 	public void accessor_one_class_one_null(accessor_one.ClassOneImplBase remoteObj, String name){
 		String param1 = null;
 	
@@ -74,6 +97,11 @@ public class ClientStartExpanded extends Thread{
 		}
 	}
 	
+	/**
+	 * Methodenaufruf auf einem Objekt der Klasse ClassOneImplBase.
+	 * @param remoteObj
+	 * @param name
+	 */
 	public void accessor_one_class_one(accessor_one.ClassOneImplBase remoteObj, String name){
 		Random rand = new Random();
 		int testkind = rand.nextInt(2); //0 = Methodentest korrekt, 1 = Methodentest Exception
@@ -115,7 +143,11 @@ public class ClientStartExpanded extends Thread{
 		}
 	}
 	
-	
+	/**
+	 * Methodenaufruf auf einem Objekt der Klasse ClassTwoImplBase
+	 * @param remoteObj
+	 * @param name
+	 */
 	public void accessor_one_class_two(accessor_one.ClassTwoImplBase remoteObj, String name){
 		Random rand = new Random();
 		int testkind = rand.nextInt(2); //0 = Methodentest korrekt, 1 = Methodentest Exception
@@ -172,6 +204,11 @@ public class ClientStartExpanded extends Thread{
 		
 	}
 	
+	/**
+	 * Methodenaufruf auf einem Objekt der Klasse ClassOneImplBase
+	 * @param remoteObj
+	 * @param name
+	 */
 	public void accessor_two_class_one(accessor_two.ClassOneImplBase remoteObj, String name){
 				double returnval;
 				String param1 = name;

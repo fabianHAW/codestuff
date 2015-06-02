@@ -14,7 +14,9 @@ import mware_lib.RemoteObjectRef;
 import mware_lib.Skeleton;
 
 /**
- * 
+ *  *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - accessor_two.
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in accessor_two - SkeletonOneAT
  * @author Fabian
  * 
  *         Implementierung des Skeletons

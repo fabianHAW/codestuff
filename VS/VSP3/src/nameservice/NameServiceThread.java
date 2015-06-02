@@ -6,7 +6,11 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-/**
+/***  
+ * Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegeben Methoden
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in nameservice - NameServiceThread
+ * 
  * Behandelt den NameserviceRequest.
  * 
  * @author Francis

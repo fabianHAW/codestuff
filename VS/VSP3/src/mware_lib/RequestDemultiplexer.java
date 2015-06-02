@@ -7,6 +7,10 @@ import accessor_one.ObjectAdapterAO;
 import accessor_two.ObjectAdapterAT;
 
 /**
+ *  *  Verweise zum Entwurf:
+ * <Entwurfsdokument> : Implementierung der vorgegebenen Methoden in Nr. 3 (d) - mware_lib.
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in mware_lib - RequestDemultiplexer
+ * <Sequenzdiagramm vsp3_sequ_server> : Realiserung der Sequenznummer  1.1.1
  * 
  * @author Fabian
  * 

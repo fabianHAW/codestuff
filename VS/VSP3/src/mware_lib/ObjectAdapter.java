@@ -3,6 +3,9 @@ package mware_lib;
 import java.util.ArrayList;
 
 /**
+ * Verweis zum Entwurf:
+ * <Klassendiagramm> : Implementierung durch vorgegebene Methoden in mware_lib - ObjectAdapter
+ * <Entwurfsdokument> : Implementierung durch Vorgabe der in 3d definierten Methoden.
  * 
  * @author Francis
  * 
