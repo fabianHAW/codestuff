@@ -32,8 +32,17 @@ public class NameServiceThread extends Thread {
 	public void run() {
 		if (request[0].equals("rebind")) {
 			System.out.println(this.getClass() + "call rebind");
-			RemoteObjectRef rof = newRemoteRef(request);
-			rebind(rof, request[1]);
+			RemoteObjectRef rof;
+			try {
+				rof = new RemoteObjectRef(
+						InetAddress.getByName(request[2]),
+						Integer.valueOf(request[3]), Long.valueOf(request[4]),
+						Integer.valueOf(request[5]));
+				rebind(rof, request[1]);
+			} catch (NumberFormatException | UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else if (request[0].equals("resolve")) {
 			System.out.println(this.getClass() + "call resolve");
 			RemoteObjectRef o = resolve(request[1]);
@@ -77,18 +86,6 @@ public class NameServiceThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private static RemoteObjectRef newRemoteRef(String[] message) {
-		try {
-			return new RemoteObjectRef(InetAddress.getByName(message[2]),
-					Integer.valueOf(message[3]), Long.valueOf(message[4]),
-					Integer.valueOf(message[5]));
-		} catch (NumberFormatException | UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	/**
