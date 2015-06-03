@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import haw.aip3.haw.entities.Bauteil;
 import haw.aip3.haw.entities.EinfachesBauteil;
 import haw.aip3.haw.entities.KomplexesBauteil;
+import haw.aip3.haw.entities.Stueckliste;
 import haw.aip3.haw.repositories.BauteilRepository;
 
 @Service
@@ -15,8 +16,8 @@ public class BauteilServiceImpl implements BauteilService {
 	private BauteilRepository bauteilRepo;
 
 	@Override
-	public void erstelleKomplexesBauteil(String name) {
-		bauteilRepo.save(new KomplexesBauteil(name));
+	public void erstelleKomplexesBauteil(String name, Stueckliste stueckliste) {
+		bauteilRepo.save(new KomplexesBauteil(name, stueckliste));
 	}
 
 	@Override

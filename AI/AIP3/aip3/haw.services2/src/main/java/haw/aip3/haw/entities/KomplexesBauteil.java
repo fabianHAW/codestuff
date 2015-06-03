@@ -10,8 +10,9 @@ public class KomplexesBauteil extends Bauteil {
 		super();
 	}
 
-	public KomplexesBauteil(String name) {
+	public KomplexesBauteil(String name, Stueckliste stueckliste) {
 		super(name);
+		this.stueckliste = stueckliste;
 	}
 
 	@OneToOne

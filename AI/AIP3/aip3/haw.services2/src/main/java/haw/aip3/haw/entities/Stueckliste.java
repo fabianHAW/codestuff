@@ -1,11 +1,18 @@
 package haw.aip3.haw.entities;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Stueckliste {
@@ -13,11 +20,12 @@ public class Stueckliste {
 	public Stueckliste() {
 	}
 
-	public Stueckliste(String name, Date gueltigAb, Date gueltigBis, int menge) {
-		this.stuecklisteName = name;
+	public Stueckliste(String name, Date gueltigAb, Date gueltigBis,
+			Set<StuecklistenPosition> position) {
+		this.name = name;
 		this.gueltigAb = gueltigAb;
 		this.gueltigBis = gueltigBis;
-		this.menge = menge;
+		this.position = position;
 	}
 
 	@Id
@@ -25,7 +33,7 @@ public class Stueckliste {
 	private long stuecklisteNr;
 
 	@Column
-	private String stuecklisteName;
+	private String name;
 
 	@Column
 	private Date gueltigAb;
@@ -33,8 +41,9 @@ public class Stueckliste {
 	@Column
 	private Date gueltigBis;
 
-	@Column
-	private int menge;
+	@OneToMany(fetch = FetchType.LAZY)
+	//@ElementCollection(targetClass = StuecklistenPosition.class)
+	private Set<StuecklistenPosition> position;
 
 	public long getStuecklisteNr() {
 		return stuecklisteNr;
@@ -45,11 +54,11 @@ public class Stueckliste {
 	}
 
 	public String getStuecklisteName() {
-		return stuecklisteName;
+		return name;
 	}
 
 	public void setStuecklisteName(String stuecklisteName) {
-		this.stuecklisteName = stuecklisteName;
+		this.name = stuecklisteName;
 	}
 
 	public Date getGueltigAb() {
@@ -68,12 +77,12 @@ public class Stueckliste {
 		this.gueltigBis = gueltigBis;
 	}
 
-	public int getMenge() {
-		return menge;
+	public Set<StuecklistenPosition> getPosition() {
+		return position;
 	}
 
-	public void setMenge(int menge) {
-		this.menge = menge;
+	public void setPosition(Set<StuecklistenPosition> position) {
+		this.position = position;
 	}
 
 	@Override
@@ -84,9 +93,10 @@ public class Stueckliste {
 				+ ((gueltigAb == null) ? 0 : gueltigAb.hashCode());
 		result = prime * result
 				+ ((gueltigBis == null) ? 0 : gueltigBis.hashCode());
-		result = prime * result + menge;
 		result = prime * result
-				+ ((stuecklisteName == null) ? 0 : stuecklisteName.hashCode());
+				+ ((position == null) ? 0 : position.hashCode());
+		result = prime * result
+				+ ((name == null) ? 0 : name.hashCode());
 		result = prime * result
 				+ (int) (stuecklisteNr ^ (stuecklisteNr >>> 32));
 		return result;
@@ -111,12 +121,15 @@ public class Stueckliste {
 				return false;
 		} else if (!gueltigBis.equals(other.gueltigBis))
 			return false;
-		if (menge != other.menge)
-			return false;
-		if (stuecklisteName == null) {
-			if (other.stuecklisteName != null)
+		if (position == null) {
+			if (other.position != null)
 				return false;
-		} else if (!stuecklisteName.equals(other.stuecklisteName))
+		} else if (!position.equals(other.position))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
 			return false;
 		if (stuecklisteNr != other.stuecklisteNr)
 			return false;
