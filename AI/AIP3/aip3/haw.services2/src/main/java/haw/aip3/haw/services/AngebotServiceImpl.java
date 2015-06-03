@@ -22,6 +22,7 @@ public class AngebotServiceImpl implements AngebotService{
 
 	@Override
 	public Angebot getAngebot(long angebotNr) {
+		System.out.println("inside get: " + angebotNr);
 		return this.angebotRepo.findOne(angebotNr);
 	}
 

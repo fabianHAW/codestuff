@@ -50,7 +50,7 @@ public class KundenAuftragTest {
 		KundenAuftrag ka2 = auftragsService.getAuftrag(id2);
 		Assert.notNull(ka2);
 		
-		angebotService.erstelleAngebot();
+		//angebotService.erstelleAngebot();
 		Angebot a1 = angebotService.getAngebot(1);
 		Angebot ates = angebotService.getAngebot(4);
 		System.out.println(ates);

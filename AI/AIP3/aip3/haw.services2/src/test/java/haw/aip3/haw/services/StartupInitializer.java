@@ -30,7 +30,7 @@ public class StartupInitializer implements
 	private KundenAuftragService auftragService;
 
 	@Autowired
-	private AngebotRepository angebotRepo;
+	private AngebotService angebotService;
 
 	@Autowired
 	private BauteilRepository bauteilRepo;
@@ -55,70 +55,94 @@ public class StartupInitializer implements
 
 	public void configure() {
 
+		System.out.println("Stuecklisten-Positionen initialisieren");
+		initStuecklistenPositionen();
+
+		System.out.println("Stuecklisten-Positionen 1 holen");
+		Set<StuecklistenPosition> posSet1 = getStuecklistenPostionenSet1();
+		
+		System.out.println("Stueckliste 1 erzeugen");
+		// 100 days = 8640000000 ms
+		this.stuecklisteService.erstelleStueckliste("Steuckliste1", new Date(),
+				new Date(System.currentTimeMillis() + 8640000000L), posSet1);
+
+		System.out.println("Stueckliste 1 holen");
+		Stueckliste stueckliste1 = this.stuecklisteService
+				.getStueckliste("Stueckliste1");
+		
+		System.out.println("Komplexes Bauteil 1 erzeugen");
+		bauteilService.erstelleKomplexesBauteil("Bauteil1", stueckliste1);
+		
+		System.out.println("Komplexes Bauteil 1 holen");
+		Bauteil b1 = bauteilService.findeBauteil("Bauteil1");
+
+		System.out.println("Angebot 1 erzeugen");
+		// 2 days = 172800000 ms
+		this.angebotService.erstelleAngebot(b1,
+				new Date(System.currentTimeMillis() + 172800000), 33.33d);
+		
+		System.out.println("Kundenauftrag 1 erzeugen");
+		this.auftragService.erzeugeKundenAuftrag(this.angebotService.getAngebot(1));
+
+		System.out.println("Stuecklisten-Positionen 2 holen");
+		Set<StuecklistenPosition> posSet2 = getStuecklistenPostionenSet2();
+		// 100 days = 8640000000 ms
+		this.stuecklisteService.erstelleStueckliste("Steuckliste2", new Date(),
+				new Date(System.currentTimeMillis() + 8640000000L), posSet2);
+
+		System.out.println("Stueckliste 2 holen");
+		Stueckliste stueckliste2 = this.stuecklisteService
+				.getStueckliste("Stueckliste2");
+		
+		System.out.println("Komplexes Bauteil 2 erzeugen");
+		bauteilService.erstelleKomplexesBauteil("Bauteil2", stueckliste2);
+		
+		System.out.println("Komplexes Bauteil 2 holen");
+		Bauteil b2 = bauteilService.findeBauteil("Bauteil2");
+		System.out.println("bauteil2: " + b2);
+
+		System.out.println("Angebot 2 erzeugen");
+		// 3 days = 259200000 ms
+		this.angebotService.erstelleAngebot(b2,
+				new Date(System.currentTimeMillis() + 259200000), 44.44d);
+
+		System.out.println("Kundenauftrag 2 erzeugen");
+		this.auftragService.erzeugeKundenAuftrag(this.angebotService.getAngebot(2));
+
+		System.out.println(this.angebotService.getAngebot(1));
+		System.out.println(this.angebotService.getAngebot(2));
+	}
+
+	private void initStuecklistenPositionen() {
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
 				"Position1", 3);
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
 				"Position2", 7);
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
 				"Position3", 20);
-
-		Set<StuecklistenPosition> posList1 = new HashSet<StuecklistenPosition>();
-		posList1.add(this.stuecklistenPositionService
-				.getStuecklistenPosition("Position1"));
-		posList1.add(this.stuecklistenPositionService
-				.getStuecklistenPosition("Position2"));
-		posList1.add(this.stuecklistenPositionService
-				.getStuecklistenPosition("Position3"));
-
-		// 100 days = 8640000000 ms
-		this.stuecklisteService.erstelleStueckliste("Steuckliste1", new Date(),
-				new Date(System.currentTimeMillis() + 8640000000L), posList1);
-		
-		
-		
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
 				"Position4", 29);
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
 				"Position5", 37);
-
-		Set<StuecklistenPosition> posList2 = new HashSet<StuecklistenPosition>();
-		posList2.add(this.stuecklistenPositionService
-				.getStuecklistenPosition("Position4"));
-		posList2.add(this.stuecklistenPositionService
-				.getStuecklistenPosition("Position5"));
-
-		// 100 days = 8640000000 ms
-		this.stuecklisteService.erstelleStueckliste("Steuckliste2", new Date(),
-				new Date(System.currentTimeMillis() + 8640000000L), posList2);
-
-		Stueckliste stueckliste1 = this.stuecklisteService.getStueckliste("Stueckliste1");
-		bauteilService.erstelleKomplexesBauteil("Bauteil1", stueckliste1);
-		Bauteil b1 = bauteilService.findeBauteil("Bauteil1");
-
-		// 2 days = 172800000 ms
-		Angebot a1 = new Angebot(b1, new Date(), new Date(
-				System.currentTimeMillis() + 172800000), 333.3d);
-		angebotRepo.save(a1);
-
-		this.auftragService.erzeugeKundenAuftrag(a1);
-
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		Stueckliste stueckliste2 = this.stuecklisteService.getStueckliste("Stueckliste2");
-		bauteilService.erstelleKomplexesBauteil("Bauteil2", stueckliste2);
-		Bauteil b2 = bauteilService.findeBauteil("Bauteil2");
-
-		// 3 days = 259200000 ms
-		Angebot a2 = new Angebot(b2, new Date(), new Date(
-				System.currentTimeMillis() + 259200000), 333.3d);
-		angebotRepo.save(a2);
-
-		this.auftragService.erzeugeKundenAuftrag(a2);
-
 	}
 
+	private Set<StuecklistenPosition> getStuecklistenPostionenSet1() {
+		Set<StuecklistenPosition> posList = new HashSet<StuecklistenPosition>();
+		posList.add(this.stuecklistenPositionService
+				.getStuecklistenPosition("Position1"));
+		posList.add(this.stuecklistenPositionService
+				.getStuecklistenPosition("Position2"));
+		posList.add(this.stuecklistenPositionService
+				.getStuecklistenPosition("Position3"));
+		return posList;
+	}
+
+	private Set<StuecklistenPosition> getStuecklistenPostionenSet2() {
+		Set<StuecklistenPosition> posList = new HashSet<StuecklistenPosition>();
+		posList.add(this.stuecklistenPositionService
+				.getStuecklistenPosition("Position4"));
+		posList.add(this.stuecklistenPositionService
+				.getStuecklistenPosition("Position5"));
+		return posList;
+	}
 }

@@ -43,6 +43,8 @@ public class AngebotMockTest {
 				@Override
 				public Angebot getAngebot(long bauteilId) {
 					// 2 days = 172800000 ms
+					System.out.println("bauteilId: " + bauteilId);
+					System.out.println("ref: " + bauteilRepo.findOne(bauteilId));
 					return new Angebot(bauteilRepo.findOne(bauteilId), new Date(),
 							new Date(System.currentTimeMillis() + 172800000L),
 							5.4d);
@@ -55,8 +57,9 @@ public class AngebotMockTest {
 	private AngebotService angebotService;
 
 	@Test
-	public void findeAngbeot() {
-		Angebot a1 = angebotService.getAngebot(1);
+	public void findeAngbeot() throws InterruptedException {
+		Thread.sleep(5000);
+		Angebot a1 = angebotService.getAngebot(0);
 		// angebotService.erstelleAngebot(null);
 		Angebot a2 = angebotService.getAngebot(2);
 		System.out.println(a1.getGueltigAb());
