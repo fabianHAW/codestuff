@@ -4,45 +4,52 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 
 @Entity
-public class Angebot {
-	
-	public Angebot() {}
-	
-	public Angebot(Bauteil bauteil, Date gueltigAb, Date gueltigBis, double preis) {
-		this.bauteil = bauteil;
-		this.gueltigAb = gueltigAb;
-		this.gueltigBis = gueltigBis;
-		this.preis = preis;
-	}
-	
-	@Id
-	@GeneratedValue
-	private long angebotsNr;
-	
-	@Column
-	private Date gueltigAb;
-	
-	@Column
-	private Date gueltigBis;
-	
-	@Column
-	private double preis;
-	
-	@ManyToOne(fetch=FetchType.LAZY)
-	private Bauteil bauteil;
-	
-	public long getAngebotsNr() {
-		return angebotsNr;
+public class Stueckliste {
+
+	public Stueckliste() {
 	}
 
-	public void setAngebotsNr(long angebotsNr) {
-		this.angebotsNr = angebotsNr;
+	public Stueckliste(String name, Date gueltigAb, Date gueltigBis, int menge) {
+		this.stuecklisteName = name;
+		this.gueltigAb = gueltigAb;
+		this.gueltigBis = gueltigBis;
+		this.menge = menge;
+	}
+
+	@Id
+	@GeneratedValue
+	private long stuecklisteNr;
+
+	@Column
+	private String stuecklisteName;
+
+	@Column
+	private Date gueltigAb;
+
+	@Column
+	private Date gueltigBis;
+
+	@Column
+	private int menge;
+
+	public long getStuecklisteNr() {
+		return stuecklisteNr;
+	}
+
+	public void setStuecklisteNr(long stuecklisteNr) {
+		this.stuecklisteNr = stuecklisteNr;
+	}
+
+	public String getStuecklisteName() {
+		return stuecklisteName;
+	}
+
+	public void setStuecklisteName(String stuecklisteName) {
+		this.stuecklisteName = stuecklisteName;
 	}
 
 	public Date getGueltigAb() {
@@ -61,37 +68,27 @@ public class Angebot {
 		this.gueltigBis = gueltigBis;
 	}
 
-	public double getPreis() {
-		return preis;
+	public int getMenge() {
+		return menge;
 	}
 
-	public void setPreis(double preis) {
-		this.preis = preis;
-	}
-	
-	
-
-	public Bauteil getBauteil() {
-		return bauteil;
-	}
-
-	public void setBauteil(Bauteil bauteil) {
-		this.bauteil = bauteil;
+	public void setMenge(int menge) {
+		this.menge = menge;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (angebotsNr ^ (angebotsNr >>> 32));
-		result = prime * result + ((bauteil == null) ? 0 : bauteil.hashCode());
 		result = prime * result
 				+ ((gueltigAb == null) ? 0 : gueltigAb.hashCode());
 		result = prime * result
 				+ ((gueltigBis == null) ? 0 : gueltigBis.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(preis);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + menge;
+		result = prime * result
+				+ ((stuecklisteName == null) ? 0 : stuecklisteName.hashCode());
+		result = prime * result
+				+ (int) (stuecklisteNr ^ (stuecklisteNr >>> 32));
 		return result;
 	}
 
@@ -103,14 +100,7 @@ public class Angebot {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Angebot other = (Angebot) obj;
-		if (angebotsNr != other.angebotsNr)
-			return false;
-		if (bauteil == null) {
-			if (other.bauteil != null)
-				return false;
-		} else if (!bauteil.equals(other.bauteil))
-			return false;
+		Stueckliste other = (Stueckliste) obj;
 		if (gueltigAb == null) {
 			if (other.gueltigAb != null)
 				return false;
@@ -121,14 +111,16 @@ public class Angebot {
 				return false;
 		} else if (!gueltigBis.equals(other.gueltigBis))
 			return false;
-		if (Double.doubleToLongBits(preis) != Double
-				.doubleToLongBits(other.preis))
+		if (menge != other.menge)
+			return false;
+		if (stuecklisteName == null) {
+			if (other.stuecklisteName != null)
+				return false;
+		} else if (!stuecklisteName.equals(other.stuecklisteName))
+			return false;
+		if (stuecklisteNr != other.stuecklisteNr)
 			return false;
 		return true;
 	}
 
-	
-	
-
-	
 }
