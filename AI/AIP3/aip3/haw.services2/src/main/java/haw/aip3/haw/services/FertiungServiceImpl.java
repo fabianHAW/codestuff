@@ -1,16 +1,17 @@
 package haw.aip3.haw.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import haw.aip3.haw.entities.Fertigungsauftrag;
 import haw.aip3.haw.entities.KundenAuftrag;
 import haw.aip3.haw.repositories.FertigungsauftragRepository;
 
+@Service
 public class FertiungServiceImpl implements FertigungService {
 
+	@Autowired
 	private FertigungsauftragRepository repo;
-	public FertiungServiceImpl(FertigungsauftragRepository faRepo) {
-		// TODO Auto-generated constructor stub
-		repo = faRepo;
-	}
 
 	@Override
 	public Fertigungsauftrag createFertigungsAuftrag(KundenAuftrag a) {

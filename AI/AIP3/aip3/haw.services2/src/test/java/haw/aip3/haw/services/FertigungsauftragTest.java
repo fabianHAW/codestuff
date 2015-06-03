@@ -29,6 +29,9 @@ public class FertigungsauftragTest {
 
 	@Autowired
 	private FertigungService fertigungService;
+	
+	@Autowired
+	private KundenAuftragService kundenAuftragService;
 
 	
 	@Test
@@ -49,9 +52,10 @@ public class FertigungsauftragTest {
 	
 	@Test
 	public void saveFertigungsAuftrag(){
-		KundenAuftrag ka = new KundenAuftrag();
+		KundenAuftrag ka = kundenAuftragService.getAuftrag((long)1);
 		Fertigungsauftrag fa = fertigungService.createFertigungsAuftrag(ka);
-		fertigungService.saveFertigungsAuftrag(fa);
+		//System.out.println("faNr.: " + fa.getNr());
+		System.out.println("faNr.: " + fertigungService.saveFertigungsAuftrag(fa));
 		Assert.isTrue(fa.equals(fertigungService.findFertigungsauftrag(fa.getNr())));
 	}
 	
