@@ -10,7 +10,7 @@ import haw.aip3.haw.entities.Stueckliste;
 import haw.aip3.haw.repositories.BauteilRepository;
 
 @Service
-public class BauteilServiceImpl implements BauteilService {
+public class ProduktServiceImpl implements ProduktService {
 
 	@Autowired
 	private BauteilRepository bauteilRepo;

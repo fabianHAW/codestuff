@@ -1,16 +1,12 @@
 package haw.aip3.haw.services;
 
-import haw.aip3.haw.entities.Angebot;
 import haw.aip3.haw.entities.Bauteil;
 import haw.aip3.haw.entities.Stueckliste;
-import haw.aip3.haw.repositories.AngebotRepository;
 import haw.aip3.haw.repositories.BauteilRepository;
 import haw.aip3.haw.entities.StuecklistenPosition;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +23,13 @@ public class StartupInitializer implements
 	// .getLogger(StartupInitializer.class);
 
 	@Autowired
-	private KundenAuftragService auftragService;
-
-	@Autowired
-	private AngebotService angebotService;
+	private AuftragsService auftragsService;
 
 	@Autowired
 	private BauteilRepository bauteilRepo;
 
 	@Autowired
-	private BauteilService bauteilService;
+	private ProduktService bauteilService;
 
 	@Autowired
 	private StuecklisteService stuecklisteService;
@@ -78,11 +71,11 @@ public class StartupInitializer implements
 
 		System.out.println("Angebot 1 erzeugen");
 		// 2 days = 172800000 ms
-		this.angebotService.erstelleAngebot(b1,
+		this.auftragsService.erstelleAngebot(b1,
 				new Date(System.currentTimeMillis() + 172800000), 33.33d);
 		
 		System.out.println("Kundenauftrag 1 erzeugen");
-		this.auftragService.erzeugeKundenAuftrag(this.angebotService.getAngebot(1));
+		this.auftragsService.erzeugeKundenAuftrag(this.auftragsService.getAngebot(1));
 
 		System.out.println("Stuecklisten-Positionen 2 holen");
 		Set<StuecklistenPosition> posSet2 = getStuecklistenPostionenSet2();
@@ -103,14 +96,14 @@ public class StartupInitializer implements
 
 		System.out.println("Angebot 2 erzeugen");
 		// 3 days = 259200000 ms
-		this.angebotService.erstelleAngebot(b2,
+		this.auftragsService.erstelleAngebot(b2,
 				new Date(System.currentTimeMillis() + 259200000), 44.44d);
 
 		System.out.println("Kundenauftrag 2 erzeugen");
-		this.auftragService.erzeugeKundenAuftrag(this.angebotService.getAngebot(2));
+		this.auftragsService.erzeugeKundenAuftrag(this.auftragsService.getAngebot(2));
 
-		System.out.println(this.angebotService.getAngebot(1));
-		System.out.println(this.angebotService.getAngebot(2));
+		System.out.println(this.auftragsService.getAngebot(1));
+		System.out.println(this.auftragsService.getAngebot(2));
 	}
 
 	private void initStuecklistenPositionen() {

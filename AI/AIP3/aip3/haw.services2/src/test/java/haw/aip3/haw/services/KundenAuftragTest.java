@@ -5,7 +5,6 @@ package haw.aip3.haw.services;
 import haw.aip3.haw.entities.Angebot;
 import haw.aip3.haw.entities.Bauteil;
 import haw.aip3.haw.entities.KundenAuftrag;
-import haw.aip3.haw.services.KundenAuftragService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,13 +26,10 @@ public class KundenAuftragTest {
     static class ContextConfiguration {}
 
 	@Autowired
-	private KundenAuftragService auftragsService;
-
-	@Autowired
-	private AngebotService angebotService;
+	private AuftragsService auftragsService;
 	
 	@Autowired
-	private BauteilService bauteilService;
+	private ProduktService bauteilService;
 	
 	@Test
 	public void findAuftragByID(){
@@ -51,8 +47,8 @@ public class KundenAuftragTest {
 		Assert.notNull(ka2);
 		
 		//angebotService.erstelleAngebot();
-		Angebot a1 = angebotService.getAngebot(1);
-		Angebot ates = angebotService.getAngebot(4);
+		Angebot a1 = auftragsService.getAngebot(1);
+		Angebot ates = auftragsService.getAngebot(4);
 		System.out.println(ates);
 		
 		auftragsService.erzeugeKundenAuftrag(a1);

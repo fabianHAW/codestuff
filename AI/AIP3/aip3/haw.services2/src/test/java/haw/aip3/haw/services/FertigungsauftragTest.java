@@ -4,7 +4,6 @@ package haw.aip3.haw.services;
 
 import haw.aip3.haw.entities.Fertigungsauftrag;
 import haw.aip3.haw.entities.KundenAuftrag;
-import haw.aip3.haw.services.KundenAuftragService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +28,7 @@ public class FertigungsauftragTest {
 	private FertigungService fertigungService;
 	
 	@Autowired
-	private KundenAuftragService kundenAuftragService;
+	private AuftragsService kundenAuftragService;
 
 	
 	@Test
