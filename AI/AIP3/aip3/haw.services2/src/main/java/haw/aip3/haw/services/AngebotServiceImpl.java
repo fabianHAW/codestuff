@@ -1,5 +1,7 @@
 package haw.aip3.haw.services;
 
+import java.util.Date;
+
 import haw.aip3.haw.entities.Angebot;
 import haw.aip3.haw.entities.Bauteil;
 import haw.aip3.haw.repositories.AngebotRepository;
@@ -14,12 +16,8 @@ public class AngebotServiceImpl implements AngebotService{
 	protected AngebotRepository angebotRepo; 
     
 	@Override
-	public void erstelleAngebot(Bauteil bauteil) {
-	}
-	
-	@Override
-	public void erstelleAngebot() {
-		this.angebotRepo.save(new Angebot());
+	public void erstelleAngebot(Bauteil bauteil, Date gueltigBis, double preis) {
+		this.angebotRepo.save(new Angebot(bauteil, new Date(), gueltigBis, preis));
 	}
 
 	@Override

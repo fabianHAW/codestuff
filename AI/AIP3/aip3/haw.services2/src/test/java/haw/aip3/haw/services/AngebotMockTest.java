@@ -5,6 +5,7 @@ import java.util.Date;
 import haw.aip3.haw.entities.Angebot;
 import haw.aip3.haw.entities.Bauteil;
 import haw.aip3.haw.repositories.AngebotRepository;
+import haw.aip3.haw.repositories.BauteilRepository;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,52 +26,48 @@ public class AngebotMockTest {
 	static class ContextConfiguration {
 
 		@Autowired
-		private KundenAuftragService auftragRepo;
-		
-		@Autowired
-		protected AngebotRepository angebotRepo;
+		protected BauteilRepository bauteilRepo;
 
 		@Bean(name = "angebotService")
 		public AngebotService angebotService() {
 			return new AngebotServiceImpl() {
-				
-				@Override
-				public void erstelleAngebot(Bauteil bauteil){
-					//2 days = 172800000 ms
-					this.angebotRepo.save(new Angebot(bauteil, new Date(), new Date(
-							System.currentTimeMillis() + 172800000), 2.3d));
-				}
+
+				// @Override
+				// public void erstelleAngebot(Bauteil bauteil, Date gueltigBis,
+				// double preis) {
+				// this.angebotRepo.save(new Angebot(bauteil, new Date(),
+				// gueltigBis, preis));
+				// }
+
 				// this method is mocked by our fake implementation
 				@Override
-				public Angebot getAngebot(long id) {
-					//2 days = 172800000 ms
-					return new Angebot(null, new Date(), new Date(
-							System.currentTimeMillis() + 172800000), 2.3d);
+				public Angebot getAngebot(long bauteilId) {
+					// 2 days = 172800000 ms
+					return new Angebot(bauteilRepo.findOne(bauteilId), new Date(),
+							new Date(System.currentTimeMillis() + 172800000L),
+							5.4d);
 				}
 			};
-		}		
+		}
 	}
-	
+
 	@Autowired
 	private AngebotService angebotService;
-	
+
 	@Test
-	public void findeAngbeot(){
+	public void findeAngbeot() {
 		Angebot a1 = angebotService.getAngebot(1);
-		angebotService.erstelleAngebot(null);
+		// angebotService.erstelleAngebot(null);
 		Angebot a2 = angebotService.getAngebot(2);
 		System.out.println(a1.getGueltigAb());
 		System.out.println(a1.getGueltigBis());
+		System.out.println(a1.getPreis());
+		System.out.println(a1.getBauteil().getName());
 		
 		System.out.println(a2.getGueltigAb());
 		System.out.println(a2.getGueltigBis());
+		System.out.println(a2.getPreis());
+		System.out.println(a2.getBauteil().getName());
 	}
-	
-	
-	
-	
-	
-	
-	
 
 }
