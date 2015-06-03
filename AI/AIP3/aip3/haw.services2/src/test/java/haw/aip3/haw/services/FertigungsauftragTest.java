@@ -18,7 +18,7 @@ import org.springframework.util.Assert;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=haw.aip3.haw.services.KundenAuftragTest.ContextConfiguration.class)
+@ContextConfiguration(classes=haw.aip3.haw.services.AuftragsverwaltungTest.ContextConfiguration.class)
 public class FertigungsauftragTest {
 
 	
