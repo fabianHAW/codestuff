@@ -3,6 +3,9 @@ package haw.aip3.haw.services;
 import java.util.Date;
 
 import haw.aip3.haw.entities.Angebot;
+import haw.aip3.haw.entities.Bauteil;
+import haw.aip3.haw.entities.KundenAuftrag;
+import haw.aip3.haw.repositories.AngebotRepository;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,8 +16,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = haw.aip3.haw.services.AngebotMockTest.ContextConfiguration.class)
-public class FertigungMockTest {
+@ContextConfiguration(classes = haw.aip3.haw.services.FertigungsAuftragMock.ContextConfiguration.class)
+public class FertigungsAuftragMock {
 
 	// no @Configuration, so it does only get picked up by this test
 	@ComponentScan(basePackages = "haw.aip3.haw.services")
@@ -22,21 +25,23 @@ public class FertigungMockTest {
 	// this is taken from DatabaseConfig.class
 	static class ContextConfiguration {
 
+		
 		@Autowired
-		private FertigungService faServices;
+		protected AngebotRepository angebotRepo;
 
-		@Bean(name = "angebotService")
-		public AngebotService angebotService() {
-			return new AngebotServiceImpl() {
-				// this method is mocked by our fake implementation
+		@Bean(name = "auftragService")
+		public KundenAuftragService auftragService(){
+			return new KundenAuftragServiceImpl(){
+				
 				@Override
-				public Angebot getAngebot(long id) {
-					//2 days = 172800000 ms
-					return new Angebot(new Date(), new Date(
-							System.currentTimeMillis() + 172800000), 2.3d);
+				public KundenAuftrag getAuftrag(Long id){
+					return new KundenAuftrag();
 				}
+				
 			};
+			
 		}
+		
 	}
 	
 	@Autowired
@@ -44,9 +49,14 @@ public class FertigungMockTest {
 	
 	@Test
 	public void findeAngbeot(){
-		Angebot a = angebotService.getAngebot(1);
-		System.out.println(a.getGueltigAb());
-		System.out.println(a.getGueltigBis());
+		Angebot a1 = angebotService.getAngebot(1);
+		angebotService.erstelleAngebot(null);
+		Angebot a2 = angebotService.getAngebot(2);
+		System.out.println(a1.getGueltigAb());
+		System.out.println(a1.getGueltigBis());
+		
+		System.out.println(a2.getGueltigAb());
+		System.out.println(a2.getGueltigBis());
 	}
 	
 	

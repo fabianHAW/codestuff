@@ -8,6 +8,7 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -37,7 +38,7 @@ public class Arbeitsplan {
 				e.printStackTrace();
 			}
 		}
-	//	bauteil = b;
+		bauteil = b;
 		besteht_aus = vorgaenge;
 	}
 	
@@ -45,10 +46,10 @@ public class Arbeitsplan {
 	@GeneratedValue
 	private Long nr;
 
-//	@Column(nullable = false)
-//	private Bauteil bauteil;
+	@OneToOne(fetch=FetchType.LAZY)
+	private Bauteil bauteil;
 
-	@Column
+	@OneToMany(fetch=FetchType.LAZY)
 	@ElementCollection(targetClass=Vorgang.class)
 	List<Vorgang> besteht_aus;
 
@@ -60,13 +61,13 @@ public class Arbeitsplan {
 		this.nr = nr;
 	}
 
-//	public Bauteil getBauteil() {
-//		return bauteil;
-//	}
-//
-//	public void setBauteil(Bauteil bauteil) {
-//		this.bauteil = bauteil;
-//	}
+	public Bauteil getBauteil() {
+		return bauteil;
+	}
+
+	public void setBauteil(Bauteil bauteil) {
+		this.bauteil = bauteil;
+	}
 
 	public List<Vorgang> getBesteht_aus() {
 		return besteht_aus;
@@ -80,6 +81,7 @@ public class Arbeitsplan {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((bauteil == null) ? 0 : bauteil.hashCode());
 		result = prime * result
 				+ ((besteht_aus == null) ? 0 : besteht_aus.hashCode());
 		result = prime * result + ((nr == null) ? 0 : nr.hashCode());
@@ -95,6 +97,11 @@ public class Arbeitsplan {
 		if (getClass() != obj.getClass())
 			return false;
 		Arbeitsplan other = (Arbeitsplan) obj;
+		if (bauteil == null) {
+			if (other.bauteil != null)
+				return false;
+		} else if (!bauteil.equals(other.bauteil))
+			return false;
 		if (besteht_aus == null) {
 			if (other.besteht_aus != null)
 				return false;
@@ -107,6 +114,8 @@ public class Arbeitsplan {
 			return false;
 		return true;
 	}
+
+	
 
 
 }
