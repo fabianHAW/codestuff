@@ -1,4 +1,6 @@
-package haw.aip3.haw.entities;
+package haw.aip3.haw.entities.auftragsverwaltung;
+
+import haw.aip3.haw.entities.produkt.Bauteil;
 
 import java.util.Date;
 

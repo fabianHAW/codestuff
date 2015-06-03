@@ -1,11 +1,11 @@
-package haw.aip3.haw.services;
+package haw.aip3.haw.services.fertigungsverwaltung;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import haw.aip3.haw.entities.Fertigungsauftrag;
-import haw.aip3.haw.entities.KundenAuftrag;
-import haw.aip3.haw.repositories.FertigungsauftragRepository;
+import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
+import haw.aip3.haw.entities.fertigungsverwaltung.Fertigungsauftrag;
+import haw.aip3.haw.repositories.fertigungsverwaltung.FertigungsauftragRepository;
 
 @Service
 public class FertiungServiceImpl implements FertigungService {

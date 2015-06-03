@@ -1,7 +1,7 @@
-package haw.aip3.haw.services;
+package haw.aip3.haw.services.produkt;
 
-import haw.aip3.haw.entities.Bauteil;
-import haw.aip3.haw.entities.Stueckliste;
+import haw.aip3.haw.entities.produkt.Bauteil;
+import haw.aip3.haw.entities.produkt.Stueckliste;
 
 public interface ProduktService {
 	

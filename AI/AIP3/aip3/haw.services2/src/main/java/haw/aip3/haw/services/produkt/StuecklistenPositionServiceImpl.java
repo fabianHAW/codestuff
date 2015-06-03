@@ -1,7 +1,7 @@
-package haw.aip3.haw.services;
+package haw.aip3.haw.services.produkt;
 
-import haw.aip3.haw.entities.StuecklistenPosition;
-import haw.aip3.haw.repositories.StuecklistenPostionRepository;
+import haw.aip3.haw.entities.produkt.StuecklistenPosition;
+import haw.aip3.haw.repositories.produkt.StuecklistenPostionRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

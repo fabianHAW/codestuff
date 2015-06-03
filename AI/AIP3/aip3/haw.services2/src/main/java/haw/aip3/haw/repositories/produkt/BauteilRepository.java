@@ -1,6 +1,6 @@
-package haw.aip3.haw.repositories;
+package haw.aip3.haw.repositories.produkt;
 
-import haw.aip3.haw.entities.Bauteil;
+import haw.aip3.haw.entities.produkt.Bauteil;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 

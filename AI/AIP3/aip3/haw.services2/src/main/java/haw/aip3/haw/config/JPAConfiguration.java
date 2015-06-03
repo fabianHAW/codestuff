@@ -2,7 +2,7 @@ package haw.aip3.haw.config;
 
 
 
-import haw.aip3.haw.entities.KundenAuftrag;
+import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
 
 import java.util.HashMap;
 import java.util.Map;

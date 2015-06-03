@@ -1,6 +1,6 @@
-package haw.aip3.haw.services;
+package haw.aip3.haw.services.produkt;
 
-import haw.aip3.haw.entities.StuecklistenPosition;
+import haw.aip3.haw.entities.produkt.StuecklistenPosition;
 
 public interface StuecklistenPositionService {
 

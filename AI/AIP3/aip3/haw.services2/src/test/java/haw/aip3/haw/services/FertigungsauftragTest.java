@@ -2,8 +2,10 @@ package haw.aip3.haw.services;
 
 
 
-import haw.aip3.haw.entities.Fertigungsauftrag;
-import haw.aip3.haw.entities.KundenAuftrag;
+import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
+import haw.aip3.haw.entities.fertigungsverwaltung.Fertigungsauftrag;
+import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
+import haw.aip3.haw.services.fertigungsverwaltung.FertigungService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

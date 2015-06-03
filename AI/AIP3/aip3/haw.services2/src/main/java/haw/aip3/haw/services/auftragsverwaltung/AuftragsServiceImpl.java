@@ -1,10 +1,10 @@
-package haw.aip3.haw.services;
+package haw.aip3.haw.services.auftragsverwaltung;
 
-import haw.aip3.haw.entities.Angebot;
-import haw.aip3.haw.entities.Bauteil;
-import haw.aip3.haw.entities.KundenAuftrag;
-import haw.aip3.haw.repositories.AngebotRepository;
-import haw.aip3.haw.repositories.KundenAuftragRepository;
+import haw.aip3.haw.entities.auftragsverwaltung.Angebot;
+import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
+import haw.aip3.haw.entities.produkt.Bauteil;
+import haw.aip3.haw.repositories.auftragsverwaltung.AngebotRepository;
+import haw.aip3.haw.repositories.auftragsverwaltung.KundenAuftragRepository;
 
 import java.util.Date;
 

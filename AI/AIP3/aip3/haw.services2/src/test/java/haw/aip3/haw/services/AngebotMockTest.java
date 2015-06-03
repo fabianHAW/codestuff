@@ -2,10 +2,11 @@ package haw.aip3.haw.services;
 
 import java.util.Date;
 
-import haw.aip3.haw.entities.Angebot;
-import haw.aip3.haw.entities.Bauteil;
-import haw.aip3.haw.repositories.AngebotRepository;
-import haw.aip3.haw.repositories.BauteilRepository;
+import haw.aip3.haw.entities.auftragsverwaltung.Angebot;
+import haw.aip3.haw.entities.produkt.Bauteil;
+import haw.aip3.haw.repositories.auftragsverwaltung.AngebotRepository;
+import haw.aip3.haw.repositories.produkt.BauteilRepository;
+import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

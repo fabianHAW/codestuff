@@ -1,6 +1,6 @@
-package haw.aip3.haw.repositories;
+package haw.aip3.haw.repositories.fertigungsverwaltung;
 
-import haw.aip3.haw.entities.Fertigungsauftrag;
+import haw.aip3.haw.entities.fertigungsverwaltung.Fertigungsauftrag;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 

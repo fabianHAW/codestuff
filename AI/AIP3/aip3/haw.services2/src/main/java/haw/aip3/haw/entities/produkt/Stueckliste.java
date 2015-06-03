@@ -1,4 +1,4 @@
-package haw.aip3.haw.entities;
+package haw.aip3.haw.entities.produkt;
 
 import java.util.Date;
 import java.util.List;

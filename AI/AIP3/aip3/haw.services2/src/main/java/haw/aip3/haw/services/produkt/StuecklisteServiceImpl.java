@@ -1,8 +1,8 @@
-package haw.aip3.haw.services;
+package haw.aip3.haw.services.produkt;
 
-import haw.aip3.haw.entities.Stueckliste;
-import haw.aip3.haw.entities.StuecklistenPosition;
-import haw.aip3.haw.repositories.StuecklisteRepository;
+import haw.aip3.haw.entities.produkt.Stueckliste;
+import haw.aip3.haw.entities.produkt.StuecklistenPosition;
+import haw.aip3.haw.repositories.produkt.StuecklisteRepository;
 
 import java.util.Date;
 import java.util.List;

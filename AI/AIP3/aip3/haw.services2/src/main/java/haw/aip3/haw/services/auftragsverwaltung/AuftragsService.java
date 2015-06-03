@@ -1,8 +1,8 @@
-package haw.aip3.haw.services;
+package haw.aip3.haw.services.auftragsverwaltung;
 
-import haw.aip3.haw.entities.Angebot;
-import haw.aip3.haw.entities.Bauteil;
-import haw.aip3.haw.entities.KundenAuftrag;
+import haw.aip3.haw.entities.auftragsverwaltung.Angebot;
+import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
+import haw.aip3.haw.entities.produkt.Bauteil;
 
 import java.util.Date;
 

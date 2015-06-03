@@ -1,13 +1,13 @@
-package haw.aip3.haw.services;
+package haw.aip3.haw.services.produkt;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import haw.aip3.haw.entities.Bauteil;
-import haw.aip3.haw.entities.EinfachesBauteil;
-import haw.aip3.haw.entities.KomplexesBauteil;
-import haw.aip3.haw.entities.Stueckliste;
-import haw.aip3.haw.repositories.BauteilRepository;
+import haw.aip3.haw.entities.produkt.Bauteil;
+import haw.aip3.haw.entities.produkt.EinfachesBauteil;
+import haw.aip3.haw.entities.produkt.KomplexesBauteil;
+import haw.aip3.haw.entities.produkt.Stueckliste;
+import haw.aip3.haw.repositories.produkt.BauteilRepository;
 
 @Service
 public class ProduktServiceImpl implements ProduktService {

@@ -1,9 +1,13 @@
 package haw.aip3.haw.services;
 
-import haw.aip3.haw.entities.Bauteil;
-import haw.aip3.haw.entities.Stueckliste;
-import haw.aip3.haw.repositories.BauteilRepository;
-import haw.aip3.haw.entities.StuecklistenPosition;
+import haw.aip3.haw.repositories.produkt.BauteilRepository;
+import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
+import haw.aip3.haw.services.produkt.ProduktService;
+import haw.aip3.haw.services.produkt.StuecklisteService;
+import haw.aip3.haw.services.produkt.StuecklistenPositionService;
+import haw.aip3.haw.entities.produkt.Bauteil;
+import haw.aip3.haw.entities.produkt.Stueckliste;
+import haw.aip3.haw.entities.produkt.StuecklistenPosition;
 
 import java.util.Date;
 import java.util.HashSet;

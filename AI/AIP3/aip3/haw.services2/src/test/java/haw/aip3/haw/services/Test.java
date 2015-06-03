@@ -1,6 +1,6 @@
 package haw.aip3.haw.services;
 
-import haw.aip3.haw.entities.KundenAuftrag;
+import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
 
 public class Test {
 

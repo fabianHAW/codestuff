@@ -1,6 +1,6 @@
-package haw.aip3.haw.repositories;
+package haw.aip3.haw.repositories.auftragsverwaltung;
 
-import haw.aip3.haw.entities.Angebot;
+import haw.aip3.haw.entities.auftragsverwaltung.Angebot;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 

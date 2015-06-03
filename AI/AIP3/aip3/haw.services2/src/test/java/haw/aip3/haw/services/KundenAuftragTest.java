@@ -2,9 +2,11 @@ package haw.aip3.haw.services;
 
 
 
-import haw.aip3.haw.entities.Angebot;
-import haw.aip3.haw.entities.Bauteil;
-import haw.aip3.haw.entities.KundenAuftrag;
+import haw.aip3.haw.entities.auftragsverwaltung.Angebot;
+import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
+import haw.aip3.haw.entities.produkt.Bauteil;
+import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
+import haw.aip3.haw.services.produkt.ProduktService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

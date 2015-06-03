@@ -1,7 +1,7 @@
-package haw.aip3.haw.services;
+package haw.aip3.haw.services.fertigungsverwaltung;
 
-import haw.aip3.haw.entities.Fertigungsauftrag;
-import haw.aip3.haw.entities.KundenAuftrag;
+import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
+import haw.aip3.haw.entities.fertigungsverwaltung.Fertigungsauftrag;
 
 
 public interface FertigungService {

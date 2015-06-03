@@ -1,4 +1,4 @@
-package haw.aip3.haw.entities;
+package haw.aip3.haw.entities.produkt;
 
 import haw.aip3.haw.exception.SizeLessThanOneException;
 

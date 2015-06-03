@@ -1,4 +1,7 @@
-package haw.aip3.haw.entities;
+package haw.aip3.haw.entities.fertigungsverwaltung;
+
+import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
+import haw.aip3.haw.entities.produkt.Bauteil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
