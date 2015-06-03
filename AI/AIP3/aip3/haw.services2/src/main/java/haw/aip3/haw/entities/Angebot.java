@@ -19,6 +19,13 @@ public class Angebot {
 	public Angebot() {
 	}
 	
+	public Angebot(Date gueltigAb, Date gueltigBis, double preis) {
+		this.gueltigAb = gueltigAb;
+		this.gueltigBis = gueltigBis;
+		this.preis = preis;
+	}
+	
+	
 	@Id
 	@GeneratedValue
 	private long angebotsNr;
