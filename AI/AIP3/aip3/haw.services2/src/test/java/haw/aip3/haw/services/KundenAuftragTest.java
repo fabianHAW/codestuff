@@ -3,6 +3,7 @@ package haw.aip3.haw.services;
 
 
 import haw.aip3.haw.entities.Angebot;
+import haw.aip3.haw.entities.Bauteil;
 import haw.aip3.haw.entities.KundenAuftrag;
 import haw.aip3.haw.services.KundenAuftragService;
 
@@ -27,9 +28,12 @@ public class KundenAuftragTest {
 
 	@Autowired
 	private KundenAuftragService auftragsService;
-	
+
 	@Autowired
 	private AngebotService angebotService;
+	
+	@Autowired
+	private BauteilService bauteilService;
 	
 	@Test
 	public void findAuftragByID(){
@@ -46,7 +50,8 @@ public class KundenAuftragTest {
 		KundenAuftrag ka2 = auftragsService.getAuftrag(id2);
 		Assert.notNull(ka2);
 		
-		Angebot a1 = angebotService.erstelleAngebot();
+		angebotService.erstelleAngebot();
+		Angebot a1 = angebotService.getAngebot(1);
 		Angebot ates = angebotService.getAngebot(4);
 		System.out.println(ates);
 		
@@ -54,5 +59,16 @@ public class KundenAuftragTest {
 		KundenAuftrag ka3 = auftragsService.getAuftrag(id3);
 		Assert.notNull(ka3);
 		
+	}
+	
+	@Test
+	public void testBauteile(){
+		Bauteil b1 = bauteilService.findeBauteil("Bauteil1");
+		Bauteil b2 = bauteilService.findeBauteil("Bauteil2");
+		Assert.notNull(b1);
+		Assert.notNull(b2);
+
+		System.out.println(b1.getBauteilNr() + " " + b1.getName());
+		System.out.println(b2.getBauteilNr() + " " + b2.getName());
 	}
 }

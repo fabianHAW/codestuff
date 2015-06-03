@@ -1,11 +1,8 @@
 package haw.aip3.haw.services;
 
 import haw.aip3.haw.entities.Angebot;
+import haw.aip3.haw.entities.Bauteil;
 import haw.aip3.haw.repositories.AngebotRepository;
-import haw.aip3.haw.repositories.KundenAuftragRepository;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,13 +11,15 @@ import org.springframework.stereotype.Service;
 public class AngebotServiceImpl implements AngebotService{
 	
 	@Autowired
-	private AngebotRepository angebotRepo; 
+	protected AngebotRepository angebotRepo; 
     
 	@Override
-	public Angebot erstelleAngebot() {
-		Angebot a = new Angebot();
-		this.angebotRepo.save(a);
-		return a;
+	public void erstelleAngebot(Bauteil bauteil) {
+	}
+	
+	@Override
+	public void erstelleAngebot() {
+		this.angebotRepo.save(new Angebot());
 	}
 
 	@Override
