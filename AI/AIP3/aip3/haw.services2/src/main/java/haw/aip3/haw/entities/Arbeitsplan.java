@@ -46,10 +46,10 @@ public class Arbeitsplan {
 	@GeneratedValue
 	private Long nr;
 
-	@OneToOne(fetch=FetchType.LAZY)
+	@OneToOne(fetch=FetchType.EAGER)
 	private Bauteil bauteil;
 
-	@OneToMany(fetch=FetchType.LAZY)
+	@OneToMany(fetch=FetchType.EAGER)
 	@ElementCollection(targetClass=Vorgang.class)
 	List<Vorgang> besteht_aus;
 

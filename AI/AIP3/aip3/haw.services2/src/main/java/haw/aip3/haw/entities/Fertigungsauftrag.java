@@ -24,7 +24,7 @@ public class Fertigungsauftrag {
 	@GeneratedValue
 	private Long nr;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.EAGER)
 	private Bauteil bauteil;
 	
 	@OneToOne

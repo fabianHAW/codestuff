@@ -41,7 +41,7 @@ public class Stueckliste {
 	@Column
 	private Date gueltigBis;
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.EAGER)
 	//@ElementCollection(targetClass = StuecklistenPosition.class)
 	private Set<StuecklistenPosition> position;
 

@@ -34,7 +34,7 @@ public class Angebot {
 	@Column
 	private double preis;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.EAGER)
 	private Bauteil bauteil;
 	
 	public long getAngebotsNr() {

@@ -2,8 +2,6 @@ package haw.aip3.haw.services;
 
 
 
-import haw.aip3.haw.entities.Angebot;
-import haw.aip3.haw.entities.Bauteil;
 import haw.aip3.haw.entities.Fertigungsauftrag;
 import haw.aip3.haw.entities.KundenAuftrag;
 import haw.aip3.haw.services.KundenAuftragService;
@@ -44,7 +42,7 @@ public class FertigungsauftragTest {
 	
 	@Test
 	public void findFertigungsAuftrag(){
-		KundenAuftrag ka = new KundenAuftrag();
+		KundenAuftrag ka =  kundenAuftragService.getAuftrag((long)1);
 		Fertigungsauftrag fa = fertigungService.createFertigungsAuftrag(ka);
 		fertigungService.saveFertigungsAuftrag(fa);
 		Assert.notNull(fertigungService.findFertigungsauftrag(fa.getNr()));
@@ -54,14 +52,13 @@ public class FertigungsauftragTest {
 	public void saveFertigungsAuftrag(){
 		KundenAuftrag ka = kundenAuftragService.getAuftrag((long)1);
 		Fertigungsauftrag fa = fertigungService.createFertigungsAuftrag(ka);
-		//System.out.println("faNr.: " + fa.getNr());
-		System.out.println("faNr.: " + fertigungService.saveFertigungsAuftrag(fa));
+		fertigungService.saveFertigungsAuftrag(fa);
 		Assert.isTrue(fa.equals(fertigungService.findFertigungsauftrag(fa.getNr())));
 	}
 	
 	@Test
 	public void deleteFertigungsAuftrag(){
-		KundenAuftrag ka = new KundenAuftrag();
+		KundenAuftrag ka =  kundenAuftragService.getAuftrag((long)1);
 		Fertigungsauftrag fa = fertigungService.createFertigungsAuftrag(ka);
 		fertigungService.saveFertigungsAuftrag(fa);
 		Assert.notNull(fertigungService.findFertigungsauftrag(fa.getNr()));
