@@ -96,7 +96,6 @@ public class StartupInitializer implements
 		
 		System.out.println("Komplexes Bauteil 2 holen");
 		Bauteil b2 = bauteilService.findeBauteil("Bauteil2");
-		System.out.println("bauteil2: " + b2);
 
 		System.out.println("Angebot 2 erzeugen");
 		// 3 days = 259200000 ms
@@ -105,9 +104,6 @@ public class StartupInitializer implements
 
 		System.out.println("Kundenauftrag 2 erzeugen");
 		this.auftragsService.erzeugeKundenAuftrag(this.auftragsService.getAngebot(2));
-
-		System.out.println(this.auftragsService.getAngebot(1));
-		System.out.println(this.auftragsService.getAngebot(2));
 	}
 
 	private void initStuecklistenPositionen() {

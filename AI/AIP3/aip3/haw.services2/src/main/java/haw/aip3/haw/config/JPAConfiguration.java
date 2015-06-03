@@ -1,8 +1,8 @@
 package haw.aip3.haw.config;
 
-
-
 import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
+import haw.aip3.haw.entities.fertigungsverwaltung.Fertigungsauftrag;
+import haw.aip3.haw.entities.produkt.Bauteil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,38 +25,43 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-
 @Configuration
 @EnableJpaRepositories("haw.aip3.haw.repositories")
-@EnableTransactionManagement // similiar to <tx:annotation-driven/>
+@EnableTransactionManagement
+// similiar to <tx:annotation-driven/>
 @ComponentScan(basePackages = "haw.aip3.haw.entities")
 public class JPAConfiguration {
 	private static final String JAVAX_JDBC = "javax.persistence.jdbc.";
-	
+
 	public static final String[] PROPERTIES_TO_COPY = {
-		"javax.persistence.schema-generation.database.action",
-        "javax.persistence.schema-generation.create-source",
-        "javax.persistence.sql-load-script-source"
-	};
+			"javax.persistence.schema-generation.database.action",
+			"javax.persistence.schema-generation.create-source",
+			"javax.persistence.sql-load-script-source" };
 
 	@Autowired(required = false)
 	private PersistenceUnitManager persistenceUnitManager;
-	
+
 	@Autowired
-	private Environment environment; // this provides the values of our property source, e.g. application.properties
+	private Environment environment; // this provides the values of our property
+										// source, e.g. application.properties
 
 	@Bean(name = "entityManagerFactory")
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		Map<String, Object> jpaProperties = new HashMap<>();
-		for(String p: PROPERTIES_TO_COPY) {
+		for (String p : PROPERTIES_TO_COPY) {
 			String v = environment.getProperty(p);
-			if(v!=null) jpaProperties.put(p,v);
+			if (v != null)
+				jpaProperties.put(p, v);
 		}
 		return entityManagerFactory(jpaProperties);
 	}
-	
-	protected LocalContainerEntityManagerFactoryBean entityManagerFactory(Map<String, Object> jpaProperties) {
-		String[] packagesToScan = new String[]{KundenAuftrag.class.getPackage().getName()};
+
+	protected LocalContainerEntityManagerFactoryBean entityManagerFactory(
+			Map<String, Object> jpaProperties) {
+		String[] packagesToScan = new String[] {
+				KundenAuftrag.class.getPackage().getName(),
+				Fertigungsauftrag.class.getPackage().getName(),
+				Bauteil.class.getPackage().getName() };
 		AbstractJpaVendorAdapter jpaVendor = new HibernateJpaVendorAdapter();
 		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
 		if (persistenceUnitManager != null) {
@@ -72,15 +77,19 @@ public class JPAConfiguration {
 	@Bean
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(environment.getRequiredProperty(JAVAX_JDBC+"driver"));
-        dataSource.setUrl(environment.getRequiredProperty(JAVAX_JDBC+"url"));
-        dataSource.setUsername(environment.getRequiredProperty(JAVAX_JDBC+"user"));
-        dataSource.setPassword(environment.getRequiredProperty(JAVAX_JDBC+"password"));
+		dataSource.setDriverClassName(environment
+				.getRequiredProperty(JAVAX_JDBC + "driver"));
+		dataSource.setUrl(environment.getRequiredProperty(JAVAX_JDBC + "url"));
+		dataSource.setUsername(environment.getRequiredProperty(JAVAX_JDBC
+				+ "user"));
+		dataSource.setPassword(environment.getRequiredProperty(JAVAX_JDBC
+				+ "password"));
 		return dataSource;
 	}
 
 	@Bean(name = "transactionManager")
-	public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+	public PlatformTransactionManager transactionManager(
+			EntityManagerFactory emf) {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();
 		transactionManager.setEntityManagerFactory(emf);
 		return transactionManager;

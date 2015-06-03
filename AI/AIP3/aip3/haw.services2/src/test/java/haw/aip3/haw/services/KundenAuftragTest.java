@@ -43,15 +43,15 @@ public class KundenAuftragTest {
 		Assert.notNull(ka1);
 		
 		auftragsService.markiereAuftrag(ka1);
-		System.out.println(ka1.isAbgeschlossen());
+		Assert.isTrue(ka1.isAbgeschlossen());
 		
 		KundenAuftrag ka2 = auftragsService.getAuftrag(id2);
 		Assert.notNull(ka2);
 		
-		//angebotService.erstelleAngebot();
 		Angebot a1 = auftragsService.getAngebot(1);
+		Assert.notNull(a1);
 		Angebot ates = auftragsService.getAngebot(4);
-		System.out.println(ates);
+		Assert.isNull(ates);
 		
 		auftragsService.erzeugeKundenAuftrag(a1);
 		KundenAuftrag ka3 = auftragsService.getAuftrag(id3);
