@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--[if IE 8]>         <html class="lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class=""> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8">
+    	<title>Mondula Test HTML File</title>
+    	<meta name="author" 			content="Mondula GmbH, Hamburg, Germany" />
+    	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+	</head>
+  	<body>
+  	<div id="list">
+  	</div>
+  	<div id="details">
+  	</div>
+  	<script type="text/javascript">
+  	
+  	function showDetails(val){
+  		$.getJSON("/users/"+val, function( data ) {
+			var items = [];
+			for(var key in data) {
+				var val = data[key];
+				if($.isArray(val)) {
+					var inner = [];
+					for(var i=0,l=val.length;i<l;i++) {
+						var v = val[i];
+						if(v.authority) v = v.authority;
+						else if(v.description) v = v.description;
+						inner.push("<br>"+v);
+					}
+					val = inner.join("");
+				}
+			    items.push( "<li>" +key+": "+ val + "</li>" );
+			}
+			 
+			$("#details").html("<ul>"+items.join("")+"</ul>");
+		});
+  	}
+  	
+  	function showUserList(query){
+  		if(query) query = "?search="+query;
+  		else query = "";
+  		$.getJSON("/users"+query, function( data ) {
+			var items = [];
+			data.forEach(function( val ) {
+			    items.push( "<li id='" + val.id + "'><a href='#' data-trg='"+val.id+"'>" + val.name + "</a></li>" );
+			});
+			 
+			$( "<ul/>", {
+			   "class": "my-new-list",
+			    html: items.join( "" )
+			}).appendTo( "#list" );
+			  
+			$("#list ul li a").on("click",function(e){
+				var trg = e.target,
+					val	= trg.getAttribute("data-trg");
+				showDetails(val);
+			});
+		});
+  	}
+  	
+  	$(document).ready(function(e) {
+		showUserList("");
+  	});
+  	</script>
+  	</body>
+</html>

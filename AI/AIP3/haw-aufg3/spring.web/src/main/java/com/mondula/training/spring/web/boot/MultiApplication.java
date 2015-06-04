@@ -72,7 +72,7 @@ public class MultiApplication {
 		
 		startServer(Application1.class);
 		
-		startServer(Application2.class);
+		//startServer(Application2.class);
 	}
 
 	private static void startServer(Class<?/* extends BaseApplication*/> config) {

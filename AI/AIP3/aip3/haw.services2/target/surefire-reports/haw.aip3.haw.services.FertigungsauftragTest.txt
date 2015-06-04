@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: haw.aip3.haw.services.FertigungsauftragTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.124 sec - in haw.aip3.haw.services.FertigungsauftragTest
