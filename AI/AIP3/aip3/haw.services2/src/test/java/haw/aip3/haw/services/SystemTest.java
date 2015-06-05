@@ -79,79 +79,35 @@ public class SystemTest {
 	
 	@Test 
 	public void mpsSzenario(){
-		
-		/***
-		 * 
-		 */
-		//Erstelle Angebot
-		this.auftragsService.erstelleAngebot(
-				produktService.findeBauteil("Bauteil2"),
-				new Date(System.currentTimeMillis() + 172800000), 2000);
-		
-		Angebot a = this.auftragsService.getAngebot(3);
-
-		boolean preis = false;
-		if (a.getPreis() == 2000)
-			preis = true;
-
-		Assert.notNull(a);
-		Assert.isTrue(preis);
+		//Erzeuge Angebot
+		EinfachesBauteil einfachesBauteil2 = new EinfachesBauteil("Rasenmaehermotoröl");
+		EinfachesBauteil einfachesBauteil1 = new EinfachesBauteil("Rasenmaeher-Motor");
+		StuecklistenPosition stuecklistePosition1 = new StuecklistenPosition("StuecklistenPosition1", 2, einfachesBauteil1);
+		StuecklistenPosition stuecklistenPosition2 = new StuecklistenPosition("StuecklistenPosition2", 1, einfachesBauteil2);
+		Set<StuecklistenPosition> positionen = new HashSet<StuecklistenPosition>(Arrays.asList(stuecklistePosition1, stuecklistenPosition2));
+		Stueckliste stueckliste = new Stueckliste("Stueckliste1", new Date(), new Date(System.currentTimeMillis() + (long)259200000), positionen);
+		Vorgang vorgang1 = new Vorgang(VorgangArtTyp.BEREITSTELLUNG, 1, 2, 3);
+		ArrayList<Vorgang> vorgaenge = new ArrayList<Vorgang>(Arrays.asList(vorgang1));
+		Arbeitsplan arbeitsplan = new Arbeitsplan(null, vorgaenge);
+		KomplexesBauteil bauteilKomplex = new KomplexesBauteil("Rasenmaeher", stueckliste, arbeitsplan);
+		Angebot angebot = new Angebot(bauteilKomplex, new Date(), new Date(System.currentTimeMillis() + (long)259200000), 199);
 		
 		//Erzeuge KundenAuftrag
-		this.auftragsService.erzeugeKundenAuftrag(this.auftragsService
-				.getAngebot(3));
-		KundenAuftrag ka = this.auftragsService.getAuftrag(3L);
-		
-		Assert.notNull(ka);
-		
-		//Erstelle Fertigungsplan
-		Fertigungsauftrag f = new Fertigungsauftrag(ka);
-		Vorgang v = new Vorgang(VorgangArtTyp.BEREITSTELLUNG, 1, 2, 3);
-		ArrayList<Vorgang> vorgaenge = new ArrayList<Vorgang>(Arrays.asList(v));
-		this.produktService.erstelleEinfachesBauteil("einfachesBauteil1");
-		Set<StuecklistenPosition> positionen1 = new HashSet<StuecklistenPosition>(); 
-		
-		StuecklistenPosition sp1 = new StuecklistenPosition("Rasenmaeher-Motor", 1, new EinfachesBauteil());
-		positionen1.add(sp1);
-		
-		
-		Set<StuecklistenPosition> positionen2 = new HashSet<StuecklistenPosition>(
-				Arrays.asList(new StuecklistenPosition("Platte1", 2, new EinfachesBauteil()),
-						new StuecklistenPosition("Platte2", 42, new EinfachesBauteil()))); 
-		
-		Stueckliste sl = new Stueckliste("ABCD", new Date(), new Date(System.currentTimeMillis() + 200300), positionen2);
-		//Falscher Entwurf: Arbeitsplan soll Bauteil im Konstruktor bekommen, aber
-		//Komplexes Bauteil soll Arbeitsplan im Konstruktor bekommen: Henne - Ei Problem.
-		Arbeitsplan a1 = new Arbeitsplan(null, vorgaenge);
-		Bauteil komplex = new KomplexesBauteil("Rasenmaeher", sl, a1);
-		f.setBauteil(komplex);
-		fertigungService.saveFertigungsAuftrag(f);
-		//False da List ein Bauteil verglichen wird?
-		Assert.isTrue(f.equals(fertigungService.findFertigungsauftrag(f.getNr())));
-		
-		List<Arbeitsplan> a2 = produktService.erstelleArbeitsplaene(f);
-		Assert.isTrue(a2.size() == 1);
-		/**
-		 * 
-		 */
-		//Erzeuge Angebot
-		// 2 days = 172800000 ms
-
-		
-	
+		KundenAuftrag kundenAuftrag = new KundenAuftrag(angebot, false, new Date());
 		
 		//Erzeuge Fertigungsauftrag
-		Fertigungsauftrag fa = fertigungService.createFertigungsAuftrag(ka);
-		Assert.notNull(fa);
+		Fertigungsauftrag fertigungsauftrag = new Fertigungsauftrag(kundenAuftrag);
 		
-		List<Arbeitsplan> arbeitsplaene = produktService.erstelleArbeitsplaene(fa);
-		Assert.isTrue(arbeitsplaene.size() != 0);
+		fertigungService.saveFertigungsAuftrag(fertigungsauftrag);
+		Assert.isTrue(fertigungsauftrag.equals(fertigungService.findFertigungsauftrag(fertigungsauftrag.getNr())));
 		
-		//Markiere Auftrag als abgeschlossen
-		this.auftragsService.markiereAuftrag(ka);
-		Assert.isTrue(ka.isAbgeschlossen());
+		//Erzeuge Arbeitspläne
+		List<Arbeitsplan> arbeitsplaene = produktService.erstelleArbeitsplaene(fertigungsauftrag);
+		Assert.isTrue(arbeitsplaene.size() == 1);
+		//Komplexe Bauteile bauen
+		produktService.komplexesBauteilBauen(arbeitsplaene);
 		
-		//ToDo: Die Nr. 8 u. 9 des Anwendungsfalls.
-		
+		kundenAuftrag.setAbgeschlossen(true);
+		Assert.isTrue(kundenAuftrag.isAbgeschlossen());
 	}
 }

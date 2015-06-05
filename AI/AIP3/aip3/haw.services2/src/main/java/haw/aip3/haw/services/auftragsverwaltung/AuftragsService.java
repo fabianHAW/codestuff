@@ -18,4 +18,6 @@ public interface AuftragsService {
 	public void markiereAuftrag(KundenAuftrag ka);
 	
 	public KundenAuftrag getAuftrag(Long id);
+	
+	public void updateAuftrag(KundenAuftrag ka);
 }

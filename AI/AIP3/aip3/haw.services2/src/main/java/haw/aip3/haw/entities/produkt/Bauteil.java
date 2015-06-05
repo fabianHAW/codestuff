@@ -53,17 +53,32 @@ public abstract class Bauteil {
 		if (this == obj)
 			return true;
 		if (obj == null)
-			return false;
+		{
+			System.out.println("1d");
+				return false;
+			}
 		if (getClass() != obj.getClass())
-			return false;
+		{
+			System.out.println("2d");
+				return false;
+			}
 		Bauteil other = (Bauteil) obj;
 		if (bauteilNr != other.bauteilNr)
-			return false;
+		{
+			System.out.println("3d");
+				return false;
+			}
 		if (name == null) {
 			if (other.name != null)
-				return false;
+			{
+				System.out.println("4d");
+					return false;
+				}
 		} else if (!name.equals(other.name))
-			return false;
+		{
+			System.out.println("5d");
+				return false;
+			}
 		return true;
 	}
 	

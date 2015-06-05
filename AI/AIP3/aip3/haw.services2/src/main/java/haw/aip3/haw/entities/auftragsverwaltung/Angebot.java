@@ -4,6 +4,7 @@ import haw.aip3.haw.entities.produkt.Bauteil;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -44,7 +45,7 @@ public class Angebot {
 	@Column
 	private double preis;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	private Bauteil bauteil;
 	
 	@Column
@@ -112,33 +113,64 @@ public class Angebot {
 
 	@Override
 	public boolean equals(Object obj) {
+		System.out.println("0c");
 		if (this == obj)
 			return true;
 		if (obj == null)
-			return false;
+		{
+			System.out.println("1c");
+				return false;
+			}
 		if (getClass() != obj.getClass())
-			return false;
+		{
+			System.out.println("2c");
+				return false;
+			}
 		Angebot other = (Angebot) obj;
 		if (angebotsNr != other.angebotsNr)
-			return false;
+		{
+			System.out.println("3c");
+				return false;
+			}
 		if (bauteil == null) {
 			if (other.bauteil != null)
-				return false;
+			{
+				System.out.println("4c");
+					return false;
+				}
 		} else if (!bauteil.equals(other.bauteil))
-			return false;
+		{
+			System.out.println("5c");
+				return false;
+			}
 		if (gueltigAb == null) {
 			if (other.gueltigAb != null)
-				return false;
+			{
+				System.out.println("6c");
+					return false;
+				}
 		} else if (!gueltigAb.equals(other.gueltigAb))
-			return false;
+		{
+			System.out.println("7c");
+				return false;
+			}
 		if (gueltigBis == null) {
 			if (other.gueltigBis != null)
-				return false;
+			{
+				System.out.println("8c");
+					return false;
+				}
 		} else if (!gueltigBis.equals(other.gueltigBis))
-			return false;
+		{
+			System.out.println("9c");
+				return false;
+			}
 		if (Double.doubleToLongBits(preis) != Double
 				.doubleToLongBits(other.preis))
-			return false;
+		{
+			System.out.println("10c");
+				return false;
+			}
 		return true;
 	}
 

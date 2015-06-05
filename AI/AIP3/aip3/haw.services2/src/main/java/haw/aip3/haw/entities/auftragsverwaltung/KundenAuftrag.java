@@ -2,8 +2,10 @@ package haw.aip3.haw.entities.auftragsverwaltung;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
@@ -30,7 +32,7 @@ public class KundenAuftrag {
 	@Column
 	private Date auftragsDatum;
 
-	@OneToOne
+	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	//@Column
 	private Angebot angebot;
 
@@ -82,30 +84,58 @@ public class KundenAuftrag {
 
 	@Override
 	public boolean equals(Object obj) {
+		System.out.println("0a");
 		if (this == obj)
 			return true;
 		if (obj == null)
-			return false;
+		{
+			System.out.println("1");
+				return false;
+			}
 		if (getClass() != obj.getClass())
-			return false;
+		{
+			System.out.println("2");
+				return false;
+			}
 		KundenAuftrag other = (KundenAuftrag) obj;
 		if (abgeschlossen != other.abgeschlossen)
-			return false;
+		{
+			System.out.println("3");
+				return false;
+			}
 		if (angebot == null) {
 			if (other.angebot != null)
-				return false;
+			{
+				System.out.println("4");
+					return false;
+				}
 		} else if (!angebot.equals(other.angebot))
-			return false;
+		{
+			System.out.println("4b");
+				return false;
+			}
 		if (auftragsDatum == null) {
 			if (other.auftragsDatum != null)
-				return false;
+			{
+				System.out.println("5");
+					return false;
+				}
 		} else if (!auftragsDatum.equals(other.auftragsDatum))
-			return false;
+		{
+			System.out.println("6b");
+				return false;
+			}
 		if (auftragsID == null) {
 			if (other.auftragsID != null)
-				return false;
+			{
+				System.out.println("7");
+					return false;
+				}
 		} else if (!auftragsID.equals(other.auftragsID))
-			return false;
+		{
+			System.out.println("8");
+				return false;
+			}
 		return true;
 	}
 

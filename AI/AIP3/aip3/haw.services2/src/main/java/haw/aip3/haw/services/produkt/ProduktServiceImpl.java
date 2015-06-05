@@ -69,6 +69,9 @@ public class ProduktServiceImpl implements ProduktService {
 	@Override
 	public List<Arbeitsplan> erstelleArbeitsplaene(Fertigungsauftrag fa) {
 		// TODO Auto-generated method stub
+		if(fa.getBauteil() == null)
+			return new ArrayList<Arbeitsplan>(getPlaene(fa.getKundenAuftrag().getAngebot().getBauteil()));
+		//TODO Statt Bauteil direkt aus Fertigungsauftrag -> Bauteil aus Angebot - Tests anpassen.
 		return new ArrayList<Arbeitsplan>(getPlaene(fa.getBauteil()));
 	}
 	

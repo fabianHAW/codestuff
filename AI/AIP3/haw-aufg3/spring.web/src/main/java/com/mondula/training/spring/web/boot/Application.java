@@ -1,5 +1,10 @@
 package com.mondula.training.spring.web.boot;
 
+import haw.aip3.haw.config.AppConfiguration;
+import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
+
+
+
 import java.sql.SQLException;
 
 import org.springframework.boot.SpringApplication;
@@ -8,8 +13,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-import com.mondula.training.spring.service.config.AppConfiguration;
-import com.mondula.training.spring.service.services.UserService;
 import com.mondula.training.spring.web.controller.MainController;
 
 
@@ -30,7 +33,9 @@ public class Application {
   	        
     	// Through this you can test if beans are available and 
     	// what result they return.
-    	UserService us = ctx.getBean(UserService.class);
-  		System.out.println("users with 'm': "+us.getUsers("m"));
+    	AuftragsService as = ctx.getBean(AuftragsService.class);
+    	System.out.println(as.getAuftrag(1L));
+//    	UserService us = ctx.getBean(UserService.class);
+//  		System.out.println("users with 'm': "+us.getUsers("m"));
     }
 }
