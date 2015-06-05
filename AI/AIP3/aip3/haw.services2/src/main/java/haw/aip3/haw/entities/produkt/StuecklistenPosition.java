@@ -79,22 +79,42 @@ public class StuecklistenPosition {
 
 	@Override
 	public boolean equals(Object obj) {
+		System.out.println("0f");
 		if (this == obj)
 			return true;
 		if (obj == null)
-			return false;
+		{
+			System.out.println("1f");
+				return false;
+			}
 		if (getClass() != obj.getClass())
-			return false;
+		{
+			System.out.println("2f");
+				return false;
+			}
 		StuecklistenPosition other = (StuecklistenPosition) obj;
 		if (bauteil == null) {
 			if (other.bauteil != null)
-				return false;
+			{
+				System.out.println("3f");
+					return false;
+				}
 		} else if (!bauteil.equals(other.bauteil))
-			return false;
+		{
+			System.out.println("4f");
+				return false;
+			}
 		if (menge != other.menge)
-			return false;
+		{
+			System.out.println("5f");
+				return false;
+			}
 		if (positionNr != other.positionNr)
-			return false;
+		{
+			System.out.println("6f");
+				return false;
+			}
+		System.out.println("7f");
 		return true;
 	}
 

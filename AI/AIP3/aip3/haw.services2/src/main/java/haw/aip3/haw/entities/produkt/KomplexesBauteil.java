@@ -50,15 +50,27 @@ public class KomplexesBauteil extends Bauteil {
 		if (this == obj)
 			return true;
 		if (!super.equals(obj))
-			return false;
+		{
+			System.out.println("1e");
+				return false;
+			}
 		if (getClass() != obj.getClass())
-			return false;
+		{
+			System.out.println("2e");
+				return false;
+			}
 		KomplexesBauteil other = (KomplexesBauteil) obj;
 		if (stueckliste == null) {
 			if (other.stueckliste != null)
-				return false;
+			{
+				System.out.println("3e");
+					return false;
+				}
 		} else if (!stueckliste.equals(other.stueckliste))
-			return false;
+		{
+			System.out.println("4e");
+				return false;
+			};
 		return true;
 	}
 

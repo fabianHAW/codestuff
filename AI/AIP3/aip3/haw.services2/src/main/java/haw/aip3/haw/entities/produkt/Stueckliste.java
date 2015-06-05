@@ -1,6 +1,8 @@
 package haw.aip3.haw.entities.produkt;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -125,8 +127,10 @@ public class Stueckliste {
 		if (position == null) {
 			if (other.position != null)
 				return false;
-		} else if (!position.equals(other.position))
+		} else if (!compareSets(position, other.position)){
+			System.out.println("jo");
 			return false;
+		}
 		if (name == null) {
 			if (other.name != null)
 				return false;
@@ -134,6 +138,68 @@ public class Stueckliste {
 			return false;
 		if (stuecklisteNr != other.stuecklisteNr)
 			return false;
+		return true;
+	}
+	
+	private boolean compareSets(Set<StuecklistenPosition> position1, Set<StuecklistenPosition> position2){
+		if(position1.size() != position1.size()){
+			return false;
+		}
+		
+		Iterator<StuecklistenPosition> iter1 = position1.iterator();
+		Iterator<StuecklistenPosition> iter2 = position2.iterator();
+		int position1Elems = 0;
+		int position2Elems = 0;
+		
+		while(iter1.hasNext()){
+			StuecklistenPosition sp1 = iter1.next();
+			position1Elems++;
+			for(StuecklistenPosition sp : position2){
+				if(sp.getPositionNr() == sp1.getPositionNr()){
+					if(!sp.getBauteil().equals(sp1.getBauteil())){
+						return false;
+					}
+					if(sp.getMenge() != sp1.getMenge()){
+						return false;
+					}
+					if(!sp.getPositionName().equals(sp1.getPositionName())){
+						return false;
+					}
+					position2Elems++;
+				}
+			}
+		}
+		
+		if(position1Elems != position2Elems){
+			return false;
+		}
+		
+		position2Elems = 0;
+		position1Elems = 0;
+		
+		while(iter2.hasNext()){
+			StuecklistenPosition sp2 = iter2.next();
+			position2Elems++;
+			for(StuecklistenPosition sp : position1){
+				if(sp.getPositionNr() == sp2.getPositionNr()){
+					if(!sp.getBauteil().equals(sp2.getBauteil())){
+						return false;
+					}
+					if(sp.getMenge() != sp2.getMenge()){
+						return false;
+					}
+					if(!sp.getPositionName().equals(sp2.getPositionName())){
+						return false;
+					}
+					position1Elems++;
+				}
+			}
+		}
+		
+		if(position1Elems != position2Elems){
+			return false;
+		}
+		
 		return true;
 	}
 

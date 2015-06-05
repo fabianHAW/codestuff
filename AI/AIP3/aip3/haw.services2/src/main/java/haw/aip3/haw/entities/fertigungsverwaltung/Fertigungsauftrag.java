@@ -31,7 +31,7 @@ public class Fertigungsauftrag {
 	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	private Bauteil bauteil;
 	
-	@OneToOne
+	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	private KundenAuftrag kundenAuftrag;
 
 	public Long getNr() {
@@ -71,28 +71,52 @@ public class Fertigungsauftrag {
 
 	@Override
 	public boolean equals(Object obj) {
+		System.out.println("0");
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (obj == null){
+		System.out.println("1");
 			return false;
+		}
 		if (getClass() != obj.getClass())
-			return false;
+		{
+			System.out.println("2");
+				return false;
+			}
 		Fertigungsauftrag other = (Fertigungsauftrag) obj;
 		if (bauteil == null) {
 			if (other.bauteil != null)
-				return false;
+			{
+				System.out.println("3");
+					return false;
+				}
 		} else if (!bauteil.equals(other.bauteil))
-			return false;
+		{
+			System.out.println("4");
+				return false;
+			}
 		if (kundenAuftrag == null) {
 			if (other.kundenAuftrag != null)
-				return false;
+			{
+				System.out.println("5");
+					return false;
+				}
 		} else if (!kundenAuftrag.equals(other.kundenAuftrag))
-			return false;
+		{
+			System.out.println("6");
+				return false;
+			}
 		if (nr == null) {
 			if (other.nr != null)
-				return false;
+			{
+				System.out.println("7");
+					return false;
+				}
 		} else if (!nr.equals(other.nr))
-			return false;
+		{
+			System.out.println("8");
+				return false;
+			}
 		return true;
 	}
 

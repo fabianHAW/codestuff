@@ -51,4 +51,10 @@ public class AuftragsServiceImpl implements AuftragsService{
 		this.angebotRepo.save(new Angebot(kundenID, bauteil));
 	}
 
+	@Override
+	public void updateAuftrag(KundenAuftrag ka) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
