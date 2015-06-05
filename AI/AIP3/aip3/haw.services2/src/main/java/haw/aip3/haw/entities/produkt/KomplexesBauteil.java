@@ -1,5 +1,6 @@
 package haw.aip3.haw.entities.produkt;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
@@ -10,12 +11,16 @@ public class KomplexesBauteil extends Bauteil {
 		super();
 	}
 
-	public KomplexesBauteil(String name, Stueckliste stueckliste) {
+	public KomplexesBauteil(String name, Stueckliste stueckliste, Arbeitsplan arbeitsplan) {
 		super(name);
 		this.stueckliste = stueckliste;
+		this.arbeitsplan = arbeitsplan;
 	}
 
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
+	Arbeitsplan arbeitsplan;
+	
+	@OneToOne(cascade=CascadeType.ALL)
 	private Stueckliste stueckliste;
 
 	@Override
@@ -55,6 +60,14 @@ public class KomplexesBauteil extends Bauteil {
 		} else if (!stueckliste.equals(other.stueckliste))
 			return false;
 		return true;
+	}
+
+	public Arbeitsplan getArbeitsplan() {
+		return arbeitsplan;
+	}
+
+	public void setArbeitsplan(Arbeitsplan arbeitsplan) {
+		this.arbeitsplan = arbeitsplan;
 	}
 
 }

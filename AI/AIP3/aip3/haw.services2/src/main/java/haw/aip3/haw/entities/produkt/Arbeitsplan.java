@@ -3,8 +3,10 @@ package haw.aip3.haw.entities.produkt;
 import haw.aip3.haw.exception.SizeLessThanOneException;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -49,7 +51,7 @@ public class Arbeitsplan {
 	@OneToOne(fetch=FetchType.EAGER)
 	private Bauteil bauteil;
 
-	@OneToMany(fetch=FetchType.EAGER)
+	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@ElementCollection(targetClass=Vorgang.class)
 	List<Vorgang> besteht_aus;
 
@@ -105,8 +107,11 @@ public class Arbeitsplan {
 		if (besteht_aus == null) {
 			if (other.besteht_aus != null)
 				return false;
-		} else if (!besteht_aus.equals(other.besteht_aus))
+		} else if(besteht_aus.size() != other.besteht_aus.size()){
 			return false;
+		}else if (checkListNonEquality(besteht_aus, other.besteht_aus)){
+			return false;
+		}
 		if (nr == null) {
 			if (other.nr != null)
 				return false;
@@ -115,7 +120,15 @@ public class Arbeitsplan {
 		return true;
 	}
 
-	
-
+	private boolean checkListNonEquality(List<Vorgang> a, List<Vorgang> b){
+		Iterator<Vorgang> iter1 = a.iterator();
+		Iterator<Vorgang> iter2 = b.iterator();
+		while(iter1.hasNext() && iter2.hasNext()){
+			if(!iter1.next().equals(iter2.next())){
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

@@ -9,7 +9,7 @@ import haw.aip3.haw.entities.produkt.Stueckliste;
 
 public interface ProduktService {
 	
-	public void erstelleKomplexesBauteil(String name, Stueckliste stueckliste);
+	public void erstelleKomplexesBauteil(String name, Stueckliste stueckliste, Arbeitsplan arbeitsplan);
 	
 	public void erstelleEinfachesBauteil(String name);
 	
@@ -17,6 +17,7 @@ public interface ProduktService {
 	
 	public Bauteil getBauteil(Fertigungsauftrag fa);
 	
+	public List<Arbeitsplan> erstelleArbeitsplaene(Fertigungsauftrag fa); 
 	/*
 	 * macht irgendwie nicht viel sinn...
 	 */

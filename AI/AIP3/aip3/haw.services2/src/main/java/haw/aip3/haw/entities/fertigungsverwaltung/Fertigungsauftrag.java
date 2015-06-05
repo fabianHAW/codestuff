@@ -3,6 +3,7 @@ package haw.aip3.haw.entities.fertigungsverwaltung;
 import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
 import haw.aip3.haw.entities.produkt.Bauteil;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,7 +28,7 @@ public class Fertigungsauftrag {
 	@GeneratedValue
 	private Long nr;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	private Bauteil bauteil;
 	
 	@OneToOne

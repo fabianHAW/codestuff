@@ -21,7 +21,6 @@ public class Vorgang {
 	
 	@Id
 	@GeneratedValue
-	@Column
 	private Long nr;
 	
 	@Column(nullable = false)
@@ -97,24 +96,33 @@ public class Vorgang {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (obj == null){
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()){
 			return false;
+		}
 		Vorgang other = (Vorgang) obj;
-		if (art != other.art)
+		if (art != other.art){
 			return false;
-		if (maschinenzeit != other.maschinenzeit)
+		}
+		if (maschinenzeit != other.maschinenzeit){
 			return false;
+		}
 		if (nr == null) {
-			if (other.nr != null)
+			if (other.nr != null){
+
 				return false;
-		} else if (!nr.equals(other.nr))
+			}
+		} else if (!nr.equals(other.nr)){
 			return false;
-		if (personenzeit != other.personenzeit)
+		}
+		if (personenzeit != other.personenzeit){
 			return false;
-		if (ruestzeit != other.ruestzeit)
+		}
+		if (ruestzeit != other.ruestzeit){
 			return false;
+		}
 		return true;
 	}
 

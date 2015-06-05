@@ -5,7 +5,9 @@ import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
 import haw.aip3.haw.services.produkt.ProduktService;
 import haw.aip3.haw.services.produkt.StuecklisteService;
 import haw.aip3.haw.services.produkt.StuecklistenPositionService;
+import haw.aip3.haw.entities.produkt.Arbeitsplan;
 import haw.aip3.haw.entities.produkt.Bauteil;
+import haw.aip3.haw.entities.produkt.EinfachesBauteil;
 import haw.aip3.haw.entities.produkt.Stueckliste;
 import haw.aip3.haw.entities.produkt.StuecklistenPosition;
 
@@ -66,9 +68,9 @@ public class StartupInitializer implements
 		System.out.println("Stueckliste 1 holen");
 		Stueckliste stueckliste1 = this.stuecklisteService
 				.getStueckliste("Stueckliste1");
-		
+		Arbeitsplan arbeitsplan = new Arbeitsplan();
 		System.out.println("Komplexes Bauteil 1 erzeugen");
-		bauteilService.erstelleKomplexesBauteil("Bauteil1", stueckliste1);
+		bauteilService.erstelleKomplexesBauteil("Bauteil1", stueckliste1, arbeitsplan);
 		
 		System.out.println("Komplexes Bauteil 1 holen");
 		Bauteil b1 = bauteilService.findeBauteil("Bauteil1");
@@ -92,7 +94,7 @@ public class StartupInitializer implements
 				.getStueckliste("Stueckliste2");
 		
 		System.out.println("Komplexes Bauteil 2 erzeugen");
-		bauteilService.erstelleKomplexesBauteil("Bauteil2", stueckliste2);
+		bauteilService.erstelleKomplexesBauteil("Bauteil2", stueckliste2, arbeitsplan);
 		
 		System.out.println("Komplexes Bauteil 2 holen");
 		Bauteil b2 = bauteilService.findeBauteil("Bauteil2");
@@ -108,15 +110,15 @@ public class StartupInitializer implements
 
 	private void initStuecklistenPositionen() {
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
-				"Position1", 3);
+				"Position1", 3, new EinfachesBauteil());
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
-				"Position2", 7);
+				"Position2", 7, new EinfachesBauteil());
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
-				"Position3", 20);
+				"Position3", 20, new EinfachesBauteil());
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
-				"Position4", 29);
+				"Position4", 29, new EinfachesBauteil());
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
-				"Position5", 37);
+				"Position5", 37, new EinfachesBauteil());
 	}
 
 	private Set<StuecklistenPosition> getStuecklistenPostionenSet1() {

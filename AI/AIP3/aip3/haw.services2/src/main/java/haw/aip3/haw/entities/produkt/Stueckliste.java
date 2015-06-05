@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -41,7 +42,7 @@ public class Stueckliste {
 	@Column
 	private Date gueltigBis;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
 	//@ElementCollection(targetClass = StuecklistenPosition.class)
 	private Set<StuecklistenPosition> position;
 

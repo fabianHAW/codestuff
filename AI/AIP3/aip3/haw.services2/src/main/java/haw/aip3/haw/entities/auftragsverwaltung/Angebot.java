@@ -23,6 +23,14 @@ public class Angebot {
 		this.preis = preis;
 	}
 	
+	public Angebot(int kundenID, String bauteil){
+		//Kunde mit kundenID suchen
+		this.kundenID = kundenID;
+		
+		//Bauteil aus produktService suchen und speichern.
+		//this.bauteil = bauteil;
+	}
+	
 	@Id
 	@GeneratedValue
 	private long angebotsNr;
@@ -38,6 +46,9 @@ public class Angebot {
 	
 	@ManyToOne(fetch=FetchType.EAGER)
 	private Bauteil bauteil;
+	
+	@Column
+	private int kundenID;
 	
 	public long getAngebotsNr() {
 		return angebotsNr;
@@ -81,6 +92,8 @@ public class Angebot {
 		this.bauteil = bauteil;
 	}
 
+	//Hashcode & Equals anpassen, wenn Übereinstimmung in Konstruktoränderung
+	//da kundenID hinzugekommen als Attribut.
 	@Override
 	public int hashCode() {
 		final int prime = 31;

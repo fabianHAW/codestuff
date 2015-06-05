@@ -1,17 +1,27 @@
 package haw.aip3.haw.services;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import haw.aip3.haw.entities.fertigungsverwaltung.Fertigungsauftrag;
+import haw.aip3.haw.entities.produkt.Arbeitsplan;
 import haw.aip3.haw.entities.produkt.Bauteil;
+import haw.aip3.haw.entities.produkt.EinfachesBauteil;
+import haw.aip3.haw.entities.produkt.KomplexesBauteil;
 import haw.aip3.haw.entities.produkt.Stueckliste;
 import haw.aip3.haw.entities.produkt.StuecklistenPosition;
+import haw.aip3.haw.entities.produkt.Vorgang;
+import haw.aip3.haw.entities.produkt.Vorgang.VorgangArtTyp;
 import haw.aip3.haw.repositories.fertigungsverwaltung.FertigungsauftragRepository;
+import haw.aip3.haw.repositories.produkt.ArbeitsplanRepository;
 import haw.aip3.haw.repositories.produkt.BauteilRepository;
 import haw.aip3.haw.repositories.produkt.StuecklisteRepository;
 import haw.aip3.haw.repositories.produkt.StuecklistenPostionRepository;
+import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
 import haw.aip3.haw.services.produkt.ProduktService;
 import haw.aip3.haw.services.produkt.StuecklisteService;
 import haw.aip3.haw.services.produkt.StuecklistenPositionService;
@@ -54,7 +64,13 @@ public class ProduktServiceTest {
 
 	@Autowired
 	private FertigungsauftragRepository fertigungsRepo;
+	
+	@Autowired
+	private ArbeitsplanRepository arbeitsplanRepo;
 
+	@Autowired
+	private AuftragsService auftragService;
+	
 	// **********************************************************************
 	// ************************BauteileTests*********************************
 	// **********************************************************************
@@ -68,9 +84,10 @@ public class ProduktServiceTest {
 	@Test
 	public void erstelleKomplexesProdukt() {
 		Stueckliste stueckliste = new Stueckliste();
+		Arbeitsplan arbeitsplan = new Arbeitsplan();
 		this.stuecklisteRepo.save(stueckliste);
 		this.produktService.erstelleKomplexesBauteil("komplexesBauteil1",
-				stueckliste);
+				stueckliste, arbeitsplan);
 		Bauteil b = this.bauteilRepo.findByName("komplexesBauteil1");
 		Assert.notNull(b);
 	}
@@ -80,9 +97,10 @@ public class ProduktServiceTest {
 		this.produktService.erstelleEinfachesBauteil("einfachesBauteil2");
 
 		Stueckliste stueckliste = new Stueckliste();
+		Arbeitsplan arbeitsplan = new Arbeitsplan();
 		this.stuecklisteRepo.save(stueckliste);
 		this.produktService.erstelleKomplexesBauteil("komplexesBauteil2",
-				stueckliste);
+				stueckliste, arbeitsplan);
 
 		Bauteil einfach = this.produktService.findeBauteil("einfachesBauteil2");
 		Bauteil komplex = this.produktService.findeBauteil("komplexesBauteil2");
@@ -118,7 +136,7 @@ public class ProduktServiceTest {
 	@Test
 	public void erstelleStuecklisteGetStueckliste() {
 		StuecklistenPosition stuecklistenPosition = new StuecklistenPosition(
-				"stuecklistenPosition1", 2);
+				"stuecklistenPosition1", 2, new EinfachesBauteil());
 		this.stuecklistePostionRepo.save(stuecklistenPosition);
 
 		// 100 days = 8640000000 ms
@@ -141,7 +159,7 @@ public class ProduktServiceTest {
 	
 	@Test
 	public void erstelleStuecklistenPositionGetStuecklistenPosition(){
-		this.stuecklistePositionService.erstelleStuecklistenPosition("stuecklistenPosition2", 4);
+		this.stuecklistePositionService.erstelleStuecklistenPosition("stuecklistenPosition2", 4, new EinfachesBauteil());
 		StuecklistenPosition s = this.stuecklistePositionService.getStuecklistenPosition("stuecklistenPosition2");
 		
 		boolean menge = false;
@@ -149,5 +167,50 @@ public class ProduktServiceTest {
 		Assert.notNull(s);
 		Assert.isTrue(menge);
 		
+	}
+	
+	@Test
+	public void erstelleArbeitsplan(){
+		Vorgang v = new Vorgang(VorgangArtTyp.BEREITSTELLUNG, 1, 2, 3);
+		ArrayList<Vorgang> vorgaenge = new ArrayList<Vorgang>(Arrays.asList(v));
+		this.produktService.erstelleEinfachesBauteil("einfachesBauteil1");
+		Bauteil b = this.bauteilRepo.findByName("einfachesBauteil1");
+		
+		Arbeitsplan a1 = new Arbeitsplan(b, vorgaenge);
+		Assert.isNull(a1.getNr());
+		
+		arbeitsplanRepo.save(a1);
+		Assert.isTrue(a1.getNr() != null);
+		
+		Arbeitsplan a2 = arbeitsplanRepo.findOne(a1.getNr());
+		Assert.isTrue(a1.equals(a2));
+	}
+	
+	@Test
+	public void erstelleArbeitsplaeneAusFertigungsauftrag(){
+		Fertigungsauftrag f = new Fertigungsauftrag(auftragService.getAuftrag((long)1));
+		
+		Vorgang v = new Vorgang(VorgangArtTyp.BEREITSTELLUNG, 1, 2, 3);
+		ArrayList<Vorgang> vorgaenge = new ArrayList<Vorgang>(Arrays.asList(v));
+		this.produktService.erstelleEinfachesBauteil("einfachesBauteil1");
+		Set<StuecklistenPosition> positionen1 = new HashSet<StuecklistenPosition>(); 
+		
+		StuecklistenPosition sp1 = new StuecklistenPosition("Rasenmaeher-Motor", 1, new EinfachesBauteil());
+		positionen1.add(sp1);
+		
+		
+		Set<StuecklistenPosition> positionen2 = new HashSet<StuecklistenPosition>(
+				Arrays.asList(new StuecklistenPosition("Platte1", 2, new EinfachesBauteil()),
+						new StuecklistenPosition("Platte2", 42, new EinfachesBauteil()))); 
+		
+		Stueckliste sl = new Stueckliste("ABCD", new Date(), new Date(System.currentTimeMillis() + 200300), positionen2);
+		//Falscher Entwurf: Arbeitsplan soll Bauteil im Konstruktor bekommen, aber
+		//Komplexes Bauteil soll Arbeitsplan im Konstruktor bekommen: Henne - Ei Problem.
+		Arbeitsplan a1 = new Arbeitsplan(null, vorgaenge);
+		Bauteil komplex = new KomplexesBauteil("Rasenmaeher", sl, a1);
+		f.setBauteil(komplex);
+		
+		List<Arbeitsplan> a2 = produktService.erstelleArbeitsplaene(f);
+		Assert.isTrue(a2.size() == 1);
 	}
 }

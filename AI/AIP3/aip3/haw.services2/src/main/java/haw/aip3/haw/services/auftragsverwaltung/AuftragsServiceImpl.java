@@ -45,4 +45,10 @@ public class AuftragsServiceImpl implements AuftragsService{
 		return this.auftragRepo.findOne(id);
 	}
 
+	@Override
+	public void erstelleAngebot(int kundenID, String bauteil) {
+		// TODO Auto-generated method stub
+		this.angebotRepo.save(new Angebot(kundenID, bauteil));
+	}
+
 }

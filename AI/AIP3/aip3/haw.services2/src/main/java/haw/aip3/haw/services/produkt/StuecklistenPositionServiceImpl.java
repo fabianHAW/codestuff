@@ -1,5 +1,6 @@
 package haw.aip3.haw.services.produkt;
 
+import haw.aip3.haw.entities.produkt.Bauteil;
 import haw.aip3.haw.entities.produkt.StuecklistenPosition;
 import haw.aip3.haw.repositories.produkt.StuecklistenPostionRepository;
 
@@ -13,8 +14,8 @@ public class StuecklistenPositionServiceImpl implements StuecklistenPositionServ
 	private StuecklistenPostionRepository stuecklistenPositionRepo;
 	
 	@Override
-	public void erstelleStuecklistenPosition(String name, int menge) {
-		this.stuecklistenPositionRepo.save(new StuecklistenPosition(name, menge));
+	public void erstelleStuecklistenPosition(String name, int menge, Bauteil b) {
+		this.stuecklistenPositionRepo.save(new StuecklistenPosition(name, menge, b));
 	}
 
 	@Override
