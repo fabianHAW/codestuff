@@ -62,18 +62,18 @@ public class StartupInitializerWeb implements
 		
 		System.out.println("Stueckliste 1 erzeugen");
 		// 100 days = 8640000000 ms
-		this.stuecklisteService.erstelleStueckliste("Steuckliste1", new Date(),
+		this.stuecklisteService.erstelleStueckliste("Steuckliste11", new Date(),
 				new Date(System.currentTimeMillis() + 8640000000L), posSet1);
 
 		System.out.println("Stueckliste 1 holen");
 		Stueckliste stueckliste1 = this.stuecklisteService
-				.getStueckliste("Stueckliste1");
+				.getStueckliste("Stueckliste11");
 		Arbeitsplan arbeitsplan = new Arbeitsplan();
 		System.out.println("Komplexes Bauteil 1 erzeugen");
-		bauteilService.erstelleKomplexesBauteil("Bauteil1", stueckliste1, arbeitsplan);
+		bauteilService.erstelleKomplexesBauteil("Bauteil11", stueckliste1, arbeitsplan);
 		
 		System.out.println("Komplexes Bauteil 1 holen");
-		Bauteil b1 = bauteilService.findeBauteil("Bauteil1");
+		Bauteil b1 = bauteilService.findeBauteil("Bauteil11");
 
 		System.out.println("Angebot 1 erzeugen");
 		// 2 days = 172800000 ms
@@ -86,18 +86,18 @@ public class StartupInitializerWeb implements
 		System.out.println("Stuecklisten-Positionen 2 holen");
 		Set<StuecklistenPosition> posSet2 = getStuecklistenPostionenSet2();
 		// 100 days = 8640000000 ms
-		this.stuecklisteService.erstelleStueckliste("Steuckliste2", new Date(),
+		this.stuecklisteService.erstelleStueckliste("Steuckliste22", new Date(),
 				new Date(System.currentTimeMillis() + 8640000000L), posSet2);
 
 		System.out.println("Stueckliste 2 holen");
 		Stueckliste stueckliste2 = this.stuecklisteService
-				.getStueckliste("Stueckliste2");
+				.getStueckliste("Stueckliste22");
 		
 		System.out.println("Komplexes Bauteil 2 erzeugen");
-		bauteilService.erstelleKomplexesBauteil("Bauteil2", stueckliste2, arbeitsplan);
+		bauteilService.erstelleKomplexesBauteil("Bauteil22", stueckliste2, arbeitsplan);
 		
 		System.out.println("Komplexes Bauteil 2 holen");
-		Bauteil b2 = bauteilService.findeBauteil("Bauteil2");
+		Bauteil b2 = bauteilService.findeBauteil("Bauteil22");
 
 		System.out.println("Angebot 2 erzeugen");
 		// 3 days = 259200000 ms
@@ -110,34 +110,34 @@ public class StartupInitializerWeb implements
 
 	private void initStuecklistenPositionen() {
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
-				"Position1", 3, new EinfachesBauteil());
+				"Position11", 3, new EinfachesBauteil());
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
-				"Position2", 7, new EinfachesBauteil());
+				"Position22", 7, new EinfachesBauteil());
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
-				"Position3", 20, new EinfachesBauteil());
+				"Position33", 20, new EinfachesBauteil());
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
-				"Position4", 29, new EinfachesBauteil());
+				"Position44", 29, new EinfachesBauteil());
 		this.stuecklistenPositionService.erstelleStuecklistenPosition(
-				"Position5", 37, new EinfachesBauteil());
+				"Position55", 37, new EinfachesBauteil());
 	}
 
 	private Set<StuecklistenPosition> getStuecklistenPostionenSet1() {
 		Set<StuecklistenPosition> posList = new HashSet<StuecklistenPosition>();
 		posList.add(this.stuecklistenPositionService
-				.getStuecklistenPosition("Position1"));
+				.getStuecklistenPosition("Position11"));
 		posList.add(this.stuecklistenPositionService
-				.getStuecklistenPosition("Position2"));
+				.getStuecklistenPosition("Position22"));
 		posList.add(this.stuecklistenPositionService
-				.getStuecklistenPosition("Position3"));
+				.getStuecklistenPosition("Position33"));
 		return posList;
 	}
 
 	private Set<StuecklistenPosition> getStuecklistenPostionenSet2() {
 		Set<StuecklistenPosition> posList = new HashSet<StuecklistenPosition>();
 		posList.add(this.stuecklistenPositionService
-				.getStuecklistenPosition("Position4"));
+				.getStuecklistenPosition("Position44"));
 		posList.add(this.stuecklistenPositionService
-				.getStuecklistenPosition("Position5"));
+				.getStuecklistenPosition("Position55"));
 		return posList;
 	}
 }
