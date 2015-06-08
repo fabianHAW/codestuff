@@ -4,6 +4,7 @@ import haw.aip3.haw.web.boot.RequestADT;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -35,7 +36,7 @@ public class Dispatcher implements CommandLineRunner{
 		while(this.isAlive){
 			s = this.serversocket.accept();
 			this.input = new ObjectInputStream(s.getInputStream());
-			RequestADT request = (RequestADT) this.input.readObject();
+			new DispatcherThread(this.monitor, (RequestADT) this.input.readObject()).run();
 		}
 	}
 	
@@ -50,8 +51,28 @@ public class Dispatcher implements CommandLineRunner{
 	}
 
 	
-	private class DispatcherThread{
-		public DispatcherThread(){
+	private class DispatcherThread extends Thread{
+		
+		private Monitor monitor;
+		private RequestADT request;
+		private ServerSocket serversocket;
+		private ObjectInputStream input;
+		private ObjectOutputStream output;
+		
+		public DispatcherThread(Monitor monitor, RequestADT request){
+			this.monitor = monitor;
+			this.request = request;
+		}
+		
+		public void run(){
+			Socket s = this.monitor.getAliveServer();
+			try {
+				this.output = new ObjectOutputStream(s.getOutputStream());
+				this.output.writeObject(this.request);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		}
 	}
