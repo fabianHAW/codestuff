@@ -3,6 +3,7 @@ package haw.aip3.haw.web.boot;
 import haw.aip3.haw.config.AppConfiguration;
 import haw.aip3.haw.services.StartupInitializer;
 import haw.aip3.haw.web.controller.MainController;
+import haw.aip3.haw.web.dispatcher.Dispatcher;
 
 import java.sql.SQLException;
 
@@ -17,6 +18,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+
+import ch.qos.logback.core.net.server.Client;
 
 
 public class MultiApplication {
@@ -77,9 +80,27 @@ public class MultiApplication {
 			System.out.println(s);
 		}
 		
-		startServer(Server1.class);
+		//startServer(Dispatcher.class);
 		
-		startServer(Server2.class);
+		Dispatcher d = new Dispatcher();
+		Server1 s1 = new Server1();
+		Server2 s2 = new Server2();
+		d.start();
+		try {
+			s1.run(new String[0]);
+			s1.run(new String[0]);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+//		
+//		startServer(Server1.class);
+//		
+//		
+//		startServer(Server2.class);
+		
+	//	startServer(Client.class);
 	}
 
 	private static void startServer(Class<?/* extends BaseApplication*/> config) {
@@ -91,7 +112,7 @@ public class MultiApplication {
 	    					AppConfiguration.class, // the configuration of this application services and entities (see spring.services)
 	    					MainController.class // the main controller to supply the rest interface to the outside world
 	    			}, new String[0]); 
-	  	        
+	  	      
 	    	// Through this you can test if beans are available and 
 	    	// what result they return.
 //			 UserService us = ctx.getBean(UserService.class);
@@ -99,6 +120,7 @@ public class MultiApplication {
 //			 //see that this configuration does not drop our database
 	  		String s = ctx.getEnvironment().getProperty("javax.persistence.schema-generation.database.action");
 			System.out.println(s);
+			
 		});
 		
 		serverThread.start();

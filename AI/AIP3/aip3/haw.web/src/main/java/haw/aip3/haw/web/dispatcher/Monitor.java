@@ -29,6 +29,7 @@ public class Monitor extends Thread {
 	}
 
 	public void run() {
+		System.out.println(Monitor.class + " running.");
 		Socket s = null;
 		while (this.isAlive) {
 			try {

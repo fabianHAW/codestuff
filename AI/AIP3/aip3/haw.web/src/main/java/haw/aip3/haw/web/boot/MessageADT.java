@@ -27,6 +27,10 @@ public class MessageADT implements Serializable{
 	public boolean isAlive() {
 		return isAlive;
 	}
+	
+	public void setIsAlive(boolean b){
+		this.isAlive = b;
+	}
 
 	@Override
 	public int hashCode() {

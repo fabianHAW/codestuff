@@ -1,22 +1,29 @@
 package haw.aip3.haw.web.Client;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.UnknownHostException;
+
+import org.springframework.web.client.RestTemplate;
+
 
 import haw.aip3.haw.web.Client.Commands.CommandType;
+import haw.aip3.haw.web.boot.IsAliveThread2;
 
 public class Client extends Thread{
 
 	private boolean stop;
-	private ObjectOutputStream ooutput;
-	private Socket socket;
-	private OutputStream output;
+	private RestTemplate restTemplate;
+	private String dispatcherURL = "http://localhost:50001";
+	
 	
 	public Client() {
 		// TODO Auto-generated constructor stub
 		stop = false;
-		Socket = new Socket("127.0.0.1", 50000);
+		restTemplate = new RestTemplate();
+
 	}
 	
 	@Override
@@ -52,13 +59,16 @@ public class Client extends Thread{
 		System.out.println("Enter the Bauteil");
 		String bauteil = System.console().readLine();
 		//Auftrag erstellen
-		
+		String success = restTemplate.getForObject(dispatcherURL + "/kundenauftrag/{" + id + ","+ bauteil +"}", String.class, 1L);
+		System.out.println("Success: " + success);
 	}
 	
 	public void auftraegeEinsehen(){
 		System.out.println("Enter your customer id:");
 		String id = System.console().readLine();
 		//Aufträge einsehen
+		String success = restTemplate.getForObject(dispatcherURL + "/kundenauftrag/{" + id + "}", String.class, 1L);
+		System.out.println("Aufträge: " + success);
 	}
 	
 	public void usage(){

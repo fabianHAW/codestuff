@@ -1,5 +1,7 @@
 package haw.aip3.haw.web.controller;
 
+import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
+
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MainController {
 
 //	@Autowired
-//	private UserRepository userRepository;
+//	private AuftragsService auftragService;
 //	
 //	// Java 8 convenience in case we need a different format or different object keys in our json
 //	private static final Mapper<User> mapper = new Mapper<User>()  

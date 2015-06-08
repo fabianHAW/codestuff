@@ -17,7 +17,7 @@ public class IsAliveThread2 extends Thread{
 		// TODO Auto-generated constructor stub
 		this.server = server;
 		try {
-			socket = new Socket("127.0.0.1", 50000);
+			socket = new Socket("127.0.0.1", 50011);
 			output = socket.getOutputStream();
 			ooutput = new ObjectOutputStream(output);
 		} catch (IOException e) {
@@ -32,22 +32,24 @@ public class IsAliveThread2 extends Thread{
 		ArrayList<String> aliveMessage = new ArrayList<String>();
 		while(server.isAlive()){
 			
-			aliveMessage.add("server2");
-			aliveMessage.add("true");
-			
 			try {
+				MessageADT m = new MessageADT();
+				m.setIsAlive(true);
+				m.setSocket(new Socket(server.getSocket().getInetAddress(), server.getSocket().getLocalPort()));
+				ooutput.writeObject(m);
 				Thread.sleep(10000);
-			} catch (InterruptedException e) {
+			} catch (InterruptedException | IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				System.out.println("Sleep in " + IsAliveThread2.class + " interrupted");
 			}
 		}
 		
-		aliveMessage.add("server2");
-		aliveMessage.add("false");
-		
 		try {
+			MessageADT m = new MessageADT();
+			m.setIsAlive(true);
+			m.setSocket(new Socket(server.getSocket().getInetAddress(), server.getSocket().getLocalPort()));
+			ooutput.writeObject(m);
 			ooutput.writeObject(aliveMessage);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
