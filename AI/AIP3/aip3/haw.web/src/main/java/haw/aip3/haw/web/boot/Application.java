@@ -1,6 +1,7 @@
 package haw.aip3.haw.web.boot;
 
 import haw.aip3.haw.config.AppConfiguration;
+import haw.aip3.haw.services.StartupInitializer;
 import haw.aip3.haw.web.controller.MainController;
 
 import java.sql.SQLException;
@@ -24,7 +25,7 @@ public class Application {
     			new Object[]{
     					Application.class, // the application
     					AppConfiguration.class, // the configuration of this application services and entities (see spring.services)
-    					StartupInitializerWeb.class // the data population
+    					StartupInitializer.class // the data population
     					//MainController.class // the main controller to supply the rest interface to the outside world
     			}, args); 
   	        
