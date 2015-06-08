@@ -1,5 +1,7 @@
 package haw.aip3.haw.web.boot;
 
+import java.io.ObjectOutputStream;
+
 import haw.aip3.haw.web.boot.MultiApplication.BaseApplication;
 
 import org.springframework.boot.CommandLineRunner;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 public class Server1 extends BaseApplication implements CommandLineRunner{
 
 	IsAliveThread1 aliveThread;
+	private boolean isAlive;
+	private ObjectOutputStream out;
 	
 	public Server1() {
 		// TODO Auto-generated constructor stub
@@ -28,9 +32,15 @@ public class Server1 extends BaseApplication implements CommandLineRunner{
 	@Override
 	public void run(String... arg0) throws Exception {
 		// TODO Auto-generated method stub
-		aliveThread = new IsAliveThread1();
+		isAlive = true;
+		aliveThread = new IsAliveThread1(this);
+		aliveThread.start();
 		main(arg0);
 		
+	}
+	
+	public boolean isAlive(){
+		return isAlive;
 	}
 
 

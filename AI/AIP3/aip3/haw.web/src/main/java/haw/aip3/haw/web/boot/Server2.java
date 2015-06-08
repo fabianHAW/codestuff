@@ -15,20 +15,29 @@ import org.springframework.context.annotation.PropertySource;
 public class Server2 extends BaseApplication implements CommandLineRunner{
 
 	IsAliveThread2 aliveThread;
+	private boolean isAlive;
 	public Server2() {
 		// TODO Auto-generated constructor stub
 	}
 	
 
+	public static void main(String[] args){
+		System.out.println(Server2.class + " started");
+		
+		
+	}
+	
 	@Override
 	public void run(String... arg0) throws Exception {
 		// TODO Auto-generated method stub
-		aliveThread = new IsAliveThread2();
+		isAlive = true;
+		aliveThread = new IsAliveThread2(this);
+		aliveThread.start();
 		main(arg0);
 	}
 	
-	public static void main(String[] args){
-		System.out.println(Server2.class + " started");
+	public boolean isAlive(){
+		return isAlive;
 	}
 
 
