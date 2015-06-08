@@ -77,7 +77,7 @@ public class ProduktServiceTest {
 	@Test
 	public void erstelleEinfachesProdukt() {
 		this.produktService.erstelleEinfachesBauteil("einfachesBauteil1");
-		Bauteil b = this.bauteilRepo.findByName("einfachesBauteil1");
+		Bauteil b = this.bauteilRepo.findByName("einfachesBauteil1").get(0);
 		Assert.notNull(b);
 	}
 
@@ -88,7 +88,7 @@ public class ProduktServiceTest {
 		this.stuecklisteRepo.save(stueckliste);
 		this.produktService.erstelleKomplexesBauteil("komplexesBauteil1",
 				stueckliste, arbeitsplan);
-		Bauteil b = this.bauteilRepo.findByName("komplexesBauteil1");
+		Bauteil b = this.bauteilRepo.findByName("komplexesBauteil1").get(0);
 		Assert.notNull(b);
 	}
 
@@ -174,7 +174,7 @@ public class ProduktServiceTest {
 		Vorgang v = new Vorgang(VorgangArtTyp.BEREITSTELLUNG, 1, 2, 3);
 		ArrayList<Vorgang> vorgaenge = new ArrayList<Vorgang>(Arrays.asList(v));
 		this.produktService.erstelleEinfachesBauteil("einfachesBauteil1");
-		Bauteil b = this.bauteilRepo.findByName("einfachesBauteil1");
+		Bauteil b = this.bauteilRepo.findByName("einfachesBauteil1").get(0);
 		
 		Arbeitsplan a1 = new Arbeitsplan(b, vorgaenge);
 		Assert.isNull(a1.getNr());

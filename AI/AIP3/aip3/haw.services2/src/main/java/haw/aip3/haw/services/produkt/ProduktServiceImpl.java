@@ -41,7 +41,7 @@ public class ProduktServiceImpl implements ProduktService {
 
 	@Override
 	public Bauteil findeBauteil(String name) {
-		return this.bauteilRepo.findByName(name);
+		return this.bauteilRepo.findByName(name).get(0);
 	}
 
 	@Override

@@ -2,6 +2,8 @@ package haw.aip3.haw.entities.produkt;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -17,10 +19,10 @@ public class KomplexesBauteil extends Bauteil {
 		this.arbeitsplan = arbeitsplan;
 	}
 
-	@OneToOne(cascade=CascadeType.ALL)
+	@ManyToOne(cascade=CascadeType.ALL)
 	Arbeitsplan arbeitsplan;
 	
-	@OneToOne(cascade=CascadeType.ALL)
+	@ManyToOne(cascade=CascadeType.ALL)
 	private Stueckliste stueckliste;
 
 	@Override

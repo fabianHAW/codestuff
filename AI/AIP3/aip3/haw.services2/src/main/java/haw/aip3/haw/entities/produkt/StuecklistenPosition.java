@@ -5,6 +5,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Type;
@@ -25,8 +27,9 @@ public class StuecklistenPosition {
 	@GeneratedValue
 	private long positionNr;
 
-	@OneToOne(targetEntity=Bauteil.class, cascade=CascadeType.ALL)
+	@ManyToOne(targetEntity=Bauteil.class, cascade=CascadeType.ALL)
 	Bauteil bauteil;
+	
 	
 	@Column
 	private String name;

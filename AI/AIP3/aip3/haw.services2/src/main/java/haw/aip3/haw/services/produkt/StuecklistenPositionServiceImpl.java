@@ -20,7 +20,7 @@ public class StuecklistenPositionServiceImpl implements StuecklistenPositionServ
 
 	@Override
 	public StuecklistenPosition getStuecklistenPosition(String name) {
-		return this.stuecklistenPositionRepo.findByName(name);		
+		return this.stuecklistenPositionRepo.findByName(name).get(0);		
 	}
 
 }

@@ -1,6 +1,7 @@
 package haw.aip3.haw.web.boot;
 
 import haw.aip3.haw.config.AppConfiguration;
+import haw.aip3.haw.services.StartupInitializer;
 import haw.aip3.haw.web.controller.MainController;
 
 import java.sql.SQLException;
@@ -41,7 +42,13 @@ public class MultiApplication {
 	@EnableAutoConfiguration
 	@ConfigurationProperties(prefix="application1") // the port property is prefixed by the application name
 	@PropertySource("classpath:application-nodump.properties") // different properties for different spring contexts.
-	public static class Application1 extends BaseApplication {}
+	public static class Application1 extends BaseApplication {
+		public static Server1 server;
+		
+		public Application1(){
+			server = new Server1();
+		}
+	}
 	
 	@Configuration
 	@EnableAutoConfiguration
@@ -62,7 +69,7 @@ public class MultiApplication {
 		try(ConfigurableApplicationContext ctx = new AnnotationConfigApplicationContext(
 				DatabaseSetupConfiguration.class, // the application
 				AppConfiguration.class, // the configuration of this application services and entities (see spring.services)
-				StartupInitializerWeb.class // the data population
+				StartupInitializer.class // the data population
 			)) {
 //			UserService us = ctx.getBean(UserService.class);
 //	  		System.out.println("users with 'm': "+us.getUsers("m"));
@@ -70,12 +77,13 @@ public class MultiApplication {
 			System.out.println(s);
 		}
 		
-		startServer(Application1.class);
+		startServer(Server1.class);
 		
-		//startServer(Application2.class);
+		startServer(Server2.class);
 	}
 
 	private static void startServer(Class<?/* extends BaseApplication*/> config) {
+		
 		Thread serverThread = new Thread(()->{
 	    	ConfigurableApplicationContext ctx = SpringApplication.run(
 	    			new Object[]{
@@ -86,12 +94,13 @@ public class MultiApplication {
 	  	        
 	    	// Through this you can test if beans are available and 
 	    	// what result they return.
-//	    	UserService us = ctx.getBean(UserService.class);
-//	  		System.out.println("users with 'm': "+us.getUsers("m"));
-	  		// see that this configuration does not drop our database
+//			 UserService us = ctx.getBean(UserService.class);
+//			 System.out.println("users with 'm': "+us.getUsers("m"));
+//			 //see that this configuration does not drop our database
 	  		String s = ctx.getEnvironment().getProperty("javax.persistence.schema-generation.database.action");
 			System.out.println(s);
 		});
+		
 		serverThread.start();
 	}
 }

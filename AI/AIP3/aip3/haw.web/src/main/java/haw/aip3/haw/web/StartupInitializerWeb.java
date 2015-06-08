@@ -1,4 +1,4 @@
-package haw.aip3.haw.web.boot;
+package haw.aip3.haw.web;
 
 import haw.aip3.haw.repositories.produkt.BauteilRepository;
 import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
