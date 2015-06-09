@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Configuration
-@EnableAutoConfiguration
-@ConfigurationProperties(prefix = "dispatcher")
-// the port property is prefixed by the application name
-@PropertySource("classpath:application-nodump.properties")
+//@Configuration
+//@EnableAutoConfiguration
+//@ConfigurationProperties(prefix = "dispatcher")
+//// the port property is prefixed by the application name
+//@PropertySource("classpath:application-nodump.properties")
 public class Dispatcher extends Thread implements CommandLineRunner{
 
 	private Monitor monitor;

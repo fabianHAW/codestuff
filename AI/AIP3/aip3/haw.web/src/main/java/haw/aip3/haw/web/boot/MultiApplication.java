@@ -46,11 +46,11 @@ public class MultiApplication {
 	@ConfigurationProperties(prefix="application1") // the port property is prefixed by the application name
 	@PropertySource("classpath:application-nodump.properties") // different properties for different spring contexts.
 	public static class Application1 extends BaseApplication {
-		public static Server1 server;
-		
-		public Application1(){
-			server = new Server1();
-		}
+//		public static Server1 server;
+//		
+//		public Application1(){
+//			server = new Server1();
+//		}
 	}
 	
 	@Configuration
@@ -82,18 +82,19 @@ public class MultiApplication {
 		
 		//startServer(Dispatcher.class);
 		
-		Dispatcher d = new Dispatcher();
-		Server1 s1 = new Server1();
-		Server2 s2 = new Server2();
-		d.start();
-		try {
-			s1.run(new String[0]);
-			s1.run(new String[0]);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+//		Dispatcher d = new Dispatcher();
+//		Server1 s1 = new Server1();
+//		Server2 s2 = new Server2();
+//		d.start();
+//		try {
+//			s1.run(new String[0]);
+//			s1.run(new String[0]);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		startServer(Application1.class);
+		startServer(Application2.class);
 //		
 //		startServer(Server1.class);
 //		

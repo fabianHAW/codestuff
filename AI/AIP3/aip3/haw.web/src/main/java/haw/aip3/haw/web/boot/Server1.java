@@ -20,12 +20,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
-@Configuration
-@EnableAutoConfiguration
-@ConfigurationProperties(prefix = "server1")
-// the port property is prefixed by the application name
-@PropertySource("classpath:application-nodump.properties")
-// different properties for different spring contexts.
+//@Configuration
+//@EnableAutoConfiguration
+//@ConfigurationProperties(prefix = "server1")
+//// the port property is prefixed by the application name
+//@PropertySource("classpath:application-nodump.properties")
+//// different properties for different spring contexts.
 public class Server1 extends BaseApplication implements CommandLineRunner {
 
 	IsAliveThread1 aliveThread;
