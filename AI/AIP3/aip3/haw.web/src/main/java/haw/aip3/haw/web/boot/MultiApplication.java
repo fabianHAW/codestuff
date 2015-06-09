@@ -1,9 +1,8 @@
 package haw.aip3.haw.web.boot;
 
 import haw.aip3.haw.config.AppConfiguration;
-import haw.aip3.haw.services.StartupInitializer;
+import haw.aip3.haw.web.StartupInitializerWeb;
 import haw.aip3.haw.web.controller.MainController;
-import haw.aip3.haw.web.dispatcher.Dispatcher;
 
 import java.sql.SQLException;
 
@@ -19,7 +18,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-import ch.qos.logback.core.net.server.Client;
 
 
 public class MultiApplication {
@@ -44,7 +42,7 @@ public class MultiApplication {
 	@Configuration
 	@EnableAutoConfiguration
 	@ConfigurationProperties(prefix="application1") // the port property is prefixed by the application name
-	@PropertySource("classpath:application-nodump.properties") // different properties for different spring contexts.
+	@PropertySource("classpath:application-dump.properties") // different properties for different spring contexts.
 	public static class Application1 extends BaseApplication {
 //		public static Server1 server;
 //		
@@ -72,7 +70,7 @@ public class MultiApplication {
 		try(ConfigurableApplicationContext ctx = new AnnotationConfigApplicationContext(
 				DatabaseSetupConfiguration.class, // the application
 				AppConfiguration.class, // the configuration of this application services and entities (see spring.services)
-				StartupInitializer.class // the data population
+				StartupInitializerWeb.class // the data population
 			)) {
 //			UserService us = ctx.getBean(UserService.class);
 //	  		System.out.println("users with 'm': "+us.getUsers("m"));
