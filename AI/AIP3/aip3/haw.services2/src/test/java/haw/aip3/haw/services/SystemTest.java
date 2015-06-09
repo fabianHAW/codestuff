@@ -87,8 +87,8 @@ public class SystemTest {
 		//Erzeuge Angebot
 		produktService.erstelleEinfachesBauteil("Rasenmaehermotorlöl");
 		produktService.erstelleEinfachesBauteil("Rasenmaeher-Motor");
-		EinfachesBauteil einfachesBauteil2 = (EinfachesBauteil) produktService.findeBauteil("Rasenmaehermotorlöl");//new EinfachesBauteil("Rasenmaehermotoröl");
-		EinfachesBauteil einfachesBauteil1 = (EinfachesBauteil) produktService.findeBauteil("Rasenmaeher-Motor");
+		EinfachesBauteil einfachesBauteil2 = /*(EinfachesBauteil) produktService.findeBauteil("Rasenmaehermotorlöl");//*/new EinfachesBauteil("Rasenmaehermotor1");
+		EinfachesBauteil einfachesBauteil1 = /*(EinfachesBauteil) produktService.findeBauteil("Rasenmaeher-Motor");*/new EinfachesBauteil("Rasenmaehermotor2");
 		
 		StuecklistenPosition stuecklistePosition1 = new StuecklistenPosition("StuecklistenPosition1", 2, einfachesBauteil1);
 		stuecklistePostionRepo.save(stuecklistePosition1);
@@ -104,7 +104,7 @@ public class SystemTest {
 		
 		ArrayList<Vorgang> vorgaenge = new ArrayList<Vorgang>(Arrays.asList(vorgang1));
 		Arbeitsplan arbeitsplan = new Arbeitsplan(null, vorgaenge);
-		arbeitsplanRepo.save(arbeitsplan);
+		//arbeitsplanRepo.save(arbeitsplan);
 		
 		produktService.erstelleKomplexesBauteil("Rasenmaeher", stueckliste, arbeitsplan);//new KomplexesBauteil("Rasenmaeher", stueckliste, arbeitsplan);
 		KomplexesBauteil bauteilKomplex = (KomplexesBauteil) produktService.findeBauteil("Rasenmaeher");
