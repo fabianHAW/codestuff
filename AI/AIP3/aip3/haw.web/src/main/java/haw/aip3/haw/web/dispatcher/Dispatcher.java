@@ -2,6 +2,7 @@ package haw.aip3.haw.web.dispatcher;
 
 import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
 import haw.aip3.haw.web.Client.Commands.CommandType;
+import haw.aip3.haw.web.boot.MultiApplication.BaseApplication;
 import haw.aip3.haw.web.boot.RequestADT;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 //@ConfigurationProperties(prefix = "dispatcher")
 //// the port property is prefixed by the application name
 //@PropertySource("classpath:application-nodump.properties")
-public class Dispatcher extends Thread implements CommandLineRunner{
+public class Dispatcher implements CommandLineRunner{
 
 	private Monitor monitor;
 	private ServerSocket serversocket;
@@ -39,14 +40,14 @@ public class Dispatcher extends Thread implements CommandLineRunner{
 	
 	
 	public Dispatcher() {
-		this.monitor = new Monitor();
-		this.monitor.start();
-		try {
-			this.serversocket = new ServerSocket(LISTENPORT);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		this.monitor = new Monitor();
+//		this.monitor.start();
+//		try {
+//			this.serversocket = new ServerSocket(LISTENPORT);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		this.isAlive = true;
 	}
 	
@@ -112,14 +113,14 @@ public class Dispatcher extends Thread implements CommandLineRunner{
 		
 		@Override
 		public void run(){
-			Socket s = this.monitor.getAliveServer();
-			try {
-				this.output = new ObjectOutputStream(s.getOutputStream());
-				this.output.writeObject(this.request);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			Socket s = this.monitor.getAliveServer();
+////			try {
+////				this.output = new ObjectOutputStream(s.getOutputStream());
+////				this.output.writeObject(this.request);
+////			} catch (IOException e) {
+////				// TODO Auto-generated catch block
+////				e.printStackTrace();
+////			}
 			
 		}
 	}

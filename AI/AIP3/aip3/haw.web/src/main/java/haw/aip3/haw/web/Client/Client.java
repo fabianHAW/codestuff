@@ -6,17 +6,31 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.client.RestTemplate;
+
+
+
 
 
 import haw.aip3.haw.web.Client.Commands.CommandType;
 import haw.aip3.haw.web.boot.IsAliveThread2;
 
-public class Client extends Thread{
+//@Configuration
+//@EnableAutoConfiguration
+//@ConfigurationProperties(prefix = "client")
+//// the port property is prefixed by the application name
+//@PropertySource("classpath:application-nodump.properties")
+//// different properties for different spring contexts.
+public class Client extends Thread implements CommandLineRunner{
 
 	private boolean stop;
 	private RestTemplate restTemplate;
-	private String dispatcherURL = "http://localhost:50001";
+	private String dispatcherURL = "http://localhost:8083";
 	
 	
 	public Client() {
@@ -77,6 +91,20 @@ public class Client extends Thread{
 	
 	public void stopRunning(){
 		this.stop = true;
+	}
+
+	@Override
+	public void run(String... arg0) throws Exception {
+		// TODO Auto-generated method stub
+		while(!stop){
+			System.out.print("Enter something:");
+			String input = System.console().readLine();
+			
+			CommandType ctype = Commands.whichCommand(input);
+			
+			executeCommand(ctype);
+		}
+		
 	}
 
 }

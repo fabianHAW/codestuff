@@ -3,6 +3,12 @@ package haw.aip3.haw.config;
 import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
 import haw.aip3.haw.entities.fertigungsverwaltung.Fertigungsauftrag;
 import haw.aip3.haw.entities.produkt.Bauteil;
+import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
+import haw.aip3.haw.services.auftragsverwaltung.AuftragsServiceImpl;
+import haw.aip3.haw.services.fertigungsverwaltung.FertigungService;
+import haw.aip3.haw.services.fertigungsverwaltung.FertiungServiceImpl;
+import haw.aip3.haw.services.produkt.ProduktService;
+import haw.aip3.haw.services.produkt.ProduktServiceImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,4 +100,20 @@ public class JPAConfiguration {
 		transactionManager.setEntityManagerFactory(emf);
 		return transactionManager;
 	}
+	
+	@Bean(name = "auftragsServiceImpl")
+	public AuftragsService auftragsService(){
+		return new AuftragsServiceImpl();
+	}
+	
+	@Bean(name = "produktServiceImpl")
+	public ProduktService produktService(){
+		return new ProduktServiceImpl();
+	}
+	
+	@Bean(name = "fertiungServiceImpl")
+	public FertigungService fertiungService(){
+		return new FertiungServiceImpl();
+	}
+	
 }

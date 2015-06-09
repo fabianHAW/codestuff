@@ -18,12 +18,12 @@ public class Monitor extends Thread {
 	Set<Socket> serverSet;
 
 	public Monitor() {
-		try {
-			this.serversocket = new ServerSocket(LISTENPORT);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			this.serversocket = new ServerSocket(LISTENPORT);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		this.isAlive = true;
 		this.serverSet = new HashSet<Socket>();
 	}
@@ -32,31 +32,31 @@ public class Monitor extends Thread {
 		System.out.println(Monitor.class + " running.");
 		Socket s = null;
 		while (this.isAlive) {
-			try {
-				s = this.serversocket.accept();
-				this.input = new ObjectInputStream(s.getInputStream());
-
-				MessageADT request = (MessageADT) this.input.readObject();
-				handleRequest(request);
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				s = this.serversocket.accept();
+//				this.input = new ObjectInputStream(s.getInputStream());
+//
+//				MessageADT request = (MessageADT) this.input.readObject();
+//				handleRequest(request);
+//
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
 		}
 		
-		try {
-			if (this.input != null)
-				this.input.close();
-			if (s != null)
-				s.close();
-			if (this.serversocket != null)
-				this.serversocket.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			if (this.input != null)
+//				this.input.close();
+//			if (s != null)
+//				s.close();
+//			if (this.serversocket != null)
+//				this.serversocket.close();
+//
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	private void handleRequest(MessageADT request) {

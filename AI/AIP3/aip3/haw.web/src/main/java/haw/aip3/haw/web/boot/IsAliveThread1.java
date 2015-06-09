@@ -1,5 +1,7 @@
 package haw.aip3.haw.web.boot;
 
+import haw.aip3.haw.web.boot.MultiApplication.Server1;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -13,17 +15,17 @@ public class IsAliveThread1 extends Thread{
 	private Socket socket;
 	private OutputStream output;
 	
-	public IsAliveThread1(Server1 server) {
+	public IsAliveThread1(Server1 application1) {
 		// TODO Auto-generated constructor stub
-		this.server = server;
-		try {
-			socket = new Socket("127.0.0.1", 50010);
-			output = socket.getOutputStream();
-			ooutput = new ObjectOutputStream(output);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.server = application1;
+//		try {
+//			socket = new Socket("127.0.0.1", 50010);
+//			output = socket.getOutputStream();
+//			ooutput = new ObjectOutputStream(output);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 	}
 	
@@ -33,18 +35,18 @@ public class IsAliveThread1 extends Thread{
 		while(server.isAlive()){
 			
 			
-			
-			try {
-				MessageADT m = new MessageADT();
-				m.setIsAlive(true);
-				m.setSocket(new Socket(server.getSocket().getInetAddress(), server.getSocket().getLocalPort()));
-				ooutput.writeObject(m);
-				Thread.sleep(10000);
-			} catch (InterruptedException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.out.println("Sleep in " + IsAliveThread2.class + " interrupted");
-			}
+//			
+//			try {
+//				MessageADT m = new MessageADT();
+//				m.setIsAlive(true);
+//				m.setSocket(new Socket(server.getSocket().getInetAddress(), server.getSocket().getLocalPort()));
+//				ooutput.writeObject(m);
+//				Thread.sleep(10000);
+//			} catch (InterruptedException | IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//				System.out.println("Sleep in " + IsAliveThread2.class + " interrupted");
+//			}
 		}
 		
 		

@@ -1,5 +1,7 @@
 package haw.aip3.haw.web.boot;
 
+import haw.aip3.haw.web.boot.MultiApplication.Server2;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -13,9 +15,9 @@ public class IsAliveThread2 extends Thread{
 	private Socket socket;
 	private OutputStream output;
 	
-	public IsAliveThread2(Server2 server) {
+	public IsAliveThread2(Server2 application2) {
 		// TODO Auto-generated constructor stub
-		this.server = server;
+		this.server = application2;
 		try {
 			socket = new Socket("127.0.0.1", 50011);
 			output = socket.getOutputStream();
@@ -31,18 +33,18 @@ public class IsAliveThread2 extends Thread{
 	public void run(){
 		ArrayList<String> aliveMessage = new ArrayList<String>();
 		while(server.isAlive()){
-			
-			try {
-				MessageADT m = new MessageADT();
-				m.setIsAlive(true);
-				m.setSocket(new Socket(server.getSocket().getInetAddress(), server.getSocket().getLocalPort()));
-				ooutput.writeObject(m);
-				Thread.sleep(10000);
-			} catch (InterruptedException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.out.println("Sleep in " + IsAliveThread2.class + " interrupted");
-			}
+//			
+//			try {
+//				MessageADT m = new MessageADT();
+//				m.setIsAlive(true);
+//				m.setSocket(new Socket(server.getSocket().getInetAddress(), server.getSocket().getLocalPort()));
+//				ooutput.writeObject(m);
+//				Thread.sleep(10000);
+//			} catch (InterruptedException | IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//				System.out.println("Sleep in " + IsAliveThread2.class + " interrupted");
+//			}
 		}
 		
 		try {
