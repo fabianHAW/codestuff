@@ -4,7 +4,6 @@ import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
 import haw.aip3.haw.entities.produkt.Bauteil;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,23 +14,22 @@ import javax.persistence.OneToOne;
 @Entity
 public class Fertigungsauftrag {
 
-	public Fertigungsauftrag(){
-		
+	public Fertigungsauftrag() {
+
 	}
-	
+
 	public Fertigungsauftrag(KundenAuftrag k) {
-		// TODO Auto-generated constructor stub
 		kundenAuftrag = k;
 	}
-	
+
 	@Id
 	@GeneratedValue
 	private Long nr;
-	
-	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.REFRESH)
+
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
 	private Bauteil bauteil;
-	
-	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.REFRESH)
+
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
 	private KundenAuftrag kundenAuftrag;
 
 	public Long getNr() {
@@ -71,55 +69,37 @@ public class Fertigungsauftrag {
 
 	@Override
 	public boolean equals(Object obj) {
-		System.out.println("0");
 		if (this == obj)
 			return true;
-		if (obj == null){
-		System.out.println("1");
+		if (obj == null) {
 			return false;
 		}
-		if (getClass() != obj.getClass())
-		{
-			System.out.println("2");
-				return false;
-			}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
 		Fertigungsauftrag other = (Fertigungsauftrag) obj;
 		if (bauteil == null) {
-			if (other.bauteil != null)
-			{
-				System.out.println("3");
-					return false;
-				}
-		} else if (!bauteil.equals(other.bauteil))
-		{
-			System.out.println("4");
+			if (other.bauteil != null) {
 				return false;
 			}
+		} else if (!bauteil.equals(other.bauteil)) {
+			return false;
+		}
 		if (kundenAuftrag == null) {
-			if (other.kundenAuftrag != null)
-			{
-				System.out.println("5");
-					return false;
-				}
-		} else if (!kundenAuftrag.equals(other.kundenAuftrag))
-		{
-			System.out.println("6");
+			if (other.kundenAuftrag != null) {
 				return false;
 			}
+		} else if (!kundenAuftrag.equals(other.kundenAuftrag)) {
+			return false;
+		}
 		if (nr == null) {
-			if (other.nr != null)
-			{
-				System.out.println("7");
-					return false;
-				}
-		} else if (!nr.equals(other.nr))
-		{
-			System.out.println("8");
+			if (other.nr != null) {
 				return false;
 			}
+		} else if (!nr.equals(other.nr)) {
+			return false;
+		}
 		return true;
 	}
-
-	
 
 }

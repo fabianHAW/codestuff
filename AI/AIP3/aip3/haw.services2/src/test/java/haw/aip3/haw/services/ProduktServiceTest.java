@@ -52,7 +52,6 @@ public class ProduktServiceTest {
 	public void erstelleEinfachesProdukt() {
 		Bauteil b = this.produktService
 				.erstelleEinfachesBauteil("einfachesBauteil1");
-		// Bauteil b = this.bauteilRepo.findByName("einfachesBauteil1").get(0);
 		Assert.notNull(b);
 	}
 
@@ -60,25 +59,19 @@ public class ProduktServiceTest {
 	public void erstelleKomplexesProdukt() {
 		Stueckliste stueckliste = this.produktService
 				.getStueckliste("Stueckliste1");
-		// Stueckliste stueckliste = new Stueckliste();
-		// Arbeitsplan arbeitsplan = new Arbeitsplan();
-		// this.stuecklisteRepo.save(stueckliste);
 		Bauteil b = this.produktService.erstelleKomplexesBauteil(
-				"komplexesBauteil1", stueckliste, null);
-		// Bauteil b = this.bauteilRepo.findByName("komplexesBauteil1").get(0);
+				"komplexesBauteil1", stueckliste,
+				this.produktService.getArbeitsplan(0L));
 		Assert.notNull(b);
 	}
 
 	@Test
 	public void findeBauteil() {
-		this.produktService.erstelleEinfachesBauteil("einfachesBauteil2");
-
-		// Stueckliste stueckliste = new Stueckliste();
-		// Arbeitsplan arbeitsplan = new Arbeitsplan();
+		Bauteil b = this.produktService
+				.erstelleEinfachesBauteil("einfachesBauteil2");
 		// 100 days = 8640000000 ms
 		StuecklistenPosition position = this.produktService
-				.erstelleStuecklistenPosition("stuecklistenPosition24", 394,
-						null);
+				.erstelleStuecklistenPosition("stuecklistenPosition24", 394, b);
 		Set<StuecklistenPosition> setPostionen = new HashSet<StuecklistenPosition>();
 		setPostionen.add(position);
 		Stueckliste stueckliste = this.produktService.erstelleStueckliste(
@@ -86,9 +79,8 @@ public class ProduktServiceTest {
 				new Date(System.currentTimeMillis() + 8640000000L),
 				setPostionen);
 
-		// this.stuecklisteRepo.save(stueckliste);
 		this.produktService.erstelleKomplexesBauteil("komplexesBauteil2",
-				stueckliste, null);
+				stueckliste, this.produktService.getArbeitsplan(0L));
 
 		Bauteil einfach = this.produktService.findeBauteil("einfachesBauteil2");
 		Bauteil komplex = this.produktService.findeBauteil("komplexesBauteil2");
@@ -99,23 +91,19 @@ public class ProduktServiceTest {
 
 	@Test
 	public void getBauteilMitFertigungsauftrag() {
-		// Fertigungsauftrag fa = new Fertigungsauftrag();
 		Fertigungsauftrag fa = this.fertigungsService.findFertigungsauftrag(1L);
 		Bauteil balt = this.produktService
 				.erstelleEinfachesBauteil("einfachesBauteil3");
 		fa.setBauteil(balt);
-		// this.fertigungsRepo.save(fa);
 		Bauteil bneu = this.produktService.getBauteil(fa);
 
 		Assert.notNull(bneu);
 	}
 
-	// Sinnvoll???
 	@Test
 	public void getBauteilMitBauteil() {
 		Bauteil b = this.produktService
 				.erstelleEinfachesBauteil("einfachesBauteil4");
-		// Bauteil b = this.produktService.findeBauteil("einfachesBauteil4");
 		Bauteil bNeu = this.produktService.getBauteil(b);
 
 		Assert.notNull(bNeu);
@@ -126,11 +114,9 @@ public class ProduktServiceTest {
 	// **********************************************************************
 	@Test
 	public void erstelleStuecklisteGetStueckliste() {
-		// StuecklistenPosition stuecklistenPosition = new StuecklistenPosition(
-		// "stuecklistenPosition1", 2, new EinfachesBauteil());
 		StuecklistenPosition stuecklistenPosition = this.produktService
-				.erstelleStuecklistenPosition("stuecklistenPosition1", 2, null);
-		// this.stuecklistePostionRepo.save(stuecklistenPosition);
+				.erstelleStuecklistenPosition("stuecklistenPosition1", 2,
+						this.produktService.findeBauteil("einfachesbauteil11"));
 
 		// 100 days = 8640000000 ms
 		this.produktService.erstelleStueckliste(
@@ -156,7 +142,8 @@ public class ProduktServiceTest {
 	@Test
 	public void erstelleStuecklistenPositionGetStuecklistenPosition() {
 		this.produktService.erstelleStuecklistenPosition(
-				"stuecklistenPosition2", 4, null);
+				"stuecklistenPosition2", 4,
+				this.produktService.findeBauteil("einfachesbauteil12"));
 		StuecklistenPosition s = this.produktService
 				.getStuecklistenPosition("stuecklistenPosition2");
 
@@ -170,19 +157,13 @@ public class ProduktServiceTest {
 
 	@Test
 	public void erstelleArbeitsplan() {
-		// Vorgang v = new Vorgang(VorgangArtTyp.BEREITSTELLUNG, 1, 2, 3);
 		Vorgang v = this.produktService.erstelleVorgang(VorgangArtTyp.MONTAGE,
 				20, 39, 49);
-		// vorgangRepo.save(v);
+
 		ArrayList<Vorgang> vorgaenge = new ArrayList<Vorgang>(Arrays.asList(v));
 		this.produktService.erstelleEinfachesBauteil("einfachesBauteil1");
-		// Bauteil b = this.bauteilRepo.findByName("einfachesBauteil1").get(0);
 
 		Arbeitsplan a1 = this.produktService.erstelleArbeitsplan(vorgaenge);
-		// Arbeitsplan a1 = new Arbeitsplan(b, vorgaenge);
-		// Arbeitsplan a1 = new Arbeitsplan(vorgaenge);
-
-		// arbeitsplanRepo.save(a1);
 
 		Assert.notNull(a1.getNr());
 
@@ -192,28 +173,18 @@ public class ProduktServiceTest {
 
 	@Test
 	public void erstelleArbeitsplaeneAusFertigungsauftrag() {
-		// Fertigungsauftrag f = new Fertigungsauftrag(
-		// auftragService.getAuftrag((long) 1));
 		Fertigungsauftrag f = this.fertigungsService
 				.createFertigungsAuftrag(this.auftragService.getAuftrag(1L));
 
-		// Vorgang v = new Vorgang(VorgangArtTyp.BEREITSTELLUNG, 1, 2, 3);
-		//Vorgang v = this.produktService.erstelleVorgang(
-		//		VorgangArtTyp.BEREITSTELLUNG, 1, 2, 3);
-		//ArrayList<Vorgang> vorgaenge = new ArrayList<Vorgang>(Arrays.asList(v));
-		this.produktService.erstelleEinfachesBauteil("einfachesBauteil1");
-
-		// StuecklistenPosition sp1 = new StuecklistenPosition(
-		// "Rasenmaeher-Motor", 1, new EinfachesBauteil());
+		Bauteil b = this.produktService.erstelleEinfachesBauteil("einfachesBauteil1");
 
 		StuecklistenPosition sp1 = this.produktService
-				.erstelleStuecklistenPosition("Rasenmaeher-Motor", 1, null);
+				.erstelleStuecklistenPosition("Rasenmaeher-Motor", 1, b);
 		StuecklistenPosition sp2 = this.produktService
-				.erstelleStuecklistenPosition("Platte1", 2, null);
+				.erstelleStuecklistenPosition("Platte1", 2, b);
 
 		StuecklistenPosition sp3 = this.produktService
-				.erstelleStuecklistenPosition("Platte2", 42, null);
-		// positionen1.add(sp1);
+				.erstelleStuecklistenPosition("Platte2", 42, b);
 
 		Set<StuecklistenPosition> positionen = new HashSet<StuecklistenPosition>(
 				Arrays.asList(sp1, sp2, sp3));
@@ -221,16 +192,9 @@ public class ProduktServiceTest {
 		Stueckliste sl = this.produktService.erstelleStueckliste("ABCD",
 				new Date(), new Date(System.currentTimeMillis() + 200300),
 				positionen);
-		// Stueckliste sl = new Stueckliste("ABCD", new Date(), new Date(
-		// System.currentTimeMillis() + 200300), positionen2);
-		// Falscher Entwurf: Arbeitsplan soll Bauteil im Konstruktor bekommen,
-		// aber
-		// Komplexes Bauteil soll Arbeitsplan im Konstruktor bekommen: Henne -
-		// Ei Problem.
-		// Arbeitsplan a1 = new Arbeitsplan(vorgaenge);
-		// Bauteil komplex = new KomplexesBauteil("Rasenmaeher", sl, a1);
+		
 		Bauteil komplex = this.produktService.erstelleKomplexesBauteil(
-				"Rasenmaeher", sl, null);
+				"Rasenmaeher", sl, this.produktService.getArbeitsplan(0L));
 		f.setBauteil(komplex);
 
 		List<Arbeitsplan> a2 = this.produktService.erstelleArbeitsplaene(f);

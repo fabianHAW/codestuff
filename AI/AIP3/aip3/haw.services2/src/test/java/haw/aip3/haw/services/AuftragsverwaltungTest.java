@@ -39,9 +39,8 @@ public class AuftragsverwaltungTest {
 	public void erstelleAngebot() {
 		// 2 days = 172800000 ms
 		Angebot a = this.auftragsService.erstelleAngebot(
-				bauteilService.findeBauteil("Bauteil1"),
+				this.bauteilService.findeBauteil("Bauteil1"),
 				new Date(System.currentTimeMillis() + 172800000), 2000);
-		//Angebot a = this.auftragsService.getAngebot(3);
 
 		boolean preis = false;
 		if (a.getPreis() == 2000)
@@ -52,7 +51,7 @@ public class AuftragsverwaltungTest {
 
 	@Test
 	public void getAngebot() {
-		Angebot a = auftragsService.getAngebot(1);
+		Angebot a = this.auftragsService.getAngebot(1);
 		Assert.notNull(a);
 	}
 
@@ -61,18 +60,17 @@ public class AuftragsverwaltungTest {
 	// **********************************************************************
 	@Test
 	public void erzeugeKundenAuftragGetAuftrag() {
-		KundenAuftrag ka =	this.auftragsService.erzeugeKundenAuftrag(this.auftragsService
-				.getAngebot(2));
-//		KundenAuftrag ka = this.auftragsService.getAuftrag(3L);
-		
+		KundenAuftrag ka = this.auftragsService
+				.erzeugeKundenAuftrag(this.auftragsService.getAngebot(2));
+
 		Assert.notNull(ka);
 	}
 
 	@Test
-	public void markiereAuftrag(){
+	public void markiereAuftrag() {
 		KundenAuftrag ka = this.auftragsService.getAuftrag(3L);
 		this.auftragsService.markiereAuftrag(ka);
-		
+
 		Assert.isTrue(ka.isAbgeschlossen());
 	}
 }

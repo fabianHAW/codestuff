@@ -32,10 +32,8 @@ public class KundenAuftrag {
 	@Column
 	private Date auftragsDatum;
 
-	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.REFRESH)
-	//@Column
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
 	private Angebot angebot;
-
 
 	public Long getAuftragsID() {
 		return auftragsID;
@@ -84,58 +82,40 @@ public class KundenAuftrag {
 
 	@Override
 	public boolean equals(Object obj) {
-		System.out.println("0a");
 		if (this == obj)
 			return true;
-		if (obj == null)
-		{
-			System.out.println("1");
-				return false;
-			}
-		if (getClass() != obj.getClass())
-		{
-			System.out.println("2");
-				return false;
-			}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
 		KundenAuftrag other = (KundenAuftrag) obj;
-		if (abgeschlossen != other.abgeschlossen)
-		{
-			System.out.println("3");
-				return false;
-			}
+		if (abgeschlossen != other.abgeschlossen) {
+			return false;
+		}
 		if (angebot == null) {
-			if (other.angebot != null)
-			{
-				System.out.println("4");
-					return false;
-				}
-		} else if (!angebot.equals(other.angebot))
-		{
-			System.out.println("4b");
+			if (other.angebot != null) {
 				return false;
 			}
+		} else if (!angebot.equals(other.angebot)) {
+			return false;
+		}
 		if (auftragsDatum == null) {
-			if (other.auftragsDatum != null)
-			{
-				System.out.println("5");
-					return false;
-				}
-		} else if (!auftragsDatum.equals(other.auftragsDatum))
-		{
-			System.out.println("6b");
+			if (other.auftragsDatum != null) {
+
 				return false;
 			}
+		} else if (!auftragsDatum.equals(other.auftragsDatum)) {
+			return false;
+		}
 		if (auftragsID == null) {
-			if (other.auftragsID != null)
-			{
-				System.out.println("7");
-					return false;
-				}
-		} else if (!auftragsID.equals(other.auftragsID))
-		{
-			System.out.println("8");
+			if (other.auftragsID != null) {
 				return false;
 			}
+		} else if (!auftragsID.equals(other.auftragsID)) {
+			return false;
+		}
 		return true;
 	}
 

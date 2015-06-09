@@ -5,11 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-
-import org.hibernate.annotations.Type;
 
 @Entity
 public class StuecklistenPosition {
@@ -27,10 +23,9 @@ public class StuecklistenPosition {
 	@GeneratedValue
 	private long positionNr;
 
-	@ManyToOne(targetEntity=Bauteil.class, cascade=CascadeType.ALL)
+	@ManyToOne(targetEntity = Bauteil.class, cascade = CascadeType.REFRESH)
 	Bauteil bauteil;
-	
-	
+
 	@Column
 	private String name;
 
@@ -61,7 +56,6 @@ public class StuecklistenPosition {
 		this.menge = menge;
 	}
 
-
 	public Bauteil getBauteil() {
 		return bauteil;
 	}
@@ -82,42 +76,28 @@ public class StuecklistenPosition {
 
 	@Override
 	public boolean equals(Object obj) {
-		System.out.println("0f");
 		if (this == obj)
 			return true;
-		if (obj == null)
-		{
-			System.out.println("1f");
-				return false;
-			}
-		if (getClass() != obj.getClass())
-		{
-			System.out.println("2f");
-				return false;
-			}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
 		StuecklistenPosition other = (StuecklistenPosition) obj;
 		if (bauteil == null) {
-			if (other.bauteil != null)
-			{
-				System.out.println("3f");
-					return false;
-				}
-		} else if (!bauteil.equals(other.bauteil))
-		{
-			System.out.println("4f");
+			if (other.bauteil != null) {
 				return false;
 			}
-		if (menge != other.menge)
-		{
-			System.out.println("5f");
-				return false;
-			}
-		if (positionNr != other.positionNr)
-		{
-			System.out.println("6f");
-				return false;
-			}
-		System.out.println("7f");
+		} else if (!bauteil.equals(other.bauteil)) {
+			return false;
+		}
+		if (menge != other.menge) {
+			return false;
+		}
+		if (positionNr != other.positionNr) {
+			return false;
+		}
 		return true;
 	}
 

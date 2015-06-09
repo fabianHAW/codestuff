@@ -3,7 +3,6 @@ package haw.aip3.haw.entities.produkt;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -13,16 +12,17 @@ public class KomplexesBauteil extends Bauteil {
 		super();
 	}
 
-	public KomplexesBauteil(String name, Stueckliste stueckliste, Arbeitsplan arbeitsplan) {
+	public KomplexesBauteil(String name, Stueckliste stueckliste,
+			Arbeitsplan arbeitsplan) {
 		super(name);
 		this.stueckliste = stueckliste;
 		this.arbeitsplan = arbeitsplan;
 	}
 
-	@OneToOne(cascade=CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.REFRESH)
 	Arbeitsplan arbeitsplan;
-	
-	@ManyToOne(cascade=CascadeType.REFRESH)
+
+	@ManyToOne(cascade = CascadeType.REFRESH)
 	private Stueckliste stueckliste;
 
 	@Override
@@ -51,28 +51,21 @@ public class KomplexesBauteil extends Bauteil {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
-		{
-			System.out.println("1e");
-				return false;
-			}
-		if (getClass() != obj.getClass())
-		{
-			System.out.println("2e");
-				return false;
-			}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
 		KomplexesBauteil other = (KomplexesBauteil) obj;
 		if (stueckliste == null) {
-			if (other.stueckliste != null)
-			{
-				System.out.println("3e");
-					return false;
-				}
-		} else if (!stueckliste.equals(other.stueckliste))
-		{
-			System.out.println("4e");
+			if (other.stueckliste != null) {
 				return false;
-			};
+			}
+		} else if (!stueckliste.equals(other.stueckliste)) {
+			return false;
+		}
+		;
 		return true;
 	}
 

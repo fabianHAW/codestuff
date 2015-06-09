@@ -14,7 +14,6 @@ import haw.aip3.haw.services.fertigungsverwaltung.FertigungService;
 import haw.aip3.haw.services.produkt.ProduktService;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -49,13 +48,16 @@ public class SystemTest {
 
 	@Test
 	public void mpsSzenario() {
-		// Erzeuge Angebot
-		produktService.erstelleEinfachesBauteil("Rasenmaehermotorlöl");
-		produktService.erstelleEinfachesBauteil("Rasenmaeher-Motor");
-		Bauteil einfachesBauteil2 = this.produktService
-				.erstelleEinfachesBauteil("Rasenmaehermotor1");
+		// // Erzeuge Angebot
 		Bauteil einfachesBauteil1 = this.produktService
-				.erstelleEinfachesBauteil("Rasenmaehermotor2");
+				.erstelleEinfachesBauteil("Rasenmaehermotorlöl");
+		Bauteil einfachesBauteil2 = this.produktService
+				.erstelleEinfachesBauteil("Rasenmaeher-Motor");
+
+		// Bauteil einfachesBauteil1 = this.produktService
+		// .erstelleEinfachesBauteil("Rasenmaehermotor1");
+		// Bauteil einfachesBauteil2 = this.produktService
+		// .erstelleEinfachesBauteil("Rasenmaehermotor2");
 
 		StuecklistenPosition stuecklistePosition1 = this.produktService
 				.erstelleStuecklistenPosition("StuecklistenPosition1", 2,
@@ -64,24 +66,28 @@ public class SystemTest {
 				.erstelleStuecklistenPosition("StuecklistenPosition2", 1,
 						einfachesBauteil2);
 
-		Set<StuecklistenPosition> positionen = new HashSet<StuecklistenPosition>(
-				Arrays.asList(stuecklistePosition1, stuecklistenPosition2));
+		Set<StuecklistenPosition> positionen = new HashSet<StuecklistenPosition>();
+
+		positionen.add(stuecklistePosition1);
+		positionen.add(stuecklistenPosition2);
+
 		Stueckliste stueckliste = this.produktService.erstelleStueckliste(
 				"Stueckliste111", new Date(),
 				new Date(System.currentTimeMillis() + (long) 259200000),
 				positionen);
 
-		Vorgang vorgang1 = this.produktService.erstelleVorgang(
-				VorgangArtTyp.BEREITSTELLUNG, 1, 2, 3);
-
-		ArrayList<Vorgang> vorgaenge = new ArrayList<Vorgang>(
-				Arrays.asList(vorgang1));
+		ArrayList<Vorgang> vorgaenge = new ArrayList<Vorgang>();
+		vorgaenge.add(this.produktService.erstelleVorgang(
+				VorgangArtTyp.MONTAGE, 4, 5, 6));
+		vorgaenge.add(this.produktService.erstelleVorgang(
+				VorgangArtTyp.BEREITSTELLUNG, 1, 2, 3));
 
 		Arbeitsplan arbeitsplan = this.produktService
 				.erstelleArbeitsplan(vorgaenge);
 
 		Bauteil bauteilKomplex = this.produktService.erstelleKomplexesBauteil(
 				"Rasenmaeher", stueckliste, arbeitsplan);
+
 		// new KomplexesBauteil("Rasenmaeher", stueckliste,
 		// arbeitsplan);
 		// KomplexesBauteil bauteilKomplex = (KomplexesBauteil) produktService

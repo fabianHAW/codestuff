@@ -1,11 +1,11 @@
 package haw.aip3.haw.services.fertigungsverwaltung;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
 import haw.aip3.haw.entities.fertigungsverwaltung.Fertigungsauftrag;
 import haw.aip3.haw.repositories.fertigungsverwaltung.FertigungsauftragRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class FertiungServiceImpl implements FertigungService {
@@ -23,9 +23,9 @@ public class FertiungServiceImpl implements FertigungService {
 	public boolean saveFertigungsAuftrag(Fertigungsauftrag f) {
 		// TODO Auto-generated method stub
 		repo.save(f);
-		if(repo.exists(f.getNr()))
+		if (repo.exists(f.getNr()))
 			return true;
-	
+
 		return false;
 	}
 
@@ -39,9 +39,9 @@ public class FertiungServiceImpl implements FertigungService {
 	public boolean deleteFertigungsauftrag(long faNr) {
 		// TODO Auto-generated method stub
 		repo.delete(faNr);
-		if(repo.exists(faNr))
+		if (repo.exists(faNr))
 			return false;
-		
+
 		return true;
 	}
 

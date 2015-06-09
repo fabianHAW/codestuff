@@ -8,19 +8,20 @@ import javax.persistence.Id;
 @Entity
 public abstract class Bauteil {
 
-	public Bauteil(){}
-	
-	public Bauteil(String name){
+	public Bauteil() {
+	}
+
+	public Bauteil(String name) {
 		this.name = name;
 	}
-	
+
 	@Id
 	@GeneratedValue
 	private long bauteilNr;
-	
+
 	@Column
 	private String name;
-	
+
 	public abstract boolean hasStueckliste();
 
 	public long getBauteilNr() {
@@ -52,35 +53,24 @@ public abstract class Bauteil {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-		{
-			System.out.println("1d");
-				return false;
-			}
-		if (getClass() != obj.getClass())
-		{
-			System.out.println("2d");
-				return false;
-			}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
 		Bauteil other = (Bauteil) obj;
-		if (bauteilNr != other.bauteilNr)
-		{
-			System.out.println("3d");
-				return false;
-			}
+		if (bauteilNr != other.bauteilNr) {
+			return false;
+		}
 		if (name == null) {
-			if (other.name != null)
-			{
-				System.out.println("4d");
-					return false;
-				}
-		} else if (!name.equals(other.name))
-		{
-			System.out.println("5d");
+			if (other.name != null) {
 				return false;
 			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
 		return true;
 	}
-	
-	
+
 }

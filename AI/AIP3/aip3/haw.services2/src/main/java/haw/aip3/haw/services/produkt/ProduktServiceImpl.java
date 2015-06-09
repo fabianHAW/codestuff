@@ -1,13 +1,5 @@
 package haw.aip3.haw.services.produkt;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import haw.aip3.haw.entities.fertigungsverwaltung.Fertigungsauftrag;
 import haw.aip3.haw.entities.produkt.Arbeitsplan;
 import haw.aip3.haw.entities.produkt.Bauteil;
@@ -23,6 +15,14 @@ import haw.aip3.haw.repositories.produkt.ArbeitsplanRepository;
 import haw.aip3.haw.repositories.produkt.BauteilRepository;
 import haw.aip3.haw.repositories.produkt.StuecklisteRepository;
 import haw.aip3.haw.repositories.produkt.StuecklistenPostionRepository;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProduktServiceImpl implements ProduktService {
@@ -45,7 +45,6 @@ public class ProduktServiceImpl implements ProduktService {
 	@Autowired
 	private StuecklisteRepository stuecklisteRepo;
 
-
 	@Override
 	public Bauteil erstelleKomplexesBauteil(String name,
 			Stueckliste stueckliste, Arbeitsplan arbeitsplan) {
@@ -65,7 +64,8 @@ public class ProduktServiceImpl implements ProduktService {
 
 	@Override
 	public Bauteil getBauteil(Fertigungsauftrag fa) {
-		return this.fertigungsRepo.findOne(fa.getNr()).getKundenAuftrag().getAngebot().getBauteil();
+		return this.fertigungsRepo.findOne(fa.getNr()).getKundenAuftrag()
+				.getAngebot().getBauteil();
 	}
 
 	@Override
@@ -87,12 +87,9 @@ public class ProduktServiceImpl implements ProduktService {
 
 	@Override
 	public List<Arbeitsplan> erstelleArbeitsplaene(Fertigungsauftrag fa) {
-		// TODO Auto-generated method stub
 		if (fa.getBauteil() == null)
 			return new ArrayList<Arbeitsplan>(getPlaene(fa.getKundenAuftrag()
 					.getAngebot().getBauteil()));
-		// TODO Statt Bauteil direkt aus Fertigungsauftrag -> Bauteil aus
-		// Angebot - Tests anpassen.
 		return new ArrayList<Arbeitsplan>(getPlaene(fa.getBauteil()));
 	}
 
@@ -109,7 +106,7 @@ public class ProduktServiceImpl implements ProduktService {
 	}
 
 	@Override
-	public Arbeitsplan erstelleArbeitsplan(ArrayList<Vorgang> vorgaenge) {
+	public Arbeitsplan erstelleArbeitsplan(List<Vorgang> vorgaenge) {
 		return this.arbeitsplanRepo.save(new Arbeitsplan(vorgaenge));
 	}
 
@@ -124,23 +121,24 @@ public class ProduktServiceImpl implements ProduktService {
 		return this.vorgangRepo.save(new Vorgang(typ, ruestzeit, maschinenzeit,
 				personenzeit));
 	}
-	
-	
+
 	@Override
-	public StuecklistenPosition erstelleStuecklistenPosition(String name, int menge, Bauteil b) {
-		return this.stuecklistenPositionRepo.save(new StuecklistenPosition(name, menge, b));
+	public StuecklistenPosition erstelleStuecklistenPosition(String name,
+			int menge, Bauteil b) {
+		return this.stuecklistenPositionRepo.save(new StuecklistenPosition(
+				name, menge, b));
 	}
 
 	@Override
 	public StuecklistenPosition getStuecklistenPosition(String name) {
-		return this.stuecklistenPositionRepo.findByName(name).get(0);		
+		return this.stuecklistenPositionRepo.findByName(name).get(0);
 	}
-	
+
 	@Override
 	public Stueckliste erstelleStueckliste(String name, Date gueltigAb,
 			Date gueltigBis, Set<StuecklistenPosition> position) {
-		return this.stuecklisteRepo.save(new Stueckliste(name, gueltigAb, gueltigBis,
-				position));
+		return this.stuecklisteRepo.save(new Stueckliste(name, gueltigAb,
+				gueltigBis, position));
 	}
 
 	@Override
