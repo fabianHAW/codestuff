@@ -9,8 +9,6 @@ import java.util.Date;
 public interface AuftragsService {
 	public Angebot erstelleAngebot(Bauteil bauteil, Date gueltigBis, double preis);
 	
-	public void erstelleAngebot(int kundenID, String bauteil);
-	
 	public Angebot getAngebot(long angebotNr);
 	
 	public KundenAuftrag erzeugeKundenAuftrag(Angebot a);
@@ -18,6 +16,4 @@ public interface AuftragsService {
 	public void markiereAuftrag(KundenAuftrag ka);
 	
 	public KundenAuftrag getAuftrag(Long id);
-	
-	public void updateAuftrag(KundenAuftrag ka);
 }

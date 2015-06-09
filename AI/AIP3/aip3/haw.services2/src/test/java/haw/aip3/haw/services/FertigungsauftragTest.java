@@ -35,7 +35,8 @@ public class FertigungsauftragTest {
 	
 	@Test
 	public void createFertigungsAuftrag(){
-		KundenAuftrag ka = new KundenAuftrag();
+		//KundenAuftrag ka = new KundenAuftrag();
+		KundenAuftrag ka = this.kundenAuftragService.getAuftrag(2L);
 		Fertigungsauftrag fa = fertigungService.createFertigungsAuftrag(ka);
 		Assert.notNull(fa);
 	}
