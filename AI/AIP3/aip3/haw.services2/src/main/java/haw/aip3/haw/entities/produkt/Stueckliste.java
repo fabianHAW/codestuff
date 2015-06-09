@@ -45,7 +45,7 @@ public class Stueckliste {
 	@Column
 	private Date gueltigBis;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.REFRESH)
 	//@ElementCollection(targetClass = StuecklistenPosition.class)
 	private Set<StuecklistenPosition> position;
 

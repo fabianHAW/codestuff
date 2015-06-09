@@ -28,10 +28,10 @@ public class Fertigungsauftrag {
 	@GeneratedValue
 	private Long nr;
 	
-	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.REFRESH)
 	private Bauteil bauteil;
 	
-	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.REFRESH)
 	private KundenAuftrag kundenAuftrag;
 
 	public Long getNr() {

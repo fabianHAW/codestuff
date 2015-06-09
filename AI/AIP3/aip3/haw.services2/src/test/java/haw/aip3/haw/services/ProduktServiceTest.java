@@ -16,7 +16,9 @@ import haw.aip3.haw.entities.produkt.Stueckliste;
 import haw.aip3.haw.entities.produkt.StuecklistenPosition;
 import haw.aip3.haw.entities.produkt.Vorgang;
 import haw.aip3.haw.entities.produkt.Vorgang.VorgangArtTyp;
+import haw.aip3.haw.repositories.auftragsverwaltung.AngebotRepository;
 import haw.aip3.haw.repositories.fertigungsverwaltung.FertigungsauftragRepository;
+import haw.aip3.haw.repositories.fertigungsverwaltung.VorgangRepository;
 import haw.aip3.haw.repositories.produkt.ArbeitsplanRepository;
 import haw.aip3.haw.repositories.produkt.BauteilRepository;
 import haw.aip3.haw.repositories.produkt.StuecklisteRepository;
@@ -70,6 +72,12 @@ public class ProduktServiceTest {
 
 	@Autowired
 	private AuftragsService auftragService;
+	
+	@Autowired
+	private AngebotRepository angebotRepo;
+	
+	@Autowired
+	private VorgangRepository vorgangRepo;
 	
 	// **********************************************************************
 	// ************************BauteileTests*********************************
@@ -172,14 +180,16 @@ public class ProduktServiceTest {
 	@Test
 	public void erstelleArbeitsplan(){
 		Vorgang v = new Vorgang(VorgangArtTyp.BEREITSTELLUNG, 1, 2, 3);
+		vorgangRepo.save(v);
 		ArrayList<Vorgang> vorgaenge = new ArrayList<Vorgang>(Arrays.asList(v));
 		this.produktService.erstelleEinfachesBauteil("einfachesBauteil1");
 		Bauteil b = this.bauteilRepo.findByName("einfachesBauteil1").get(0);
 		
 		Arbeitsplan a1 = new Arbeitsplan(b, vorgaenge);
-		Assert.isNull(a1.getNr());
 		
+		Assert.isNull(a1.getNr());
 		arbeitsplanRepo.save(a1);
+	
 		Assert.isTrue(a1.getNr() != null);
 		
 		Arbeitsplan a2 = arbeitsplanRepo.findOne(a1.getNr());

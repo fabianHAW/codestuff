@@ -45,7 +45,7 @@ public class Angebot {
 	@Column
 	private double preis;
 	
-	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.REFRESH)
 	private Bauteil bauteil;
 	
 	@Column

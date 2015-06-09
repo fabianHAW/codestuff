@@ -32,7 +32,7 @@ public class KundenAuftrag {
 	@Column
 	private Date auftragsDatum;
 
-	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.REFRESH)
 	//@Column
 	private Angebot angebot;
 

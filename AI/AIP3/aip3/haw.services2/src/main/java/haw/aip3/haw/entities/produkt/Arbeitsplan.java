@@ -51,7 +51,7 @@ public class Arbeitsplan {
 	@OneToOne(fetch=FetchType.EAGER)
 	private Bauteil bauteil;
 
-	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.REFRESH)
 	@ElementCollection(targetClass=Vorgang.class)
 	List<Vorgang> besteht_aus;
 

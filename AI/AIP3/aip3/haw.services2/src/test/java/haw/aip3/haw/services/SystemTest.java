@@ -19,6 +19,7 @@ import haw.aip3.haw.entities.produkt.StuecklistenPosition;
 import haw.aip3.haw.entities.produkt.Vorgang;
 import haw.aip3.haw.entities.produkt.Vorgang.VorgangArtTyp;
 import haw.aip3.haw.repositories.fertigungsverwaltung.FertigungsauftragRepository;
+import haw.aip3.haw.repositories.fertigungsverwaltung.VorgangRepository;
 import haw.aip3.haw.repositories.produkt.ArbeitsplanRepository;
 import haw.aip3.haw.repositories.produkt.BauteilRepository;
 import haw.aip3.haw.repositories.produkt.StuecklisteRepository;
@@ -77,27 +78,46 @@ public class SystemTest {
 	@Autowired
 	private FertigungService fertigungService;
 	
+	@Autowired
+	private VorgangRepository vorgangRepo;
+	
+	
 	@Test 
 	public void mpsSzenario(){
 		//Erzeuge Angebot
-		EinfachesBauteil einfachesBauteil2 = new EinfachesBauteil("Rasenmaehermotoröl");
-		EinfachesBauteil einfachesBauteil1 = new EinfachesBauteil("Rasenmaeher-Motor");
+		produktService.erstelleEinfachesBauteil("Rasenmaehermotorlöl");
+		produktService.erstelleEinfachesBauteil("Rasenmaeher-Motor");
+		EinfachesBauteil einfachesBauteil2 = (EinfachesBauteil) produktService.findeBauteil("Rasenmaehermotorlöl");//new EinfachesBauteil("Rasenmaehermotoröl");
+		EinfachesBauteil einfachesBauteil1 = (EinfachesBauteil) produktService.findeBauteil("Rasenmaeher-Motor");
+		
 		StuecklistenPosition stuecklistePosition1 = new StuecklistenPosition("StuecklistenPosition1", 2, einfachesBauteil1);
+		stuecklistePostionRepo.save(stuecklistePosition1);
 		StuecklistenPosition stuecklistenPosition2 = new StuecklistenPosition("StuecklistenPosition2", 1, einfachesBauteil2);
+		stuecklistePostionRepo.save(stuecklistenPosition2);
+		
 		Set<StuecklistenPosition> positionen = new HashSet<StuecklistenPosition>(Arrays.asList(stuecklistePosition1, stuecklistenPosition2));
 		Stueckliste stueckliste = new Stueckliste("Stueckliste1", new Date(), new Date(System.currentTimeMillis() + (long)259200000), positionen);
+		stuecklisteRepo.save(stueckliste);
+		
 		Vorgang vorgang1 = new Vorgang(VorgangArtTyp.BEREITSTELLUNG, 1, 2, 3);
+		vorgangRepo.save(vorgang1);
+		
 		ArrayList<Vorgang> vorgaenge = new ArrayList<Vorgang>(Arrays.asList(vorgang1));
 		Arbeitsplan arbeitsplan = new Arbeitsplan(null, vorgaenge);
-		KomplexesBauteil bauteilKomplex = new KomplexesBauteil("Rasenmaeher", stueckliste, arbeitsplan);
-		Angebot angebot = new Angebot(bauteilKomplex, new Date(), new Date(System.currentTimeMillis() + (long)259200000), 199);
+		arbeitsplanRepo.save(arbeitsplan);
+		
+		produktService.erstelleKomplexesBauteil("Rasenmaeher", stueckliste, arbeitsplan);//new KomplexesBauteil("Rasenmaeher", stueckliste, arbeitsplan);
+		KomplexesBauteil bauteilKomplex = (KomplexesBauteil) produktService.findeBauteil("Rasenmaeher");
+		
+		Angebot angebot = auftragsService.erstelleAngebot(bauteilKomplex, new Date(), 199);//new Angebot(bauteilKomplex, new Date(), new Date(System.currentTimeMillis() + (long)259200000), 199);
+		
 		
 		//Erzeuge KundenAuftrag
-		KundenAuftrag kundenAuftrag = new KundenAuftrag(angebot, false, new Date());
+		KundenAuftrag kundenAuftrag = auftragsService.erzeugeKundenAuftrag(angebot);//new KundenAuftrag(angebot, false, new Date());
+		
 		
 		//Erzeuge Fertigungsauftrag
-		Fertigungsauftrag fertigungsauftrag = new Fertigungsauftrag(kundenAuftrag);
-		
+		Fertigungsauftrag fertigungsauftrag = fertigungService.createFertigungsAuftrag(kundenAuftrag);
 		fertigungService.saveFertigungsAuftrag(fertigungsauftrag);
 		Assert.isTrue(fertigungsauftrag.equals(fertigungService.findFertigungsauftrag(fertigungsauftrag.getNr())));
 		

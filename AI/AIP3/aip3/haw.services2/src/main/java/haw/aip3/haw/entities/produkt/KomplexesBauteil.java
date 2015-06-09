@@ -19,10 +19,10 @@ public class KomplexesBauteil extends Bauteil {
 		this.arbeitsplan = arbeitsplan;
 	}
 
-	@ManyToOne(cascade=CascadeType.ALL)
+	@OneToOne(cascade=CascadeType.ALL)
 	Arbeitsplan arbeitsplan;
 	
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne(cascade=CascadeType.REFRESH)
 	private Stueckliste stueckliste;
 
 	@Override
