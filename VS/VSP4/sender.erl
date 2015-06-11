@@ -1,20 +1,64 @@
 -module(sender).
--export([start/4]).
+-export([start/5]).
+-import(werkzeug, [openSe/2, openSeA/2, concatBinary/4, createBinaryT/1]).
 
 -define(NAME, "sender").
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, true).
 
-start(InterfaceName, MulticastAddr, ReceivePort, StationNumber) ->
-	MessageGenPID = spawn(messagegen, start, [self()]),
+start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
+	MessageGenPID = spawn(messagegen, start, [self(), StationClass]),
 	debug("messagegen spawned", ?DEBUG),
 	SendPort = ReceivePort + StationNumber,
 	PIDList = waitForInitialValues(MessageGenPID, []),
-	debug(PIDList, ?DEBUG).
+	
+	{_TimeSyncKey, TimeSyncPID} = lists:keyfind(timesyncpid, 1, PIDList),
+	{_SlotreservationKey, SlotReservationPID} = lists:keyfind(slotreservation, 1, PIDList),
+	
+	HostAddress = getHostAddress(InterfaceName),
+	%passiv
+	Socket = openSe(HostAddress, SendPort),
+	%aktiv
+	%Socket = openSeA(HostAddress, SendPort),
+	gen_udp:controlling_process(Socket, self()),
+	
+	process(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, false),
+	gen_udp:close(Socket),
+	MessageGenPID ! kill,
+	debug("messagegen killed", ?DEBUG),
+	debug("sender terminated", ?DEBUG).
 
+process(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, false) ->
+	receive 
+		{message, Message} ->		
+			{_StationClass, Slot, _Data} = Message,
+			CheckedSlot = checkSlot(lists:nth(1, binary_to_list(Slot)), SlotReservationPID),
+			
+			case CheckedSlot of
+				true ->
+					debug("detected collision", ?DEBUG);
+				false ->
+					%getauscht mit checkSlot
+					TimeSyncPID ! {getTime, self()},
+					receive
+						{currentTime, Timestamp} ->
+							debug("received new timestamp", ?DEBUG)
+					end,
+					
+					sendMulticast(Message, Socket, MulticastAddr, ReceivePort, Timestamp)
+			end,
+			Killed = false;
+		{nomessage} ->
+			debug("sendtime expired", ?DEBUG),
+			Killed = false;
+		kill ->
+			Killed = true
+	end,
+	process(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, Killed);
+process(_Socket, _HostAddress, _MulticastAddr, _ReceivePort, _TimeSyncPID, _SlotReservationPID, true) ->
+	debug("killed", ?DEBUG).
 
-
-waitForInitialValues(MessageGenPID, PIDList) when length(PIDList) == 2 ->
+waitForInitialValues(_MessageGenPID, PIDList) when length(PIDList) == 2 ->
 	PIDList;
 waitForInitialValues(MessageGenPID, PIDList) ->
 	receive
@@ -32,11 +76,24 @@ waitForInitialValues(MessageGenPID, PIDList) ->
 	waitForInitialValues(MessageGenPID, lists:append(PIDList, ListElement)).
 
 
-checkSlot(Slot) ->
-	ok.
+getHostAddress(InterfaceName) ->
+	{ok, IfAddr} = inet:getifaddrs(),
+	{_Interface, Addresses} = lists:keyfind(InterfaceName, 1, IfAddr),
+	{addr, HostAddress} = lists:keyfind(addr, 1, Addresses),
+	HostAddress.
 	
-sendMulticast(Message) ->
-	ok.
+checkSlot(Slot, SlotReservationPID) ->
+	SlotReservationPID ! {collision, Slot},
+	receive
+		{collision, CheckedSlot} ->
+			debug("received collisiondetection", ?DEBUG)
+	end,
+	CheckedSlot.
+	
+sendMulticast({StationClass, Slot, Data}, Socket, MulticastAddr, ReceivePort, Timestamp) ->
+	gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))),
+	debug("send multicast", ?DEBUG).
 
+	
 debug(Text, true) ->
 	io:format("sender_module: ~p~n", [Text]).

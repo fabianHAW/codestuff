@@ -7,7 +7,7 @@
 
 
 start(InterfaceName, MulticastAddr, ReceivePort, StationClass, UtcOffsetMs, StationNumber) ->
-	SenderPID = spawn(sender, start, [InterfaceName, MulticastAddr, ReceivePort, StationNumber]),
+	SenderPID = spawn(sender, start, [InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber]),
 	debug("sender spawned", ?DEBUG),
 	ReceiverPID = spawn(receiver, start, [InterfaceName, MulticastAddr, ReceivePort, SenderPID, StationClass, UtcOffsetMs]),
 	debug("receiver spawned", ?DEBUG),
