@@ -1,6 +1,6 @@
 -module(receiver).
 -import(werkzeug, [getUTC/0, openSe/2, openRec/3, logging/2]).
--export([delivery/3, init/3, start/6]).
+-export([delivery/3, init/4, start/6]).
 
 -define(NAME, "receiver").
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
@@ -13,25 +13,21 @@ start(InterfaceName, MulticastAddr, ReceivePort, SenderPID, StationClass, UtcOff
 	SlotReservationPID = spawn(slotreservation, start, [SenderPID]),
 	debug("slotreservation spawned", ?DEBUG),
 	ReceiverDeliveryPID = spawn(receiver, delivery, [stationAlive, SlotReservationPID, TimeSyncPID]),
-	spawn(receiver, init, [ReceivePort, ReceiverDeliveryPID, TimeSyncPID])
+	spawn(receiver, init, [InterfaceName, ReceivePort, ReceiverDeliveryPID, TimeSyncPID])
 .
 	
-
-
-
 getDataFromMulticast() ->
 	ok.
-
 
 debug(Text, true) ->
 	io:format("receiver_module: ~p~n", [Text]).
 
-
 %%%%%%%%%%%%%%%%%%%%%NEW%%%%%%%%%%%%%%%%%%%%%
 %Initialisiert den Socket und geht dann in die Schleife.
-init(ReceivePort, ReceiverDeliveryPID, TimeSyncPID) ->
+init(ReceivePort, InterfaceName, ReceiverDeliveryPID, TimeSyncPID) ->
 	{ok, Addr} = inet:getaddr(net_adm:localhost(), inet),
-	Socket = openSe(Addr, ReceivePort),
+	HostAddress = getHostAddress(InterfaceName),
+	Socket = openSe(HostAddress, ReceivePort),
 	SlotsUsed = initSlotPositions(25),
 	TimeSyncPID ! {getTime, self()},
 	receive
@@ -49,7 +45,7 @@ initSlotPositions(NumPos) ->
 %Initialisert die Liste mit den Slot-Positionen.
 %Hierbei gilt: Slot-Position = Slot-Nr.
 initSlotPositions(SlotsUsed, NumPos, Counter) when NumPos =< Counter ->
-	initSlotPositions([0] ++ SlotsUsed, NumPos, Counter + 1);
+	initSlotPositions(lists:append(SlotsUsed, [0]), NumPos, Counter + 1);
 initSlotPositions(SlotsUsed, _NumPos, _Counter) ->
 	SlotsUsed
 .
@@ -69,8 +65,7 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 			{SlotsUsedNew, NewTime} = isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID),
 			loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, NewTime, stationAlive)
 	end
-.
-			
+.	
 	
 %Stellt den Teil der Schleife dar, in dem geloggt wird.
 loop(corrupt, Collisions, Received, _Packet, _ReceiverDeliveryPID, TimeSyncPID) ->
@@ -190,4 +185,10 @@ delivery(stationAlive, SlotReservationPID, TimeSyncPID) ->
 			delivery(stationAlive, SlotReservationPID, TimeSyncPID)
 	end
 .
+
+getHostAddress(InterfaceName) ->
+	{ok, IfAddr} = inet:getifaddrs(),
+	{_Interface, Addresses} = lists:keyfind(InterfaceName, 1, IfAddr),
+	{addr, HostAddress} = lists:keyfind(addr, 1, Addresses),
+	HostAddress.
 			
