@@ -1,6 +1,6 @@
 -module(receiver).
--import(werkzeug, [getUTC/0, openSe/2, openRec/3, logging/2]).
--export([delivery/3, init/4, start/6]).
+-import(werkzeug, [getUTC/0, openSe/2, openSeA/2, openRec/3, openRecA/3, logging/2]).
+-export([delivery/3, init/5, start/6, loop/8]).
 
 -define(NAME, "receiver").
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
@@ -13,7 +13,7 @@ start(InterfaceName, MulticastAddr, ReceivePort, SenderPID, StationClass, UtcOff
 	SlotReservationPID = spawn(slotreservation, start, [SenderPID]),
 	debug("slotreservation spawned", ?DEBUG),
 	ReceiverDeliveryPID = spawn(receiver, delivery, [stationAlive, SlotReservationPID, TimeSyncPID]),
-	spawn(receiver, init, [InterfaceName, ReceivePort, ReceiverDeliveryPID, TimeSyncPID])
+	spawn(receiver, init, [InterfaceName, MulticastAddr, string:to_integer(atom_to_list(ReceivePort)), ReceiverDeliveryPID, TimeSyncPID])
 .
 	
 getDataFromMulticast() ->
@@ -24,15 +24,17 @@ debug(Text, true) ->
 
 %%%%%%%%%%%%%%%%%%%%%NEW%%%%%%%%%%%%%%%%%%%%%
 %Initialisiert den Socket und geht dann in die Schleife.
-init(ReceivePort, InterfaceName, ReceiverDeliveryPID, TimeSyncPID) ->
+init(InterfaceName, MulticastAddr, {ReceivePort, _}, ReceiverDeliveryPID, TimeSyncPID) ->
 	{ok, Addr} = inet:getaddr(net_adm:localhost(), inet),
 	HostAddress = getHostAddress(InterfaceName),
-	Socket = openSe(HostAddress, ReceivePort),
+	Socket = openRecA(MulticastAddr, HostAddress, ReceivePort),
+	gen_udp:controlling_process(Socket, self()),
 	SlotsUsed = initSlotPositions(25),
 	TimeSyncPID ! {getTime, self()},
 	receive
 		{currentTime, TimeStamp} ->
-			spawn(receiver, loop, [0,0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive])
+			debug("timestamp received", ?DEBUG),
+			spawn(receiver, loop, [0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive])
 	end
 .
 
@@ -56,9 +58,17 @@ initSlotPositions(SlotsUsed, _NumPos, _Counter) ->
 %entschieden ob es eine Kollision gab,
 %und protokolliert.
 loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive) ->
-	{ok, {Address, Port, Packet}} = gen_udp:recv(Socket, 34),
+	io:format("1~n",[]),
+	%{ok, {Address, Port, Packet}} = gen_udp:recv(Socket, 34),
+	receive	
+		{udp, _ReceiveSocket, Address, Port, Packet} -> 
+			io:format("1.5~n",[])
+	end,
+	io:format("2~n",[]),
 	{CollisionDetected, SlotsUsedNew} = getSlotNumber(SlotsUsed, Packet),
+	io:format("3~n",[]),
 	{CollisionsNew, ReceivdNew} = loop(CollisionDetected, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID),
+	io:format("4~n",[]),
 	TimeSyncPID ! {getTime, self()},
 	receive
 		{currentTime, CurrentTime} ->
@@ -188,7 +198,7 @@ delivery(stationAlive, SlotReservationPID, TimeSyncPID) ->
 
 getHostAddress(InterfaceName) ->
 	{ok, IfAddr} = inet:getifaddrs(),
-	{_Interface, Addresses} = lists:keyfind(InterfaceName, 1, IfAddr),
+	{_Interface, Addresses} = lists:keyfind(atom_to_list(InterfaceName), 1, IfAddr),
 	{addr, HostAddress} = lists:keyfind(addr, 1, Addresses),
 	HostAddress.
 			

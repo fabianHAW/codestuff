@@ -31,7 +31,7 @@ loop(FreeSlots, SenderPID) ->
 %Sendet den nächsten freien Slot an MessageGen oder {nextSlot, nok},
 %wenn kein freier Slot zur Verfügung steht.
 getNewSlot([]) ->
-	{[], {nextSlot, nok}};
+	{[], nok};
 getNewSlot([Next | Rest]) ->
 	{Rest, Next}
 .

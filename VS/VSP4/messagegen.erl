@@ -16,16 +16,14 @@ start(SenderPID, StationClass) ->
 	debug("getdatafromsource spawned", ?DEBUG),
 	
 	{_TimeSyncKey, TimeSyncPID} = lists:keyfind(timesyncpid, 1, PIDList),
-	{_SlotreservationKey, SlotReservationPID} = lists:keyfind(slotreservation, 1, PIDList),
+	{_SlotreservationKey, SlotReservationPID} = lists:keyfind(slotreservationpid, 1, PIDList),
 	
-	%initialen slot holen
-	SlotReservationPID ! {getSlot, self()},
-	receive 
-		{nextSlot, NewSlot} ->
-			debug("received initial slot", ?DEBUG)
-	end,
 	
-	process(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, NewSlot, false),
+	NewSlot = getInitialSlot(SlotReservationPID),
+	
+	io:format("~p~n", [NewSlot]),
+	
+	loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, NewSlot, false),
 	
 	exit(PufferPID, "messagegen killed"),
 	debug("puffer killed", ?DEBUG),
@@ -33,7 +31,7 @@ start(SenderPID, StationClass) ->
 	debug("getdatafromsource killed", ?DEBUG),
 	debug("messagegen terminated", ?DEBUG).
 	
-process(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlot, false) ->
+loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlot, false) ->
 	TimeSyncPID ! {getTime, self()},
 	receive 
 		{currentTime, Timestamp} ->
@@ -50,6 +48,9 @@ process(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, Old
 	waitSendtime(Sendtime),
 	SlotReservationPID ! {getSlot, self()},
 	receive 
+		%{nextSlot, nok} ->
+		%	debug("there is no next slot available", ?DEBUG),
+			
 		{nextSlot, NextSlot} ->
 			debug("received next slot", ?DEBUG),
 			_KilledNew = false;
@@ -59,8 +60,8 @@ process(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, Old
 	end,
 	{Message, KilledNewNew} = prepareMessage(NextSlot, StationClass, PufferPID),
 	SenderPID ! Message,
-	process(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, NextSlot, KilledNewNew);
-process(_PufferPID, _SenderPID, _StationClass, _TimeSyncPID, _SlotReservationPID, _OldSlot, true) ->
+	loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, NextSlot, KilledNewNew);
+loop(_PufferPID, _SenderPID, _StationClass, _TimeSyncPID, _SlotReservationPID, _OldSlot, true) ->
 	debug("killed", ?DEBUG).
 
 
@@ -93,6 +94,19 @@ waitForInitialValues(PIDList) ->
 			ListElement = [{slotreservationpid, SlotReservationPID}]
 	end,
 	waitForInitialValues(lists:append(PIDList, ListElement)).
+
+getInitialSlot(SlotReservationPID) ->
+	%initialen slot holen
+	SlotReservationPID ! {getSlot, self()},
+	receive 
+		{nextSlot, nok} ->
+			debug("there is no initial slot available", ?DEBUG),
+			timer:sleep(200000),
+			getInitialSlot(SlotReservationPID);
+		{nextSlot, NewSlot} ->
+			debug("received initial slot", ?DEBUG),
+			NewSlot
+	end.
 
 calcSendTime(Slot, Timestamp) ->
 	debug("calculate sendtime", ?DEBUG),

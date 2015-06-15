@@ -9,11 +9,13 @@
 start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 	MessageGenPID = spawn(messagegen, start, [self(), StationClass]),
 	debug("messagegen spawned", ?DEBUG),
-	SendPort = ReceivePort + StationNumber,
+	{ReceivePortNew, _} = string:to_integer(atom_to_list(ReceivePort)),
+	{StationNumberNew, _} = string:to_integer(atom_to_list(StationNumber)),
+	SendPort = ReceivePortNew + StationNumberNew,
 	PIDList = waitForInitialValues(MessageGenPID, []),
 	
 	{_TimeSyncKey, TimeSyncPID} = lists:keyfind(timesyncpid, 1, PIDList),
-	{_SlotreservationKey, SlotReservationPID} = lists:keyfind(slotreservation, 1, PIDList),
+	{_SlotreservationKey, SlotReservationPID} = lists:keyfind(slotreservationpid, 1, PIDList),
 	
 	HostAddress = getHostAddress(InterfaceName),
 	%passiv
@@ -22,13 +24,13 @@ start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 	%Socket = openSeA(HostAddress, SendPort),
 	gen_udp:controlling_process(Socket, self()),
 	
-	process(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, false),
+	loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, false),
 	gen_udp:close(Socket),
 	MessageGenPID ! kill,
 	debug("messagegen killed", ?DEBUG),
 	debug("sender terminated", ?DEBUG).
 
-process(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, false) ->
+loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, false) ->
 	receive 
 		{message, Message} ->		
 			{_StationClass, Slot, _Data} = Message,
@@ -54,8 +56,8 @@ process(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReserv
 		kill ->
 			Killed = true
 	end,
-	process(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, Killed);
-process(_Socket, _HostAddress, _MulticastAddr, _ReceivePort, _TimeSyncPID, _SlotReservationPID, true) ->
+	loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, Killed);
+loop(_Socket, _HostAddress, _MulticastAddr, _ReceivePort, _TimeSyncPID, _SlotReservationPID, true) ->
 	debug("killed", ?DEBUG).
 
 waitForInitialValues(_MessageGenPID, PIDList) when length(PIDList) == 2 ->
@@ -78,7 +80,7 @@ waitForInitialValues(MessageGenPID, PIDList) ->
 
 getHostAddress(InterfaceName) ->
 	{ok, IfAddr} = inet:getifaddrs(),
-	{_Interface, Addresses} = lists:keyfind(InterfaceName, 1, IfAddr),
+	{_Interface, Addresses} = lists:keyfind(atom_to_list(InterfaceName), 1, IfAddr),
 	{addr, HostAddress} = lists:keyfind(addr, 1, Addresses),
 	HostAddress.
 	

@@ -53,7 +53,7 @@ dataSource="DataSource32"
 #
 # Example: stationCmd="java aufgabe4.MyStation $interfaceName $mcastAddress $receivePort $stationClass"
 ########################################################################################################
-stationCmd="erl -setcookie kekse -noshell -s datasourcetest start"
+stationCmd="erl -setcookie kekse -noshell -s starter start $interfaceName $mcastAddress $receivePort $stationClass $UTCoffsetMs"
 
 
 printUsage() {
@@ -75,7 +75,7 @@ then
 				for i in `seq $firstIndex $lastIndex`
 				do
 					# Launching data source and station.
-					./$dataSource $teamNo $i | $stationCmd &
+					./$dataSource $teamNo $i 60000| $stationCmd $i &
 					#$dataSource $teamNo $i | $stationCmd &
 					#
 					# If your are annoyed by all the output, try this instead:

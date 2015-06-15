@@ -1,24 +1,30 @@
 -module(starter).
--export([start/6]).
+-export([start/1]).
 
 -define(NAME, "starter").
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, true).
+	
+start(ArgsList) ->
+	InterfaceName = lists:nth(1, ArgsList),
+	MulticastAddr = list_to_tuple([list_to_integer(X) || X <- string:tokens(atom_to_list(lists:nth(2, ArgsList)), [$.])]), 
+	ReceivePort = lists:nth(3, ArgsList), 
+	StationClass = lists:nth(4, ArgsList), 
+	UtcOffsetMs = lists:nth(5, ArgsList), 
+	StationNumber = lists:nth(6, ArgsList),
 
-
-start(InterfaceName, MulticastAddr, ReceivePort, StationClass, UtcOffsetMs, StationNumber) ->
 	SenderPID = spawn(sender, start, [InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber]),
 	debug("sender spawned", ?DEBUG),
 	ReceiverPID = spawn(receiver, start, [InterfaceName, MulticastAddr, ReceivePort, SenderPID, StationClass, UtcOffsetMs]),
 	debug("receiver spawned", ?DEBUG),
-	Name = list_to_atom(?NAME ++ integer_to_list(StationNumber)),
+	Name = list_to_atom(lists:append(?NAME, atom_to_list(StationNumber))),
 	registerAtLocalNameservice(Name),
 	debug("waiting for kill-command", ?DEBUG),
-	%receive
-	%	kill ->
-	%		SenderPID ! kill,
-	%		ReceiverPID ! kill
-	%end.
+	receive
+		kill ->
+			SenderPID ! kill,
+			ReceiverPID ! kill
+	end,
 	unregisterAtLocalNameservice(Name).
 	
 
