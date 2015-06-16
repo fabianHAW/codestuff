@@ -29,7 +29,7 @@ init(InterfaceName, MulticastAddr, {ReceivePort, _}, ReceiverDeliveryPID, TimeSy
 	HostAddress = getHostAddress(InterfaceName),
 	Socket = openRecA(MulticastAddr, HostAddress, ReceivePort),
 	gen_udp:controlling_process(Socket, self()),
-	SlotsUsed = initSlotPositions(25),
+	SlotsUsed = initSlotPositions(24),
 		SenderPID ! {getPID, self()},
 	receive
 		{pid, MessageGenPID} ->

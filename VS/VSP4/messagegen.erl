@@ -105,7 +105,9 @@ getInitialSlot() ->
 	%SlotReservationPID ! {getSlot, self()},
 	receive 
 		{initialSlot, NewSlot} ->
-			debug("received initial slot", ?DEBUG)
+			debug("received initial slot", ?DEBUG);
+		{nextSlot, NewSlot} ->
+			debug("received next slot", ?DEBUG)
 	end,
 	NewSlot.
 	

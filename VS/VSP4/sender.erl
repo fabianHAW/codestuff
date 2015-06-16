@@ -48,7 +48,6 @@ loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservati
 				true ->
 					debug("detected collision", ?DEBUG);
 				false ->
-					%getauscht mit checkSlot
 					TimeSyncPID ! {getTime, self()},
 					receive
 						{currentTime, Timestamp} ->
@@ -102,9 +101,7 @@ checkSlot(Slot, SlotReservationPID) ->
 	
 sendMulticast({StationClass, Slot, Data}, Socket, MulticastAddr, ReceivePort, Timestamp) ->
 	debug("send multicast", ?DEBUG),
-	io:format("s: ~p m: ~p r: ~p~n",[Socket, MulticastAddr, ReceivePort]),
-	Out = gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))),
-	io:format("~p~n",[Out]).
+	gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))).
 
 	
 debug(Text, true) ->

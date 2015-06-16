@@ -18,6 +18,8 @@ loop(FreeSlots, SenderPID) ->
 			loop(lists:append(FreeSlots, [NextSlot]), SenderPID);
 		{getSlot, MessageGenPID} ->
 			{FreeSlotsNew, NextSlot} = getNewSlot(FreeSlots),
+			io:format("free: ~p~n", [FreeSlotsNew]),
+			io:format("next: ~p~n", [NextSlot]),
 			MessageGenPID ! {nextSlot, NextSlot},
 			loop(FreeSlotsNew, SenderPID);
 		{collision, Slot} ->
