@@ -1,25 +1,17 @@
 #!/bin/bash
 # 
-# (c) by H. Schulz 2013-14
 # This programme is provided 'As-is', without any guarantee of any kind, implied or otherwise and is wholly unsupported.
 # You may use and modify it as long as you state the above copyright.
 #
-# Start up script for n stations.
+# Hard-Kill script for n stations.
 #
 # Parameters:
-#              network interface
-#              multicast address
-#              receive port
 #              index of first station
 #              index of last station
-#              class of stations started (A or B)
-#              UTC offset (ms)
 #
-# Example:  startStations.sh eth2 225.10.1.2 16000 2 11 A 1
+# Example:  killStations.sh 2 11
 # 
-#           will start ten class A stations numbered 2 to 11.
-#
-# (Hint: For killing processes collectively the 'pkill' command can be useful.)
+#           will kill ten stations 2 to 11.
 #
 # To use this script assign the appropriate values to the variables below.
 #
@@ -31,7 +23,7 @@ lastIndex=$2
 
 printUsage() {
 	echo "Usage: $0 <from-station-index> <to-station-index>"
-	echo "index must be same you gave startStations.sh"
+	echo "index must be same you gave to startStations.sh"
 	echo "Example: $0 1 10"
 }
 
