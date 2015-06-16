@@ -1,7 +1,7 @@
 -module(starter).
 -export([start/1]).
 
--define(NAME, "starter").
+-define(NAME, "station").
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, true).
 	
@@ -30,6 +30,7 @@ start(ArgsList) ->
 
 registerAtLocalNameservice(Name) ->
 	register(Name, self()),
+	io:format("~p~n", [Name]),
 	debug("starter registered", ?DEBUG).
 	
 unregisterAtLocalNameservice(Name) ->

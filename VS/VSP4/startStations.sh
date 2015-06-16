@@ -45,7 +45,7 @@ teamNo="1"
 # Example:    dataSource="~/somewhere/DataSource"
 #         or  dataSource="java -cp . datasource.DataSource"
 ########################################################################################################
-dataSource="DataSource64"
+dataSource="DataSource32"
 
 ########################################################################################################
 # TODO: Enter your station's start command.
@@ -53,7 +53,8 @@ dataSource="DataSource64"
 #
 # Example: stationCmd="java aufgabe4.MyStation $interfaceName $mcastAddress $receivePort $stationClass"
 ########################################################################################################
-stationCmd="erl -setcookie kekse -noshell -s starter start $interfaceName $mcastAddress $receivePort $stationClass $UTCoffsetMs"
+stationCmdFirst="erl -sname station"
+stationCmdSecond="-setcookie kekse -noshell -s starter start $interfaceName $mcastAddress $receivePort $stationClass $UTCoffsetMs"
 
 
 printUsage() {
@@ -63,7 +64,7 @@ printUsage() {
 
 variableNames="teamNo, dataSource and stationCmd"
 
-if [ "$teamNo" != "" -a "$dataSource" != "" -a "$stationCmd" != "" ] 
+if [ "$teamNo" != "" -a "$dataSource" != "" -a "$stationCmdFirst" != "" -a "$stationCmdSecond" != "" ] 
 then
 	if [ $# -gt 5 ]
 	then
@@ -75,7 +76,7 @@ then
 				for i in `seq $firstIndex $lastIndex`
 				do
 					# Launching data source and station.
-					./$dataSource $teamNo $i 60000| $stationCmd $i &
+					./$dataSource $teamNo $i 60000| $stationCmdFirst$i $stationCmdSecond $i &
 					#$dataSource $teamNo $i | $stationCmd &
 					#
 					# If your are annoyed by all the output, try this instead:
