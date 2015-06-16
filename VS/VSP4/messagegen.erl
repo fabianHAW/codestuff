@@ -1,11 +1,12 @@
 -module(messagegen).
 -export([start/2]).
--import(werkzeug, [createBinaryS/1, createBinaryD/1, createBinaryNS/1]).
+-import(werkzeug, [createBinaryS/1, createBinaryD/1, createBinaryNS/1, getUTC/0]).
 
 -define(NAME, "messagegen").
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, true).
 -define(SENDTIMEOFFSET, 10).
+-define(SLOTLENGTH, 40).
 
 start(SenderPID, StationClass) ->
 	PIDList = waitForInitialValues([]),
@@ -19,11 +20,11 @@ start(SenderPID, StationClass) ->
 	{_SlotreservationKey, SlotReservationPID} = lists:keyfind(slotreservationpid, 1, PIDList),
 	
 	
-	NewSlot = getInitialSlot(SlotReservationPID),
+	NewSlot = getInitialSlot(),
 	
 	io:format("~p~n", [NewSlot]),
 	
-	loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, NewSlot, false),
+	loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, 0, NewSlot, false),
 	
 	exit(PufferPID, "messagegen killed"),
 	debug("puffer killed", ?DEBUG),
@@ -31,37 +32,39 @@ start(SenderPID, StationClass) ->
 	debug("getdatafromsource killed", ?DEBUG),
 	debug("messagegen terminated", ?DEBUG).
 	
-loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlot, false) ->
-	TimeSyncPID ! {getTime, self()},
-	receive 
-		{currentTime, Timestamp} ->
-			debug("received currentTime", ?DEBUG),
-			_Killed = false;
-		kill ->
-			Timestamp = -1,
-			_Killed = true
-	end,
-	Sendtime = calcSendTime(OldSlot, Timestamp),
+loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlot, NewSlot, false) ->
+	%TimeSyncPID ! {getTime, self()},
+	%receive 
+	%	{currentTime, Timestamp} ->
+	%		debug("received currentTime", ?DEBUG),
+	%		_Killed = false;
+	%	kill ->
+	%		Timestamp = -1,
+	%		_Killed = true
+	%end,
 	
-	%Sendtime expired??
 	
+	Sendtime = calcSendTime(NewSlot, OldSlot),
+	
+	
+	Timestamp = getUTC(),
 	waitSendtime(Sendtime),
-	SlotReservationPID ! {getSlot, self()},
-	receive 
-		%{nextSlot, nok} ->
-		%	debug("there is no next slot available", ?DEBUG),
-			
-		{nextSlot, NextSlot} ->
-			debug("received next slot", ?DEBUG),
-			_KilledNew = false;
-		kill ->
-			NextSlot = -1,
-			_KilledNew = true
+	Time = getUTC() - Timestamp,
+	
+	%Sendtime expired?
+	case Sendtime =< (Time + ((?SLOTLENGTH / 2) - ?SENDTIMEOFFSET)) of
+		false ->
+			debug("sendtime expired", ?DEBUG),
+			{NextSlot, KilledNew} = getNextSlot(SlotReservationPID),
+			SenderPID ! {nomessage};
+		true ->
+			{NextSlot, _Killed} = getNextSlot(SlotReservationPID),
+			{Message, KilledNew} = prepareMessage(NextSlot, StationClass, PufferPID),
+			SenderPID ! Message
 	end,
-	{Message, KilledNewNew} = prepareMessage(NextSlot, StationClass, PufferPID),
-	SenderPID ! Message,
-	loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, NextSlot, KilledNewNew);
-loop(_PufferPID, _SenderPID, _StationClass, _TimeSyncPID, _SlotReservationPID, _OldSlot, true) ->
+	
+	loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, NewSlot, NextSlot, KilledNew);
+loop(_PufferPID, _SenderPID, _StationClass, _TimeSyncPID, _SlotReservationPID, _OldSlot, _NewSlot, true) ->
 	debug("killed", ?DEBUG).
 
 
@@ -95,23 +98,36 @@ waitForInitialValues(PIDList) ->
 	end,
 	waitForInitialValues(lists:append(PIDList, ListElement)).
 
-getInitialSlot(SlotReservationPID) ->
-	%initialen slot holen
+getInitialSlot() ->
+	%initialen slot erhalten
+	%SlotReservationPID ! {getSlot, self()},
+	receive 
+		{initialSlot, NewSlot} ->
+			debug("received initial slot", ?DEBUG)
+	end,
+	NewSlot.
+	
+getNextSlot(SlotReservationPID) ->
 	SlotReservationPID ! {getSlot, self()},
 	receive 
+		%zum debuggen noch drin gelassen
 		{nextSlot, nok} ->
-			debug("there is no initial slot available", ?DEBUG),
-			timer:sleep(200000),
-			getInitialSlot(SlotReservationPID);
-		{nextSlot, NewSlot} ->
-			debug("received initial slot", ?DEBUG),
-			NewSlot
-	end.
+			debug("there is no next slot available", ?DEBUG),
+			Killed = false,
+			NextSlot = -1;
+		{nextSlot, NextSlot} ->
+			debug("received next slot", ?DEBUG),
+			Killed = false;
+		kill ->
+			NextSlot = -1,
+			Killed = true
+	end,
+	{NextSlot, Killed}.
 
-calcSendTime(Slot, Timestamp) ->
+calcSendTime(NewSlot, OldSlot) ->
 	debug("calculate sendtime", ?DEBUG),
 	%wenn Slot-Nummerieung bei 1 beginnt, muss einer abgezogen werden
-	((Slot - 1) * 40) + ?SENDTIMEOFFSET.
+	OldSlot + ((NewSlot - 1) * 40) + ?SENDTIMEOFFSET.
 
 waitSendtime(Sendtime) ->
 	debug("wait sendtime", ?DEBUG),

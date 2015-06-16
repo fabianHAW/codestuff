@@ -24,6 +24,13 @@ start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 	%Socket = openSeA(HostAddress, SendPort),
 	gen_udp:controlling_process(Socket, self()),
 	
+	%auf Receiver-Anfrage warten
+	receive 
+		{getPID, ReceiverPID} ->
+			ReceiverPID ! {pid, MessageGenPID},
+			debug("send messagegenpid to receiver", ?DEBUG)
+	end,
+	
 	loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, false),
 	gen_udp:close(Socket),
 	MessageGenPID ! kill,
