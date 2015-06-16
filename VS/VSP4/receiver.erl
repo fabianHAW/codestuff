@@ -51,7 +51,7 @@ initSlotPositions(NumPos) ->
 
 %Initialisert die Liste mit den Slot-Positionen.
 %Hierbei gilt: Slot-Position = Slot-Nr.
-initSlotPositions(SlotsUsed, NumPos, Counter) when NumPos =< Counter ->
+initSlotPositions(SlotsUsed, NumPos, Counter) when NumPos >= Counter ->
 	initSlotPositions(lists:append(SlotsUsed, [0]), NumPos, Counter + 1);
 initSlotPositions(SlotsUsed, _NumPos, _Counter) ->
 	SlotsUsed
@@ -82,14 +82,10 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 			kill()
 	after
 		1000 ->
-		TimeSyncPID ! {getTime, self()},
-			receive
-				  {currentTime, CurrentTime} ->
-					  {SlotsUsedNew, NewTime} = isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID)
-			end,
 			ReceiverDeliveryPID ! {slot, 20},
 			MessageGenPID ! {initialSlot, 20},
-			loop(Collisions, Received, lists:append(SlotsUsed, [20]), Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
+			sendFreeSlots(SlotsUsed, ReceiverDeliveryPID),
+			loop(Collisions, Received, [], Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
 	end
 .	
 	
@@ -106,7 +102,7 @@ loop(false, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID) ->
 	{Collisions, Received + 1}.
 
 %Berechnung korrigieren
-isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID) when ((CurrentTime - OldTime)*1000) >= 1 ->
+isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID) when ((CurrentTime - OldTime)) >= 1000 ->
 	TimeSyncPID ! {getTime, self()},
 	sendFreeSlots(SlotsUsed, ReceiverDeliveryPID),
 
