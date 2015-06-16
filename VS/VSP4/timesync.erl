@@ -17,13 +17,14 @@ debug(Text, true) ->
 
 %Ist die eigene Station von der Klasse B (false),
 %Bleibt die Zeit ungenau.
-%Sonst soll die Zeit synchronisieren.
+%Sonst soll die Zeit synchronisiert werden.
 getNewTime(UtcOffsetMs, false) ->
-	inaccurate(UtcOffsetMs);
+	accurate(UtcOffsetMs, 0, 0);
 getNewTime(UtcOffsetMs, true) ->
 	accurate(UtcOffsetMs, 0, 0)
 .
 
+%Nicht mehr benötigt!
 %Zeit wird nicht synchronisiert, da die eigene Station von der Klasse B ist.
 %Erhält Anfragen von Sender u. MessageGen, ignoriert Zeitmitteilung vom Receiver.
 inaccurate(UtcOffsetMs) ->
@@ -64,5 +65,5 @@ berkley(true, TimeInSlot, SyncOffsetMs, TimesReceived) ->
 
 kill() ->
 	%TODO Loggen
-	ok
+	debug("Shutdown TimeSync ~n", ?DEBUG)
 .

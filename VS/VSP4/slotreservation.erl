@@ -52,5 +52,5 @@ debug(Text, true) ->
 
 %TODO: Log
 kill() ->
-	ok
+	debug("Shutdown Slotreservation ~n", ?DEBUG)
 .

@@ -1,6 +1,6 @@
 -module(receiver).
 -import(werkzeug, [getUTC/0, openSe/2, openSeA/2, openRec/3, openRecA/3, logging/2]).
--export([delivery/3, init/5, start/6, loop/8]).
+-export([delivery/3, init/6, start/6, loop/9]).
 
 -define(NAME, "receiver").
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
@@ -13,7 +13,7 @@ start(InterfaceName, MulticastAddr, ReceivePort, SenderPID, StationClass, UtcOff
 	SlotReservationPID = spawn(slotreservation, start, [SenderPID]),
 	debug("slotreservation spawned", ?DEBUG),
 	ReceiverDeliveryPID = spawn(receiver, delivery, [stationAlive, SlotReservationPID, TimeSyncPID]),
-	spawn(receiver, init, [InterfaceName, MulticastAddr, string:to_integer(atom_to_list(ReceivePort)), ReceiverDeliveryPID, TimeSyncPID])
+	spawn(receiver, init, [InterfaceName, MulticastAddr, string:to_integer(atom_to_list(ReceivePort)), ReceiverDeliveryPID, TimeSyncPID, SenderPID])
 .
 	
 getDataFromMulticast() ->
@@ -24,17 +24,22 @@ debug(Text, true) ->
 
 %%%%%%%%%%%%%%%%%%%%%NEW%%%%%%%%%%%%%%%%%%%%%
 %Initialisiert den Socket und geht dann in die Schleife.
-init(InterfaceName, MulticastAddr, {ReceivePort, _}, ReceiverDeliveryPID, TimeSyncPID) ->
+init(InterfaceName, MulticastAddr, {ReceivePort, _}, ReceiverDeliveryPID, TimeSyncPID, SenderPID) ->
 	{ok, Addr} = inet:getaddr(net_adm:localhost(), inet),
 	HostAddress = getHostAddress(InterfaceName),
 	Socket = openRecA(MulticastAddr, HostAddress, ReceivePort),
 	gen_udp:controlling_process(Socket, self()),
 	SlotsUsed = initSlotPositions(25),
+		SenderPID ! {getPID, self()},
+	receive
+		{pid, MessageGenPID} ->
+			debug("MessageGenPID received", ?DEBUG)
+	end,
 	TimeSyncPID ! {getTime, self()},
 	receive
 		{currentTime, TimeStamp} ->
 			debug("timestamp received", ?DEBUG),
-			spawn(receiver, loop, [0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive])
+			spawn(receiver, loop, [0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive, MessageGenPID])
 	end
 .
 
@@ -57,23 +62,29 @@ initSlotPositions(SlotsUsed, _NumPos, _Counter) ->
 %Die Slot-Nr. extrahiert,
 %entschieden ob es eine Kollision gab,
 %und protokolliert.
-loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive) ->
+loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID) ->
 	io:format("1~n",[]),
 	%{ok, {Address, Port, Packet}} = gen_udp:recv(Socket, 34),
 	receive	
 		{udp, _ReceiveSocket, Address, Port, Packet} -> 
-			io:format("1.5~n",[])
-	end,
-	io:format("2~n",[]),
-	{CollisionDetected, SlotsUsedNew} = getSlotNumber(SlotsUsed, Packet),
-	io:format("3~n",[]),
-	{CollisionsNew, ReceivdNew} = loop(CollisionDetected, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID),
-	io:format("4~n",[]),
-	TimeSyncPID ! {getTime, self()},
-	receive
-		{currentTime, CurrentTime} ->
-			{SlotsUsedNew, NewTime} = isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID),
-			loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, NewTime, stationAlive)
+			io:format("1.5~n",[]),
+		{CollisionDetected, SlotsUsedNew} = getSlotNumber(SlotsUsed, Packet),
+		io:format("3~n",[]),
+		{CollisionsNew, ReceivdNew} = loop(CollisionDetected, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID),
+		io:format("4~n",[]),
+		TimeSyncPID ! {getTime, self()},
+		receive
+			{currentTime, CurrentTime} ->
+				{SlotsUsedNew, NewTime} = isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID),
+				loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, NewTime, stationAlive, MessageGenPID)
+		end;
+		kill ->
+			kill()
+	after
+		1000 ->
+			ReceiverDeliveryPID ! {slot, 20},
+			MessageGenPID ! {initialSlot, 20},
+			loop(Collisions, Received, lists:append(SlotsUsed, [20]), Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
 	end
 .	
 	
@@ -93,7 +104,7 @@ loop(false, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID) ->
 isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID) when ((CurrentTime - OldTime)*1000) >= 1 ->
 	TimeSyncPID ! {getTime, self()},
 	sendFreeSlots(SlotsUsed, ReceiverDeliveryPID),
-	
+
 	receive
 		{currentTime, CurrentTimeNew} ->
 			ok
@@ -182,6 +193,10 @@ countSlotNumberUsed([First | Rest], SlotNumber, Counter) when SlotNumber == Coun
 	[First + 1] ++ Rest;
 countSlotNumberUsed(Rest, _SlotNumber, _Counter) ->
 	Rest
+.
+
+kill() ->
+	debug("Shutdown Receiver ~n", ?DEBUG)
 .
 
 %%%%%%%%%%%%Receiver Services%%%%%%%%%%%%%
