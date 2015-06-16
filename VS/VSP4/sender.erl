@@ -9,8 +9,8 @@
 start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 	MessageGenPID = spawn(messagegen, start, [self(), StationClass]),
 	debug("messagegen spawned", ?DEBUG),
-	{ReceivePortNew, _} = string:to_integer(atom_to_list(ReceivePort)),
-	{StationNumberNew, _} = string:to_integer(atom_to_list(StationNumber)),
+	ReceivePortNew = list_to_integer(atom_to_list(ReceivePort)),
+	StationNumberNew = list_to_integer(atom_to_list(StationNumber)),
 	SendPort = ReceivePortNew + StationNumberNew,
 	PIDList = waitForInitialValues(MessageGenPID, []),
 	
@@ -19,9 +19,9 @@ start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 	
 	HostAddress = getHostAddress(InterfaceName),
 	%passiv
-	Socket = openSe(HostAddress, SendPort),
+	%Socket = openSe(HostAddress, SendPort),
 	%aktiv
-	%Socket = openSeA(HostAddress, SendPort),
+	Socket = openSeA(HostAddress, SendPort),
 	gen_udp:controlling_process(Socket, self()),
 	
 	%auf Receiver-Anfrage warten
@@ -31,7 +31,7 @@ start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 			debug("send messagegenpid to receiver", ?DEBUG)
 	end,
 	
-	loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, false),
+	loop(Socket, HostAddress, MulticastAddr, ReceivePortNew, TimeSyncPID, SlotReservationPID, false),
 	gen_udp:close(Socket),
 	MessageGenPID ! kill,
 	debug("messagegen killed", ?DEBUG),
@@ -102,8 +102,9 @@ checkSlot(Slot, SlotReservationPID) ->
 	
 sendMulticast({StationClass, Slot, Data}, Socket, MulticastAddr, ReceivePort, Timestamp) ->
 	debug("send multicast", ?DEBUG),
-	gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp)))
-	.
+	io:format("s: ~p m: ~p r: ~p~n",[Socket, MulticastAddr, ReceivePort]),
+	Out = gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))),
+	io:format("~p~n",[Out]).
 
 	
 debug(Text, true) ->
