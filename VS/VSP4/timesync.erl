@@ -47,7 +47,6 @@ accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived) ->
 			SyncOffsetNew = berkley(string:equal(StationClass, "A"), TimeInSlot, SyncOffsetMs, TimesReceived + 1),
 			accurate(UtcOffsetMs, SyncOffsetNew, TimesReceived + 1);
 		{getTime, SenderPID_MessageGenPID} ->
-			io:format("~p ~p~n", [SyncOffsetMs, UtcOffsetMs]),
 			SenderPID_MessageGenPID ! {currentTime, SyncOffsetMs + UtcOffsetMs}, %TODO: SyncOffset Berechnen Berkley
 			accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived);
 		kill ->
