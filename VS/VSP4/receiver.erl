@@ -82,6 +82,11 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 			kill()
 	after
 		1000 ->
+		TimeSyncPID ! {getTime, self()},
+			receive
+				  {currentTime, CurrentTime} ->
+					  {SlotsUsedNew, NewTime} = isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID)
+			end,
 			ReceiverDeliveryPID ! {slot, 20},
 			MessageGenPID ! {initialSlot, 20},
 			loop(Collisions, Received, lists:append(SlotsUsed, [20]), Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
@@ -109,8 +114,9 @@ isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPI
 		{currentTime, CurrentTimeNew} ->
 			ok
 	end,
-	{[], CurrentTimeNew}
-.
+	{[], CurrentTimeNew};
+isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID)->
+	{SlotsUsed, CurrentTime}.
 
 sendFreeSlots([], _ReceiverDeliveryPID) ->
 	ok;

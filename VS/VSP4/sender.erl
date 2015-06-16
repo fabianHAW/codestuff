@@ -39,10 +39,11 @@ start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 
 loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, false) ->
 	receive 
-		{message, Message} ->		
-			{_StationClass, Slot, _Data} = Message,
-			CheckedSlot = checkSlot(lists:nth(1, binary_to_list(Slot)), SlotReservationPID),
-			
+		{message, Message, OldSlot} ->		
+			debug("received new message", ?DEBUG),
+			%{_StationClass, Slot, _Data} = Message,
+			%CheckedSlot = checkSlot(lists:nth(1, binary_to_list(Slot)), SlotReservationPID),
+			CheckedSlot = checkSlot(OldSlot, SlotReservationPID),
 			case CheckedSlot of
 				true ->
 					debug("detected collision", ?DEBUG);

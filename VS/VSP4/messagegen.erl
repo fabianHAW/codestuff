@@ -48,6 +48,7 @@ loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlo
 	
 	
 	Timestamp = getUTC(),
+	%io:format("~p~n",[Sendtime]),
 	waitSendtime(Sendtime),
 	Time = getUTC() - Timestamp,
 	
@@ -60,7 +61,7 @@ loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlo
 		true ->
 			{NextSlot, _Killed} = getNextSlot(SlotReservationPID),
 			{Message, KilledNew} = prepareMessage(NextSlot, StationClass, PufferPID),
-			SenderPID ! Message
+			SenderPID ! {message, Message, OldSlot}
 	end,
 	
 	loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, NewSlot, NextSlot, KilledNew);
@@ -71,10 +72,11 @@ loop(_PufferPID, _SenderPID, _StationClass, _TimeSyncPID, _SlotReservationPID, _
 puffer(MessageGenPID, Data) ->
 	receive 
 		{data, DataNew} ->
-			debug("got new data from source", ?DEBUG);
+			ok;
+			%debug("got new data from source", ?DEBUG);
 		getdata ->
 			MessageGenPID ! {newdata, Data},
-			debug("send new data to messagegen", ?DEBUG),
+			%debug("send new data to messagegen", ?DEBUG),
 			DataNew = Data
 	end,
 	puffer(MessageGenPID, DataNew).
@@ -82,7 +84,7 @@ puffer(MessageGenPID, Data) ->
 getDataFromSource(PufferPID) ->
 	Data = io:get_chars("", 24),
 	PufferPID ! {data, Data},
-	debug("send new data to puffer", ?DEBUG),
+	%debug("send new data to puffer", ?DEBUG),
 	getDataFromSource(PufferPID).
 	
 waitForInitialValues(PIDList) when length(PIDList) == 2 ->
@@ -127,6 +129,7 @@ getNextSlot(SlotReservationPID) ->
 calcSendTime(NewSlot, OldSlot) ->
 	debug("calculate sendtime", ?DEBUG),
 	%wenn Slot-Nummerieung bei 1 beginnt, muss einer abgezogen werden
+	io:format("oldslot: ~p newslot: ~p~n", [OldSlot, NewSlot]),
 	OldSlot + ((NewSlot - 1) * 40) + ?SENDTIMEOFFSET.
 
 waitSendtime(Sendtime) ->

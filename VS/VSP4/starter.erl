@@ -9,8 +9,8 @@ start(ArgsList) ->
 	InterfaceName = lists:nth(1, ArgsList),
 	MulticastAddr = list_to_tuple([list_to_integer(X) || X <- string:tokens(atom_to_list(lists:nth(2, ArgsList)), [$.])]), 
 	ReceivePort = lists:nth(3, ArgsList), 
-	StationClass = lists:nth(4, ArgsList), 
-	UtcOffsetMs = lists:nth(5, ArgsList), 
+	StationClass = atom_to_list(lists:nth(4, ArgsList)), 
+	UtcOffsetMs = list_to_integer(atom_to_list(lists:nth(5, ArgsList))), 
 	StationNumber = lists:nth(6, ArgsList),
 
 	SenderPID = spawn(sender, start, [InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber]),
