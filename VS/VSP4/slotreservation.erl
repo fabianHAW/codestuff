@@ -25,13 +25,11 @@ loop(FreeSlots, SenderPID) ->
 			%Time2 = Time2Temp - Time1,
 			%werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("time2: ~p~n", [Time2]))),
 			{FreeSlotsNew, NextSlot} = getNewSlot(FreeSlots),
-			%io:format("free: ~p~n", [FreeSlotsNew]),
-			%io:format("next: ~p~n", [NextSlot]),
 			MessageGenPID ! {nextSlot, NextSlot},
 			%werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("time3: ~p~n", [werkzeug:getUTC() - Time2Temp]))),
 			loop(FreeSlotsNew, SenderPID);
 		{collision, Slot} ->
-			werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("FreeSlots: ~p Slot: ~p~n", [FreeSlots, Slot]))),
+			%werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("FreeSlots: ~p Slot: ~p~n", [FreeSlots, Slot]))),
 			sendCollisionAnswer(FreeSlots, Slot, SenderPID),
 			loop(FreeSlots, SenderPID);
 		kill ->
@@ -60,10 +58,10 @@ getNewSlot(List) ->
 %der Sender sende möchte, nicht in der Liste der freien Slots ist,
 %sonst {collision, false}
 sendCollisionAnswer([], _Slot, SenderPID) ->
-	werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("true~n", []))),
+	%werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("true~n", []))),
 	SenderPID ! {collision, true};
 sendCollisionAnswer([First | _Rest], Slot, SenderPID) when First == Slot->
-	werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("false~n", []))),
+	%werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("false~n", []))),
 	SenderPID ! {collision, false};
 sendCollisionAnswer([_First | Rest], Slot, SenderPID) ->
 	sendCollisionAnswer(Rest, Slot, SenderPID)

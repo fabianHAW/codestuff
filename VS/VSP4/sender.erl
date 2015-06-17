@@ -51,7 +51,8 @@ loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservati
 			logging(?LOGFILE, lists:flatten(io_lib:format("Time2 ~p ~n", [Time2]))),
 			case CheckedSlot of
 				true ->
-					debug("detected collision", ?DEBUG);
+					debug("detected collision", ?DEBUG),
+					logging(?LOGFILE, lists:flatten(io_lib:format("collision detected. nothing to send~n", [])));
 				false ->
 					TimeSyncPID ! {getTime, self()},
 					receive

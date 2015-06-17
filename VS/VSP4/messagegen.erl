@@ -9,6 +9,8 @@
 -define(SLOTLENGTH, 40).
 
 start(SenderPID, StationClass) ->
+	%Diese Methode benoetigt beim ersten Aufruf einige ms die das Senden
+	%beeinflussen wuerde, daher wird sie hier einmal aufgerufen
 	crypto:rand_uniform(1, 26),
 	PIDList = waitForInitialValues([]),
 	MessageGenPID = self(),
