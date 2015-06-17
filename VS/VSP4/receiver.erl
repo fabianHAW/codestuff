@@ -134,9 +134,9 @@ sendFreeSlots([], _ReceiverDeliveryPID, _Counter) ->
 	ok;
 sendFreeSlots([First | Rest], ReceiverDeliveryPID, Counter) when First == 0 ->
 	ReceiverDeliveryPID ! {slot, Counter},
-	sendFreeSlots(Rest, ReceiverDeliveryPID, Counter);
+	sendFreeSlots(Rest, ReceiverDeliveryPID, Counter + 1);
 sendFreeSlots([First | Rest], ReceiverDeliveryPID, Counter) ->
-	sendFreeSlots(Rest, ReceiverDeliveryPID, Counter)
+	sendFreeSlots(Rest, ReceiverDeliveryPID, Counter + 1)
 .
 
 
