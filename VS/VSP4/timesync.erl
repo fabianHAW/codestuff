@@ -3,8 +3,8 @@
 -import(werkzeug, [getUTC/0, logging/2]).
 
 -define(NAME, lists:flatten(io_lib:format("timesync@~p", [node()]))).
--define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
--define(DEBUG, true).
+-define(LOGFILE, lists:flatten(io_lib:format("~p.log", [?NAME]))).
+-define(DEBUG, false).
 
 
 start(StationClass, UtcOffsetMs, SenderPID) ->
@@ -13,9 +13,11 @@ start(StationClass, UtcOffsetMs, SenderPID) ->
 	getNewTime(UtcOffsetMs, string:equal(StationClass, "A"))
 .
 
+		
 debug(Text, true) ->
-	io:format("timesync_module: ~p~n", [Text]).
-
+	io:format("starter_module: ~p~n", [Text]);
+debug(_Text, false) ->
+	ok.
 %Ist die eigene Station von der Klasse B (false),
 %Bleibt die Zeit ungenau.
 %Sonst soll die Zeit synchronisiert werden.

@@ -3,7 +3,7 @@
 -import(werkzeug, [logging/2, openSe/2, openSeA/2, concatBinary/4, createBinaryT/1]).
 
 -define(NAME, lists:flatten(io_lib:format("sender@~p", [node()]))).
--define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
+-define(LOGFILE, lists:flatten(io_lib:format("~p.log", [?NAME]))).
 -define(DEBUG, false).
 
 start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
@@ -60,7 +60,7 @@ loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservati
 			Killed = false;
 		{nomessage} ->
 			debug("sendtime expired", ?DEBUG),
-			logging(?LOGFILE, lists:flatten(io_lib:format("sendtime expired~n", []))),
+			%logging(?LOGFILE, lists:flatten(io_lib:format("sendtime expired~n", []))),
 			Killed = false;
 		kill ->
 			Killed = true
@@ -108,4 +108,6 @@ sendMulticast({StationClass, Slot, Data}, Socket, MulticastAddr, ReceivePort, Ti
 
 	
 debug(Text, true) ->
-	io:format("sender_module: ~p~n", [Text]).
+	io:format("starter_module: ~p~n", [Text]);
+debug(_Text, false) ->
+	ok.

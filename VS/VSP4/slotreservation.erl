@@ -2,8 +2,8 @@
 -export([start/1]).
 
 -define(NAME, lists:flatten(io_lib:format("slotreservation@~p", [node()]))).
--define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
--define(DEBUG, true).
+-define(LOGFILE, lists:flatten(io_lib:format("~p.log", [?NAME]))).
+-define(DEBUG, false).
 
 start(SenderPID) ->
 	SenderPID ! {helloSlot, self()},
@@ -37,7 +37,9 @@ loop(FreeSlots, SenderPID) ->
 getNewSlot([]) ->
 	{[], nok};
 getNewSlot(List) ->
-	Rand = random:uniform(length(List)),
+	%Rand = random:uniform(length(List)),
+	Rand = crypto:rand_uniform(1, length(List)),
+	%io:format("*************rand ~p~n", [Rand]),
 	Next = lists:nth(Rand, List),
 	ListNew = lists:delete(Next, List),
 	{ListNew, Next}
@@ -54,9 +56,11 @@ sendCollisionAnswer([_First | Rest], Slot, SenderPID) ->
 	sendCollisionAnswer(Rest, Slot, SenderPID)
 .	
 
+		
 debug(Text, true) ->
-	io:format("slotreservation_module: ~p~n", [Text]).
-
+	io:format("starter_module: ~p~n", [Text]);
+debug(_Text, false) ->
+	ok.
 %TODO: Log
 kill() ->
 	debug("Shutdown Slotreservation ~n", ?DEBUG)

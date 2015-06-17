@@ -17,7 +17,6 @@ start(ArgsList) ->
 	debug("waiting for kill-command", ?DEBUG),
 	receive
 		kill ->
-			debug("received kill", ?DEBUG),
 			SenderPID ! kill,
 			ReceiverPID ! kill
 	end,
@@ -48,4 +47,6 @@ unregisterAtLocalNameservice(Name) ->
 	debug("starter unregistered", ?DEBUG).
 		
 debug(Text, true) ->
-	io:format("starter_module: ~p~n", [Text]).
+	io:format("starter_module: ~p~n", [Text]);
+debug(_Text, false) ->
+	ok.

@@ -3,7 +3,7 @@
 -import(werkzeug, [logging/2, createBinaryS/1, createBinaryD/1, createBinaryNS/1, getUTC/0]).
 
 -define(NAME, lists:flatten(io_lib:format("messagegen@~p", [node()]))).
--define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
+-define(LOGFILE, lists:flatten(io_lib:format("~p.log", [?NAME]))).
 -define(DEBUG, false).
 -define(SENDTIMEOFFSET, 10).
 -define(SLOTLENGTH, 40).
@@ -154,4 +154,6 @@ prepareMessage(Slot, StationClass, PufferPID, Killed) ->
 
 
 debug(Text, true) ->
-	io:format("messagegen_module: ~p~n", [Text]).
+	io:format("starter_module: ~p~n", [Text]);
+debug(_Text, false) ->
+	ok.
