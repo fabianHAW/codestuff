@@ -85,10 +85,23 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 			InitialSlot = random:uniform(25),
 			ReceiverDeliveryPID ! {slot, InitialSlot},
 			MessageGenPID ! {initialSlot, InitialSlot},
-			sendFreeSlots(SlotsUsed, ReceiverDeliveryPID, 1),
+			SlotsUsedNew = insertInSlotsUsed(SlotsUsed, InitialSlot),
+			sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
 			loop(Collisions, Received, [], Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
 	end
-.	
+.
+
+insertInSlotsUsed(SlotsUsed, SlotNumber) ->
+		insertInSlotsUsed(SlotsUsed, SlotNumber, 1)
+.
+
+insertInSlotsUsed([], SlotNumber, _Counter) ->
+	[];
+insertInSlotsUsed([First | Rest], SlotNumber, Counter) when SlotNumber == Counter ->
+	lists:append([First + 1], Rest);
+insertInSlotsUsed([First | Rest], SlotNumber, Counter) when SlotNumber == Counter ->
+		lists:append([First], insertInSlotsUsed(Rest, SlotNumber, Counter + 1))
+.
 	
 %Stellt den Teil der Schleife dar, in dem geloggt wird.
 loop(corrupt, Collisions, Received, _Packet, _ReceiverDeliveryPID, TimeSyncPID) ->
