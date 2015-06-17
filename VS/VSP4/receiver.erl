@@ -126,6 +126,8 @@ loop(false, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID) ->
 %Berechnung korrigieren
 isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID) when ((CurrentTime - OldTime)) >= 1000 ->
 	TimeSyncPID ! {getTime, self()},
+	TimeSyncPID ! {nextFrame},
+	
 	sendFreeSlots(SlotsUsed, ReceiverDeliveryPID, 1),
 
 	receive
@@ -181,7 +183,7 @@ getSlotNumber(SlotsUsed, Packet) ->
 	{_StationTyp,_Nutzdaten, SlotNumber,_Timestamp} = message_to_string(Packet),
 	%Binary = binary:bin_to_list(Packet),
 	%SlotNumber = binary:decode_unsigned(lists:nth(26, Binary)),
-	io:format("in getslot: ~p ~p~n", [SlotsUsed, SlotNumber]),
+	%io:format("in getslot: ~p ~p~n", [SlotsUsed, SlotNumber]),
 	{willSlotBeInUse(SlotsUsed, SlotNumber), countSlotNumberUsed(SlotsUsed, SlotNumber)}
 .
 
@@ -208,9 +210,9 @@ willSlotBeInUse([], _SlotNumber, _Counter) ->
 %Zählt die Anzahl der Stationen hoch, die den Slot SlotNumber im
 %nächsten Frame benutzen werden.
 countSlotNumberUsed(SlotsUsed, SlotNumber) ->
-	io:format("incout: ~p~n", [SlotsUsed]),
+	%io:format("incout: ~p~n", [SlotsUsed]),
 	Result = countSlotNumberUsed(SlotsUsed, SlotNumber, 1),
-	io:format("result: ~p~n", [Result]),
+	%io:format("result: ~p~n", [Result]),
 	Result
 .
 
@@ -241,7 +243,7 @@ message_to_string(Packet)	->
 	Nutzdaten= erlang:binary_to_list(Packet,2,25),
 	Slot = lists:nth(1, erlang:binary_to_list(Packet,26,26)),
 	Timestamp = erlang:binary_to_list(Packet,27,34),
-	io:format("StationTyp ~p,Nutzdaten ~p,Slot ~p,Timestamp ~p~n", [StationTyp,Nutzdaten,Slot,Timestamp]),
+	%io:format("StationTyp ~p,Nutzdaten ~p,Slot ~p,Timestamp ~p~n", [StationTyp,Nutzdaten,Slot,Timestamp]),
 	{StationTyp,Nutzdaten,Slot,Timestamp}.
 
 %%%%%%%%%%%%Receiver Services%%%%%%%%%%%%%

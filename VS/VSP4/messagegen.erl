@@ -1,6 +1,6 @@
 -module(messagegen).
 -export([start/2]).
--import(werkzeug, [createBinaryS/1, createBinaryD/1, createBinaryNS/1, getUTC/0]).
+-import(werkzeug, [logging/2, createBinaryS/1, createBinaryD/1, createBinaryNS/1, getUTC/0]).
 
 -define(NAME, lists:flatten(io_lib:format("messagegen@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
@@ -22,7 +22,7 @@ start(SenderPID, StationClass) ->
 	
 	NewSlot = getInitialSlot(),
 	
-	io:format("~p~n", [NewSlot]),
+	%io:format("~p~n", [NewSlot]),
 	
 	loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, 0, NewSlot, false),
 	
@@ -56,11 +56,13 @@ loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlo
 	case Sendtime =< (Time + ((?SLOTLENGTH / 2) - ?SENDTIMEOFFSET)) of
 		false ->
 			debug("sendtime expired", ?DEBUG),
+			logging(?LOGFILE, lists:flatten(io_lib:format("sendtime expired ~n", []))),
 			{NextSlot, KilledNew} = getNextSlot(SlotReservationPID),
 			SenderPID ! {nomessage};
 		true ->
 			{NextSlot, _Killed} = getNextSlot(SlotReservationPID),
 			{Message, KilledNew} = prepareMessage(NextSlot, StationClass, PufferPID),
+			logging(?LOGFILE, lists:flatten(io_lib:format("created new message expired ~p ~n", [Message]))),
 			SenderPID ! {message, Message, OldSlot}
 	end,
 	
