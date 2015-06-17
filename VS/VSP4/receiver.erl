@@ -25,11 +25,14 @@ debug(Text, true) ->
 %%%%%%%%%%%%%%%%%%%%%NEW%%%%%%%%%%%%%%%%%%%%%
 %Initialisiert den Socket und geht dann in die Schleife.
 init(InterfaceName, MulticastAddr, {ReceivePort, _}, ReceiverDeliveryPID, TimeSyncPID, SenderPID) ->
-	{ok, Addr} = inet:getaddr(net_adm:localhost(), inet),
+	%{ok, Addr} = inet:getaddr(net_adm:localhost(), inet),
 	HostAddress = getHostAddress(InterfaceName),
+	%Socket = openRecA(MulticastAddr, HostAddress, ReceivePort),
 	Socket = openRecA(MulticastAddr, HostAddress, ReceivePort),
-	gen_udp:controlling_process(Socket, self()),
-	SlotsUsed = initSlotPositions(25),
+	Result = gen_udp:controlling_process(Socket, self()),
+	io:format("result receiver: ~p~n", [Result]),
+	io:format("Socket receiver: ~p~n", [Socket]),
+	SlotsUsed = initSlotPositions(24),
 		SenderPID ! {getPID, self()},
 	receive
 		{pid, MessageGenPID} ->
@@ -66,28 +69,30 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 	io:format("1~n",[]),
 	%{ok, {Address, Port, Packet}} = gen_udp:recv(Socket, 34),
 	receive	
-		Any ->
-		  io:format("~p~n",[Any]);
-		{udp, _ReceiveSocket, Address, Port, Packet} -> 
+		%Any ->
+		 % io:format("~p~n",[Any]);
+		{udp, ReceiveSocket, Address, Port, Packet} -> 
 			io:format("1.5~n",[]),
-		{CollisionDetected, SlotsUsedNew} = getSlotNumber(SlotsUsed, Packet),
-		io:format("3~n",[]),
-		{CollisionsNew, ReceivdNew} = loop(CollisionDetected, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID),
-		io:format("4~n",[]),
-		TimeSyncPID ! {getTime, self()},
-		receive
-			{currentTime, CurrentTime} ->
-				{SlotsUsedNew, NewTime} = isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID),
-				loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, NewTime, stationAlive, MessageGenPID)
-		end;
+			{CollisionDetected, SlotsUsedNew} = getSlotNumber(SlotsUsed, Packet),
+			io:format("3~n",[]),
+			{CollisionsNew, ReceivdNew} = loop(CollisionDetected, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID),
+			io:format("4~n",[]),
+			TimeSyncPID ! {getTime, self()},
+			receive
+			      {currentTime, CurrentTime} ->
+				    {SlotsUsedNew, NewTime} = isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID),
+				     loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, NewTime, stationAlive, MessageGenPID)
+			end;
 		kill ->
-			kill(Socket, ReceiverDeliveryPID, TimeSyncPID)
+			kill(Socket, ReceiverDeliveryPID, TimeSyncPID);
+		Any ->
+			io:format("Any: ~p~n", [Any])
 	after
 		1000 ->
 			InitialSlot = random:uniform(25),
-			ReceiverDeliveryPID ! {slot, InitialSlot},
+			ReceiverDeliveryPID ! {slot, reset, InitialSlot},
 			MessageGenPID ! {initialSlot, InitialSlot},
-			SlotsUsedNew = insertInSlotsUsed(SlotsUsed, InitialSlot),
+			SlotsUsedNew = insertInSlotsUsed(initSlotPositions(24), InitialSlot),
 			sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
 			loop(Collisions, Received, [], Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
 	end
@@ -228,6 +233,9 @@ kill(Socket, ReceiverDeliveryPID, TimeSyncPID) ->
 %%%%%%%%%%%%Receiver Services%%%%%%%%%%%%%
 delivery(stationAlive, SlotReservationPID, TimeSyncPID) ->
 	receive
+		{slot, reset, NextSlot} ->
+			SlotReservationPID ! {slot, reset, NextSlot},
+			delivery(stationAlive, SlotReservationPID, TimeSyncPID);
 		{slot, NextSlot} ->
 			SlotReservationPID ! {slot, NextSlot},
 			delivery(stationAlive, SlotReservationPID, TimeSyncPID);

@@ -22,8 +22,10 @@ start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 	%Socket = openSe(HostAddress, SendPort),
 	%aktiv
 	Socket = openSeA(HostAddress, SendPort),
-	gen_udp:controlling_process(Socket, self()),
-	
+	%Socket = openSeA({127,0,0,2}, SendPort),
+	Result = gen_udp:controlling_process(Socket, self()),
+	A = a,
+	io:format("result sender: ~p~p~n", [Result, A]),
 	%auf Receiver-Anfrage warten
 	receive 
 		{getPID, ReceiverPID} ->

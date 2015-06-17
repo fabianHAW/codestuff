@@ -14,6 +14,8 @@ start(SenderPID) ->
 %Antwortet auf Anfragen von MessageGen und Sender
 loop(FreeSlots, SenderPID) ->
 	receive
+		{slot, reset, NextSlot} ->
+			loop([NextSlot], SenderPID);
 		{slot, NextSlot} ->
 			loop(lists:append(FreeSlots, [NextSlot]), SenderPID);
 		{getSlot, MessageGenPID} ->

@@ -45,7 +45,7 @@ loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlo
 	
 	
 	Sendtime = calcSendTime(NewSlot, OldSlot),
-	
+	io:format("sendtime: ~p~n", [Sendtime]),
 	
 	Timestamp = getUTC(),
 	%io:format("~p~n",[Sendtime]),
@@ -132,7 +132,7 @@ calcSendTime(NewSlot, OldSlot) ->
 	debug("calculate sendtime", ?DEBUG),
 	%wenn Slot-Nummerieung bei 1 beginnt, muss einer abgezogen werden
 	io:format("oldslot: ~p newslot: ~p~n", [OldSlot, NewSlot]),
-	OldSlot + ((NewSlot - 1) * 40) + ?SENDTIMEOFFSET.
+	((25 - OldSlot) * 40) + ((NewSlot - 1) * 40) + ?SENDTIMEOFFSET.
 
 waitSendtime(Sendtime) ->
 	debug("wait sendtime", ?DEBUG),
