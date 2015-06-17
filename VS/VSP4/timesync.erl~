@@ -1,8 +1,7 @@
 -module(timesync).
 -export([start/3]).
 -import(werkzeug, [getUTC/0, logging/2]).
-
--define(NAME, lists:flatten(io_lib:format("timesync@~p", [node()]))).
+-define(NAME, "timesync").
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, true).
 

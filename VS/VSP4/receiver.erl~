@@ -2,7 +2,7 @@
 -import(werkzeug, [getUTC/0, openSe/2, openSeA/2, openRec/3, openRecA/3, logging/2]).
 -export([delivery/3, init/6, start/6, loop/9]).
 
--define(NAME, lists:flatten(io_lib:format("receiver@~p", [node()]))).
+-define(NAME, lists:flatten(io_lib:format("receiver@~p", [node()]))").
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, true).
 

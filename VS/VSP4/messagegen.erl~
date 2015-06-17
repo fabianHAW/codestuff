@@ -2,7 +2,7 @@
 -export([start/2]).
 -import(werkzeug, [createBinaryS/1, createBinaryD/1, createBinaryNS/1, getUTC/0]).
 
--define(NAME, lists:flatten(io_lib:format("messagegen@~p", [node()]))).
+-define(NAME, "messagegen").
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, true).
 -define(SENDTIMEOFFSET, 10).

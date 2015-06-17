@@ -1,7 +1,7 @@
 -module(slotreservation).
 -export([start/1]).
 
--define(NAME, lists:flatten(io_lib:format("slotreservation@~p", [node()]))).
+-define(NAME, "slotreservation").
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, true).
 
