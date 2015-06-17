@@ -79,11 +79,12 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 				loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, NewTime, stationAlive, MessageGenPID)
 		end;
 		kill ->
-			kill()
+			kill(Socket, ReceiverDeliveryPID, TimeSyncPID)
 	after
 		1000 ->
-			ReceiverDeliveryPID ! {slot, 20},
-			MessageGenPID ! {initialSlot, 20},
+			InitialSlot = random:uniform(25),
+			ReceiverDeliveryPID ! {slot, InitialSlot},
+			MessageGenPID ! {initialSlot, InitialSlot},
 			sendFreeSlots(SlotsUsed, ReceiverDeliveryPID),
 			loop(Collisions, Received, [], Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
 	end
@@ -197,8 +198,13 @@ countSlotNumberUsed(Rest, _SlotNumber, _Counter) ->
 	Rest
 .
 
-kill() ->
-	debug("Shutdown Receiver ~n", ?DEBUG)
+kill(Socket, ReceiverDeliveryPID, TimeSyncPID) ->
+	gen_udp:close(Socket),
+	ReceiverDeliveryPID ! kill,
+	debug("send kill to receiver services~n", ?DEBUG),
+	TimeSyncPID ! kill,
+	debug("send kill to timesync~n", ?DEBUG),
+	debug("Shutdown Receiver~n", ?DEBUG)
 .
 
 %%%%%%%%%%%%Receiver Services%%%%%%%%%%%%%
@@ -209,7 +215,11 @@ delivery(stationAlive, SlotReservationPID, TimeSyncPID) ->
 			delivery(stationAlive, SlotReservationPID, TimeSyncPID);
 		{times, StationClass, TimeInSlot} ->
 			TimeSyncPID ! {times, StationClass, TimeInSlot},
-			delivery(stationAlive, SlotReservationPID, TimeSyncPID)
+			delivery(stationAlive, SlotReservationPID, TimeSyncPID);
+		kill ->
+			SlotReservationPID ! kill,
+			debug("send kill to slotreservation~n",?DEBUG),
+			debug("receiver services terminated~n",?DEBUG)
 	end
 .
 

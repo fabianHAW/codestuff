@@ -6,12 +6,7 @@
 -define(DEBUG, true).
 	
 start(ArgsList) ->
-	InterfaceName = lists:nth(1, ArgsList),
-	MulticastAddr = list_to_tuple([list_to_integer(X) || X <- string:tokens(atom_to_list(lists:nth(2, ArgsList)), [$.])]), 
-	ReceivePort = lists:nth(3, ArgsList), 
-	StationClass = atom_to_list(lists:nth(4, ArgsList)), 
-	UtcOffsetMs = list_to_integer(atom_to_list(lists:nth(5, ArgsList))), 
-	StationNumber = lists:nth(6, ArgsList),
+	{InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber, UtcOffsetMs} = readArgs(ArgsList),
 
 	SenderPID = spawn(sender, start, [InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber]),
 	debug("sender spawned", ?DEBUG),
@@ -27,6 +22,21 @@ start(ArgsList) ->
 	end,
 	unregisterAtLocalNameservice(Name).
 	
+readArgs(ArgsList) when length(ArgsList) == 5 ->
+	InterfaceName = lists:nth(1, ArgsList),
+	MulticastAddr = list_to_tuple([list_to_integer(X) || X <- string:tokens(atom_to_list(lists:nth(2, ArgsList)), [$.])]), 
+	ReceivePort = lists:nth(3, ArgsList), 
+	StationClass = atom_to_list(lists:nth(4, ArgsList)), 
+	StationNumber = lists:nth(5, ArgsList),
+	{InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber, 0};
+readArgs(ArgsList) when length(ArgsList) == 6 ->
+	InterfaceName = lists:nth(1, ArgsList),
+	MulticastAddr = list_to_tuple([list_to_integer(X) || X <- string:tokens(atom_to_list(lists:nth(2, ArgsList)), [$.])]), 
+	ReceivePort = lists:nth(3, ArgsList), 
+	StationClass = atom_to_list(lists:nth(4, ArgsList)), 
+	UtcOffsetMs = list_to_integer(atom_to_list(lists:nth(5, ArgsList))), 
+	StationNumber = lists:nth(6, ArgsList),
+	{InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber, UtcOffsetMs}.
 
 registerAtLocalNameservice(Name) ->
 	register(Name, self()),
