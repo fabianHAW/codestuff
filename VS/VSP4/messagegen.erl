@@ -45,7 +45,7 @@ loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlo
 	
 	
 	Sendtime = calcSendTime(NewSlot, OldSlot),
-	io:format("sendtime: ~p~n", [Sendtime]),
+	%io:format("sendtime: ~p~n", [Sendtime]),
 	
 	Timestamp = getUTC(),
 	%io:format("~p~n",[Sendtime]),

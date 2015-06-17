@@ -23,9 +23,7 @@ start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 	%aktiv
 	Socket = openSeA(HostAddress, SendPort),
 	%Socket = openSeA({127,0,0,2}, SendPort),
-	Result = gen_udp:controlling_process(Socket, self()),
-	A = a,
-	io:format("result sender: ~p~p~n", [Result, A]),
+	gen_udp:controlling_process(Socket, self()),
 	%auf Receiver-Anfrage warten
 	receive 
 		{getPID, ReceiverPID} ->
@@ -103,9 +101,7 @@ checkSlot(Slot, SlotReservationPID) ->
 	
 sendMulticast({StationClass, Slot, Data}, Socket, MulticastAddr, ReceivePort, Timestamp) ->
 	debug("send multicast", ?DEBUG),
-	io:format("~p ~p ~p~n", [Socket, MulticastAddr, ReceivePort]),
-	Result = gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))),
-	io:format("~p~n", [Result]).
+	gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))).
 
 	
 debug(Text, true) ->

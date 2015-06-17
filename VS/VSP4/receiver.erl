@@ -29,9 +29,7 @@ init(InterfaceName, MulticastAddr, {ReceivePort, _}, ReceiverDeliveryPID, TimeSy
 	HostAddress = getHostAddress(InterfaceName),
 	%Socket = openRecA(MulticastAddr, HostAddress, ReceivePort),
 	Socket = openRecA(MulticastAddr, HostAddress, ReceivePort),
-	Result = gen_udp:controlling_process(Socket, self()),
-	io:format("result receiver: ~p~n", [Result]),
-	io:format("Socket receiver: ~p~n", [Socket]),
+	gen_udp:controlling_process(Socket, self()),
 	SlotsUsed = initSlotPositions(24),
 		SenderPID ! {getPID, self()},
 	receive
@@ -41,9 +39,10 @@ init(InterfaceName, MulticastAddr, {ReceivePort, _}, ReceiverDeliveryPID, TimeSy
 	TimeSyncPID ! {getTime, self()},
 	receive
 		{currentTime, TimeStamp} ->
-			debug("timestamp received", ?DEBUG),
-			spawn(receiver, loop, [0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive, MessageGenPID])
-	end
+			debug("timestamp received", ?DEBUG)
+			%spawn(receiver, loop, [0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive, MessageGenPID])
+	end,
+	loop(0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive, MessageGenPID)
 .
 
 %Initialisert die Liste mit den Slot-Positionen.
@@ -66,27 +65,28 @@ initSlotPositions(SlotsUsed, _NumPos, _Counter) ->
 %entschieden ob es eine Kollision gab,
 %und protokolliert.
 loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID) ->
-	io:format("1~n",[]),
+	%io:format("1~n",[]),
 	%{ok, {Address, Port, Packet}} = gen_udp:recv(Socket, 34),
 	receive	
 		%Any ->
 		 % io:format("~p~n",[Any]);
-		{udp, ReceiveSocket, Address, Port, Packet} -> 
-			io:format("1.5~n",[]),
+		{udp,ReceiveSocket,Address,Port,Packet} -> 
+			debug("received new packet~n",?DEBUG),
+			%io:format("1.5~n",[]),
 			{CollisionDetected, SlotsUsedNew} = getSlotNumber(SlotsUsed, Packet),
-			io:format("3~n",[]),
+			%io:format("3~n",[]),
 			{CollisionsNew, ReceivdNew} = loop(CollisionDetected, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID),
-			io:format("4~n",[]),
+			%io:format("4~n",[]),
 			TimeSyncPID ! {getTime, self()},
 			receive
 			      {currentTime, CurrentTime} ->
-				    {SlotsUsedNew, NewTime} = isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID),
-				     loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, NewTime, stationAlive, MessageGenPID)
+				     {SlotsUsedNewNew, NewTime} = isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID),
+				     loop(CollisionsNew, ReceivdNew, SlotsUsedNewNew, Socket, ReceiverDeliveryPID, TimeSyncPID, NewTime, stationAlive, MessageGenPID)
 			end;
 		kill ->
-			kill(Socket, ReceiverDeliveryPID, TimeSyncPID);
-		Any ->
-			io:format("Any: ~p~n", [Any])
+			kill(Socket, ReceiverDeliveryPID, TimeSyncPID)
+		%Any ->
+		%	io:format("Any: ~p~n", [Any])
 	after
 		1000 ->
 			InitialSlot = random:uniform(25),
@@ -94,7 +94,7 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 			MessageGenPID ! {initialSlot, InitialSlot},
 			SlotsUsedNew = insertInSlotsUsed(initSlotPositions(24), InitialSlot),
 			sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
-			loop(Collisions, Received, [], Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
+			loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
 	end
 .
 
@@ -115,7 +115,8 @@ loop(corrupt, Collisions, Received, _Packet, _ReceiverDeliveryPID, TimeSyncPID) 
 	logging(?LOGFILE, lists:flatten(io_lib:format("Received: corrupted Package!~n", []))),
 	{Collisions, Received};
 loop(true, Collisions, Received, _Packet, _ReceiverDeliveryPID, TimeSyncPID) ->
-	logging(?LOGFILE, lists:flatten(io_lib:format("Collision detected! Collisions ~p ~n", [Collisions]))),
+	%logging(?LOGFILE, lists:flatten(io_lib:format("Collision detected! Collisions ~p ~n", [Collisions]))),
+	logging(?LOGFILE, lists:flatten(io_lib:format("Package successfully received! Received ~p ~n", [Received]))),
 	{Collisions + 1, Received};
 loop(false, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID) ->
 	logging(?LOGFILE, lists:flatten(io_lib:format("Package successfully received! Received ~p ~n", [Received]))),
@@ -147,16 +148,16 @@ sendFreeSlots([First | Rest], ReceiverDeliveryPID, Counter) ->
 
 %Extrahiert die Daten aus dem Paket und loggt den Inhalt.
 analyse(Packet, ReceiverDeliveryPID, TimeSyncPID) ->
-	Binary = binary:bin_to_list(Packet),
-	StationClass = binary:decode_unsigned(lists:nth(1, Binary)),
-	Payload = extractIntervall(Binary, 2, 25),
-	NextSlot = binary:decode_unsigned(lists:nth(26, Binary)),
-	TimeInSlot = extractIntervall(Binary, 27, 34),
+	%Binary = binary:bin_to_list(Packet),
+	%StationClass = binary:decode_unsigned(lists:nth(1, Binary)),
+	%Payload = extractIntervall(Binary, 2, 25),
+	%NextSlot = binary:decode_unsigned(lists:nth(26, Binary)),
+	%TimeInSlot = extractIntervall(Binary, 27, 34),
+	{StationTyp, Nutzdaten, SlotNumber, Timestamp} = message_to_string(Packet),
+	ReceiverDeliveryPID ! {slot, SlotNumber},
+	TimeSyncPID ! {times, StationTyp, Timestamp},
 	
-	ReceiverDeliveryPID ! {slot, NextSlot},
-	TimeSyncPID ! {times, StationClass, TimeInSlot},
-	
-	logging(?LOGFILE, lists:flatten(io_lib:format("Received Package: StationClass ~p  | Payload ~p | NextSlot ~p | Sendtime ~p ~n", [StationClass, Payload, NextSlot, TimeInSlot])))
+	logging(?LOGFILE, lists:flatten(io_lib:format("Received Package: StationClass ~p  | Payload ~p | NextSlot ~p | Sendtime ~p ~n", [StationTyp, Nutzdaten, SlotNumber, Timestamp])))
 .
 
 %Extrahiert die Daten aus dem Paket von From bis To.	
@@ -177,8 +178,10 @@ extractIntervall(_Rest, _From, To, Counter) when Counter > To ->
 %Ob der Slot im nächsten Frame schon von einer anderen Station
 %in Gebrauch sein wird.
 getSlotNumber(SlotsUsed, Packet) ->
-	Binary = binary:bin_to_list(Packet),
-	SlotNumber = binary:decode_unsigned(lists:nth(26, Binary)),
+	{_StationTyp,_Nutzdaten, SlotNumber,_Timestamp} = message_to_string(Packet),
+	%Binary = binary:bin_to_list(Packet),
+	%SlotNumber = binary:decode_unsigned(lists:nth(26, Binary)),
+	io:format("in getslot: ~p ~p~n", [SlotsUsed, SlotNumber]),
 	{willSlotBeInUse(SlotsUsed, SlotNumber), countSlotNumberUsed(SlotsUsed, SlotNumber)}
 .
 
@@ -186,17 +189,17 @@ getSlotNumber(SlotsUsed, Packet) ->
 %im nächsten Frame von einer anderen Station in Gebrauch sein wird.
 %Im Ausnahmefall wird corrupt zurückgeliefert, wenn die Slot-Nr. aus dem Paket > 25 war.
 willSlotBeInUse(SlotsUsed, SlotNumber) ->
-	willSlotBeInUse(SlotsUsed, SlotNumber, 0)
+	willSlotBeInUse(SlotsUsed, SlotNumber, 1)
 .
 
 %Liefert true oder false zurück, je nachdem ob der Slot
 %im nächsten Frame von einer anderen Station in Gebrauch sein wird.
 %Im Ausnahmefall wird corrupt zurückgeliefert, wenn die Slot-Nr. aus dem Paket > 25 war.
-willSlotBeInUse([_First | Rest], SlotNumber, Counter) when SlotNumber < Counter ->
+willSlotBeInUse([_First | Rest], SlotNumber, Counter) when SlotNumber > Counter ->
 	willSlotBeInUse(Rest, SlotNumber, Counter + 1);
-willSlotBeInUse([First | _Rest], SlotNumber, Counter) when SlotNumber == Counter, First /= 0->
+willSlotBeInUse([First | _Rest], SlotNumber, Counter) when (SlotNumber == Counter), (First /= 0) ->
 	true;
-willSlotBeInUse([First | _Rest], SlotNumber, Counter) when SlotNumber == Counter, First == 0->
+willSlotBeInUse([First | _Rest], SlotNumber, Counter) when (SlotNumber == Counter), (First == 0)->
 	false;
 willSlotBeInUse([], _SlotNumber, _Counter) ->
 	corrupt
@@ -229,6 +232,17 @@ kill(Socket, ReceiverDeliveryPID, TimeSyncPID) ->
 	debug("send kill to timesync~n", ?DEBUG),
 	debug("Shutdown Receiver~n", ?DEBUG)
 .
+
+message_to_string(Packet)	->
+%	Packet= <<BinStationTyp:8/binary,BinNutzdaten:192/binary,Slot:8/integer,Timestamp:64/integer>>
+	List = binary:bin_to_list(Packet),
+	StationTyp = lists:nth(1, List),
+	%StationTyp = erlang:binary_to_list(Packet,0,0),
+	Nutzdaten= erlang:binary_to_list(Packet,2,25),
+	Slot = lists:nth(1, erlang:binary_to_list(Packet,26,26)),
+	Timestamp = erlang:binary_to_list(Packet,27,34),
+	io:format("StationTyp ~p,Nutzdaten ~p,Slot ~p,Timestamp ~p~n", [StationTyp,Nutzdaten,Slot,Timestamp]),
+	{StationTyp,Nutzdaten,Slot,Timestamp}.
 
 %%%%%%%%%%%%Receiver Services%%%%%%%%%%%%%
 delivery(stationAlive, SlotReservationPID, TimeSyncPID) ->
