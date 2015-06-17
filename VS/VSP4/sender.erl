@@ -61,6 +61,7 @@ loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservati
 			Killed = false;
 		{nomessage} ->
 			debug("sendtime expired", ?DEBUG),
+			logging(?LOGFILE, lists:flatten(io_lib:format("sendtime expired~n", []))),
 			Killed = false;
 		kill ->
 			Killed = true
@@ -104,7 +105,7 @@ checkSlot(Slot, SlotReservationPID) ->
 sendMulticast({StationClass, Slot, Data}, Socket, MulticastAddr, ReceivePort, Timestamp) ->
 	debug("send multicast", ?DEBUG),
 	gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))),
-	logging(?LOGFILE, lists:flatten(io_lib:format("package send to multicast ~p ~p ~p ~p ~n", [StationClass, Slot, Data,Timestamp]))).
+	logging(?LOGFILE, lists:flatten(io_lib:format("package send to multicast ~p ~p ~p ~p ~n", [StationClass, Slot, Data, Timestamp]))).
 
 	
 debug(Text, true) ->

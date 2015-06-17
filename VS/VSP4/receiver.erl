@@ -126,6 +126,8 @@ loop(false, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID) ->
 %Berechnung korrigieren
 isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID) when ((CurrentTime - OldTime)) >= 1000 ->
 	TimeSyncPID ! {getTime, self()},
+	TimeSyncPID ! {nextFrame},
+	
 	sendFreeSlots(SlotsUsed, ReceiverDeliveryPID, 1),
 
 	receive

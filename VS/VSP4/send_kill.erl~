@@ -15,6 +15,5 @@ loop(To, To, Hostname, Name) ->
 loop(From, To, Hostname, Name) ->
 	NameNew = list_to_atom(Name ++ integer_to_list(From)),
 	Node = list_to_atom(Name ++ integer_to_list(From) ++ "@" ++ Hostname),
-	io:format("~p~n", [Node]),
 	{NameNew, Node} ! kill,
 	start(From + 1, To).

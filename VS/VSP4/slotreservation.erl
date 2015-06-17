@@ -36,8 +36,11 @@ loop(FreeSlots, SenderPID) ->
 %wenn kein freier Slot zur Verfügung steht.
 getNewSlot([]) ->
 	{[], nok};
-getNewSlot([Next | Rest]) ->
-	{Rest, Next}
+getNewSlot(List) ->
+	Rand = random:uniform(length(List)),
+	Next = lists:nth(Rand, List),
+	ListNew = lists:delete(Next, List),
+	{ListNew, Next}
 .
 
 %Sendet {collision, true} an den Sender, wenn der Slot in dem

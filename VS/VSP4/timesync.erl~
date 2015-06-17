@@ -1,7 +1,8 @@
 -module(timesync).
 -export([start/3]).
 -import(werkzeug, [getUTC/0, logging/2]).
--define(NAME, "timesync").
+
+-define(NAME, lists:flatten(io_lib:format("timesync@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, true).
 
@@ -19,39 +20,54 @@ debug(Text, true) ->
 %Bleibt die Zeit ungenau.
 %Sonst soll die Zeit synchronisiert werden.
 getNewTime(UtcOffsetMs, false) ->
-	accurate(UtcOffsetMs, 0, 0);
+	inaccurate(UtcOffsetMs, getUTC());
 getNewTime(UtcOffsetMs, true) ->
-	accurate(UtcOffsetMs, 0, 0)
+	accurate(UtcOffsetMs, 0, 0, 0)
 .
 
 %Nicht mehr benötigt!
 %Zeit wird nicht synchronisiert, da die eigene Station von der Klasse B ist.
 %Erhält Anfragen von Sender u. MessageGen, ignoriert Zeitmitteilung vom Receiver.
-inaccurate(UtcOffsetMs) ->
+inaccurate(UtcOffsetMs, Time) ->
 	receive 
 		{times, StationClass, TimeInSlot} ->
-			inaccurate(UtcOffsetMs);
+			case string:equal(StationClass, "A") of
+				true ->
+					inaccurate(UtcOffsetMs, TimeInSlot);
+				false ->
+					inaccurate(UtcOffsetMs, Time)
+			end;
 		{getTime, SenderPID_MessageGenPID} ->
-			SenderPID_MessageGenPID ! {currentTime, getUTC()},
-			inaccurate(UtcOffsetMs);
+			SenderPID_MessageGenPID ! {currentTime, Time},
+			inaccurate(UtcOffsetMs, Time);
 		kill ->
-			kill()
+			kill();
+		Any ->
+			inaccurate(UtcOffsetMs, Time)
 	end
 .
 
 %Zeit wird synchronisiert, da die eigene Staion von der Klasse A ist.
 %Erhält Anfragen von Sender u. MessageGen, berücksichtigt Zeitmitteilungen vom Receiver.
-accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived) ->
+accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived, FrameCounter) ->
 	receive 
 		{times, StationClass, TimeInSlot} ->
 			SyncOffsetNew = berkley(string:equal(StationClass, "A"), TimeInSlot, SyncOffsetMs, TimesReceived + 1),
-			accurate(UtcOffsetMs, SyncOffsetNew, TimesReceived + 1);
+			accurate(UtcOffsetMs, SyncOffsetNew, TimesReceived + 1, FrameCounter);
 		{getTime, SenderPID_MessageGenPID} ->
 			SenderPID_MessageGenPID ! {currentTime, SyncOffsetMs + UtcOffsetMs}, %TODO: SyncOffset Berechnen Berkley
-			accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived);
+			accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived, FrameCounter);
+		{nextFrame} ->
+			{SyncOffsetMsNew, TimesReceivedNew, FrameCounterNew} = resetIfNeccessary(SyncOffsetMs, TimesReceived, FrameCounter + 1),
+			accurate(UtcOffsetMs, SyncOffsetMsNew, TimesReceivedNew, FrameCounterNew);
 		kill ->
 			kill()
 	end
+.
+resetIfNeccessary(SyncOffsetMs, TimesReceived, FrameCounter) when FrameCounter == 4 ->
+	{0, 1, 0};
+resetIfNeccessary(SyncOffsetMs, TimesReceived, FrameCounter) ->
+	{SyncOffsetMs, TimesReceived, FrameCounter}
 .
 
 %Evtl. RTT, Jitter reinnehmen
