@@ -99,7 +99,7 @@ insertInSlotsUsed([], SlotNumber, _Counter) ->
 	[];
 insertInSlotsUsed([First | Rest], SlotNumber, Counter) when SlotNumber == Counter ->
 	lists:append([First + 1], Rest);
-insertInSlotsUsed([First | Rest], SlotNumber, Counter) when SlotNumber == Counter ->
+insertInSlotsUsed([First | Rest], SlotNumber, Counter) ->
 		lists:append([First], insertInSlotsUsed(Rest, SlotNumber, Counter + 1))
 .
 	
@@ -132,9 +132,9 @@ sendFreeSlots([], _ReceiverDeliveryPID, _Counter) ->
 	ok;
 sendFreeSlots([First | Rest], ReceiverDeliveryPID, Counter) when First == 0 ->
 	ReceiverDeliveryPID ! {slot, Counter},
-	sendFreeSlots(Rest, ReceiverDeliveryPID, Counter);
+	sendFreeSlots(Rest, ReceiverDeliveryPID, Counter + 1);
 sendFreeSlots([First | Rest], ReceiverDeliveryPID, Counter) ->
-	sendFreeSlots(Rest, ReceiverDeliveryPID, Counter)
+	sendFreeSlots(Rest, ReceiverDeliveryPID, Counter + 1)
 .
 
 
