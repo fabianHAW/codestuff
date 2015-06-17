@@ -44,7 +44,11 @@ loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservati
 
 			%{_StationClass, Slot, _Data} = Message,
 			%CheckedSlot = checkSlot(lists:nth(1, binary_to_list(Slot)), SlotReservationPID),
+			Time1 = werkzeug:getUTC(),
 			CheckedSlot = checkSlot(OldSlot, SlotReservationPID),
+			Time2Temp = werkzeug:getUTC(),
+			Time2 = Time2Temp - Time1,
+			logging(?LOGFILE, lists:flatten(io_lib:format("Time2 ~p ~n", [Time2]))),
 			case CheckedSlot of
 				true ->
 					debug("detected collision", ?DEBUG);
@@ -54,6 +58,7 @@ loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservati
 						{currentTime, Timestamp} ->
 							debug("received new timestamp", ?DEBUG)
 					end,
+					logging(?LOGFILE, lists:flatten(io_lib:format("Time3 ~p ~n", [werkzeug:getUTC() - Time2Temp]))),
 					
 					sendMulticast(Message, Socket, MulticastAddr, ReceivePort, Timestamp)
 			end,
@@ -103,6 +108,7 @@ checkSlot(Slot, SlotReservationPID) ->
 	
 sendMulticast({StationClass, Slot, Data}, Socket, MulticastAddr, ReceivePort, Timestamp) ->
 	debug("send multicast", ?DEBUG),
+	logging(?LOGFILE, lists:flatten(io_lib:format("time at sender ~p ~n", [werkzeug:getUTC()]))),
 	gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))),
 	logging(?LOGFILE, lists:flatten(io_lib:format("package send to multicast ~p ~p ~p ~p ~n", [StationClass, Slot, Data, Timestamp]))).
 

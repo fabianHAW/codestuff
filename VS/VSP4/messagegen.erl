@@ -5,10 +5,11 @@
 -define(NAME, lists:flatten(io_lib:format("messagegen@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("~p.log", [?NAME]))).
 -define(DEBUG, false).
--define(SENDTIMEOFFSET, 10).
+-define(SENDTIMEOFFSET, 0).
 -define(SLOTLENGTH, 40).
 
 start(SenderPID, StationClass) ->
+	crypto:rand_uniform(1, 26),
 	PIDList = waitForInitialValues([]),
 	MessageGenPID = self(),
 	PufferPID = spawn_link(fun() -> puffer(MessageGenPID, data) end),
@@ -42,9 +43,11 @@ loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlo
 	%		Timestamp = -1,
 	%		_Killed = true
 	%end,
-	
-	
-	Sendtime = calcSendTime(NewSlot, OldSlot),
+	TimeToGetDataStart = getUTC(),
+	{{MessageClass, MessageData}, Killed} = prepareMessage(StationClass, PufferPID, false),
+	TimeToGetDataEnd = getUTC() - TimeToGetDataStart,
+			
+	Sendtime = calcSendTime(NewSlot, OldSlot, TimeToGetDataEnd),
 	%io:format("sendtime: ~p~n", [Sendtime]),
 	
 	Timestamp = getUTC(),
@@ -57,15 +60,17 @@ loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlo
 		false ->
 			debug("sendtime expired", ?DEBUG),
 			logging(?LOGFILE, lists:flatten(io_lib:format("sendtime expired ~n", []))),
-			{NextSlot, KilledNew} = getNextSlot(SlotReservationPID),
+			{NextSlot, KilledNew} = getNextSlot(SlotReservationPID, Killed),
 			SenderPID ! {nomessage};
 		true ->
-			{NextSlot, Killed} = getNextSlot(SlotReservationPID),
-			{Message, KilledNew} = prepareMessage(NextSlot, StationClass, PufferPID, Killed),
-			logging(?LOGFILE, lists:flatten(io_lib:format("created new message ~p ~n", [Message]))),
-			SenderPID ! {message, Message, OldSlot}
+			{NextSlot, KilledNew} = getNextSlot(SlotReservationPID, Killed),
+			%{Message, KilledNew} = prepareMessage(NextSlot, StationClass, PufferPID, Killed),
+			Message = {MessageClass, createBinaryNS(NextSlot), MessageData},
+			%logging(?LOGFILE, lists:flatten(io_lib:format("created new message ~p ~n", [Message]))),
+			SenderPID ! {message, Message, NewSlot}
 	end,
 	
+	logging(?LOGFILE, lists:flatten(io_lib:format("sendtime: ~p newslot ~p oldslot ~p nextslot ~p~n", [Sendtime, NewSlot, OldSlot, NextSlot]))),
 	loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, NewSlot, NextSlot, KilledNew);
 loop(_PufferPID, _SenderPID, _StationClass, _TimeSyncPID, _SlotReservationPID, _OldSlot, _NewSlot, true) ->
 	debug("killed", ?DEBUG).
@@ -113,34 +118,45 @@ getInitialSlot() ->
 	end,
 	NewSlot.
 	
-getNextSlot(SlotReservationPID) ->
+getNextSlot(SlotReservationPID, Killed) ->
+	%Time1 = getUTC(),
 	SlotReservationPID ! {getSlot, self()},
 	receive 
 		%zum debuggen noch drin gelassen
 		{nextSlot, nok} ->
 			debug("there is no next slot available", ?DEBUG),
-			Killed = false,
+			KilledNew = Killed,
 			NextSlot = -1;
 		{nextSlot, NextSlot} ->
-			debug("received next slot", ?DEBUG),
-			Killed = false;
+			%debug("received next slot", ?DEBUG),
+			KilledNew = Killed;
 		kill ->
 			NextSlot = -1,
-			Killed = true
+			KilledNew = true
 	end,
-	{NextSlot, Killed}.
+	%logging(?LOGFILE, lists:flatten(io_lib:format("Time1: ~p Time2: ~p~n", [Time1, getUTC() - Time1]))),
+	{NextSlot, KilledNew}.
 
-calcSendTime(NewSlot, OldSlot) ->
+calcSendTime(NewSlot, 0, TimeToGetDataEnd) ->
+	logging(?LOGFILE, lists:flatten(io_lib:format("1newslot ~p oldslot ~p~n", [NewSlot, 0]))),
 	debug("calculate sendtime", ?DEBUG),
 	%wenn Slot-Nummerieung bei 1 beginnt, muss einer abgezogen werden
-	io:format("oldslot: ~p newslot: ~p~n", [OldSlot, NewSlot]),
-	((25 - OldSlot) * 40) + ((NewSlot - 1) * 40) + ?SENDTIMEOFFSET.
+	%io:format("oldslot: ~p newslot: ~p~n", [OldSlot, NewSlot]),
+	%(((NewSlot - 1) * ?SLOTLENGTH) + ?SENDTIMEOFFSET) - TimeToGetDataEnd;
+	((NewSlot - 1) * ?SLOTLENGTH) - TimeToGetDataEnd;
+calcSendTime(NewSlot, OldSlot, TimeToGetDataEnd) ->
+	debug("calculate sendtime", ?DEBUG),
+	%wenn Slot-Nummerieung bei 1 beginnt, muss einer abgezogen werden
+	%io:format("oldslot: ~p newslot: ~p~n", [OldSlot, NewSlot]),
+	logging(?LOGFILE, lists:flatten(io_lib:format("2newslot ~p oldslot ~p~n", [NewSlot, OldSlot]))),
+	%(((25 - OldSlot) * ?SLOTLENGTH) + ((NewSlot - 1) * ?SLOTLENGTH) + ?SENDTIMEOFFSET) - TimeToGetDataEnd.
+	((25 - OldSlot) * ?SLOTLENGTH) + ((NewSlot - 1) * ?SLOTLENGTH) - TimeToGetDataEnd.
 
 waitSendtime(Sendtime) ->
 	debug("wait sendtime", ?DEBUG),
 	timer:sleep(Sendtime).
 	
-prepareMessage(Slot, StationClass, PufferPID, Killed) ->
+prepareMessage(StationClass, PufferPID, Killed) ->
 	PufferPID ! getdata,
 	receive 
 		{newdata, Data} ->
@@ -150,7 +166,7 @@ prepareMessage(Slot, StationClass, PufferPID, Killed) ->
 			Data = -1,
 			KilledNew = true
 	end,
-	{{createBinaryS(StationClass), createBinaryNS(Slot), createBinaryD(Data)}, KilledNew}.
+	{{createBinaryS(StationClass), createBinaryD(Data)}, KilledNew}.
 
 
 debug(Text, true) ->

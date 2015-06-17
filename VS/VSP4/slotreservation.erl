@@ -13,18 +13,25 @@ start(SenderPID) ->
 
 %Antwortet auf Anfragen von MessageGen und Sender
 loop(FreeSlots, SenderPID) ->
+	%Time1 = werkzeug:getUTC(),
+	%werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("time1: ~p~n", [Time1]))),
 	receive
 		{slot, reset, NextSlot} ->
 			loop([NextSlot], SenderPID);
 		{slot, NextSlot} ->
 			loop(lists:append(FreeSlots, [NextSlot]), SenderPID);
 		{getSlot, MessageGenPID} ->
+			%Time2Temp = werkzeug:getUTC(),
+			%Time2 = Time2Temp - Time1,
+			%werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("time2: ~p~n", [Time2]))),
 			{FreeSlotsNew, NextSlot} = getNewSlot(FreeSlots),
 			%io:format("free: ~p~n", [FreeSlotsNew]),
 			%io:format("next: ~p~n", [NextSlot]),
 			MessageGenPID ! {nextSlot, NextSlot},
+			%werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("time3: ~p~n", [werkzeug:getUTC() - Time2Temp]))),
 			loop(FreeSlotsNew, SenderPID);
 		{collision, Slot} ->
+			werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("FreeSlots: ~p Slot: ~p~n", [FreeSlots, Slot]))),
 			sendCollisionAnswer(FreeSlots, Slot, SenderPID),
 			loop(FreeSlots, SenderPID);
 		kill ->
@@ -38,10 +45,14 @@ getNewSlot([]) ->
 	{[], nok};
 getNewSlot(List) ->
 	%Rand = random:uniform(length(List)),
-	Rand = crypto:rand_uniform(1, length(List)),
 	%io:format("*************rand ~p~n", [Rand]),
-	Next = lists:nth(Rand, List),
+	%Time1 = werkzeug:getUTC(),
+	Next = lists:nth(crypto:rand_uniform(1, length(List)), List),
+	%Time2Temp = werkzeug:getUTC(),
+	%Time2 = Time2Temp - Time1,
+	%werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("time22: ~p~n", [Time2]))),
 	ListNew = lists:delete(Next, List),
+	%werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("time33: ~p~n", [werkzeug:getUTC() - Time2Temp]))),
 	{ListNew, Next}
 .
 
@@ -49,8 +60,10 @@ getNewSlot(List) ->
 %der Sender sende möchte, nicht in der Liste der freien Slots ist,
 %sonst {collision, false}
 sendCollisionAnswer([], _Slot, SenderPID) ->
+	werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("true~n", []))),
 	SenderPID ! {collision, true};
 sendCollisionAnswer([First | _Rest], Slot, SenderPID) when First == Slot->
+	werkzeug:logging("\"messagegen@'station1@hildes-stube'\".log", lists:flatten(io_lib:format("false~n", []))),
 	SenderPID ! {collision, false};
 sendCollisionAnswer([_First | Rest], Slot, SenderPID) ->
 	sendCollisionAnswer(Rest, Slot, SenderPID)

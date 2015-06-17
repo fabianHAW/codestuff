@@ -37,7 +37,7 @@ then
 		then
 			for i in `seq $firstIndex $lastIndex`
 			do
-				erl -name kill_nodes$i -setcookie kekse -noshell -s kill_nodes start $i &
+				erl -sname kill_nodes$i -setcookie kekse -noshell -s kill_nodes start $i &
 			done
 			rc_status=0
 		else

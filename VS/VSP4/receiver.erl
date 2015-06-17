@@ -63,6 +63,7 @@ initSlotPositions(SlotsUsed, _NumPos, _Counter) ->
 loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID, Frames, initialListen) ->
 	%io:format("1~n",[]),
 	%{ok, {Address, Port, Packet}} = gen_udp:recv(Socket, 34),
+	logging(?LOGFILE, lists:flatten(io_lib:format("1time at receiver: ~p~n", [getUTC()]))),
 	receive	
 		%Any ->
 		 % io:format("~p~n",[Any]);
@@ -92,12 +93,13 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 			MessageGenPID ! {initialSlot, InitialSlot},
 			SlotsUsedNew = insertInSlotsUsed(initSlotPositions(24), InitialSlot),
 			sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
-			logging(?LOGFILE, lists:flatten(io_lib:format("Frames Total: ~p!~n", [Frames + 1]))),
+			logging(?LOGFILE, lists:flatten(io_lib:format("1Frames Total: ~p!~n", [Frames + 1]))),
 			loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID, Frames + 1)
 	end.
 
 loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID, Frames) ->
 
+	logging(?LOGFILE, lists:flatten(io_lib:format("2time at receiver: ~p~n", [getUTC()]))),
 	receive	
 		{udp,ReceiveSocket,Address,Port,Packet} -> 
 			debug("received new packet~n",?DEBUG),
@@ -118,7 +120,7 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 			MessageGenPID ! {initialSlot, InitialSlot},
 			SlotsUsedNew = insertInSlotsUsed(initSlotPositions(24), InitialSlot),
 			sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
-			logging(?LOGFILE, lists:flatten(io_lib:format("Frames Total: ~p!~n", [Frames + 1]))),
+			logging(?LOGFILE, lists:flatten(io_lib:format("2Frames Total: ~p!~n", [Frames + 1]))),
 			loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID, Frames + 1)
 	end
 .
@@ -202,21 +204,21 @@ extractIntervall(_Rest, _From, To, Counter) when Counter > To ->
 %in Gebrauch sein wird.
 getSlotNumber(SlotsUsed, Packet) ->
 	{_StationTyp,_Nutzdaten, SlotNumber,Timestamp} = message_to_string(Packet),
-	%{willSlotBeInUse(SlotsUsed, SlotNumber), countSlotNumberUsed(SlotsUsed, SlotNumber)}.
-	{willSlotBeInUse(Timestamp, PacketList), countSlotNumberUsed(SlotsUsed, SlotNumber)}
+	{willSlotBeInUse(SlotsUsed, SlotNumber), countSlotNumberUsed(SlotsUsed, SlotNumber)}.
+	%{willSlotBeInUse(Timestamp, PacketList), countSlotNumberUsed(SlotsUsed, SlotNumber)}
 
 %Liefert true oder false zurück, je nachdem ob der Slot
 %im nächsten Frame von einer anderen Station in Gebrauch sein wird.
 %Im Ausnahmefall wird corrupt zurückgeliefert, wenn die Slot-Nr. aus dem Paket > 25 war.
-%willSlotBeInUse(SlotsUsed, Timestamp) ->
-%	willSlotBeInUse(SlotsUsed, Timestamp, 1).
-.willSlotBeInUse(Timestamp, PacketList) ->
-	willSlotBeInUse(SlotsUsed, Timestamp, length(PacketList)).
+willSlotBeInUse(SlotsUsed, Timestamp) ->
+	willSlotBeInUse(SlotsUsed, Timestamp, 1).
+%willSlotBeInUse(Timestamp, PacketList) ->
+%	willSlotBeInUse(SlotsUsed, Timestamp, length(PacketList)).
 
-willSlotBeInUse(SlotsUsed, Timestamp, PacketListLength) when PacketListLength == 1 ->
+%willSlotBeInUse(SlotsUsed, Timestamp, PacketListLength) when PacketListLength == 1 ->
 
-willSlotBeInUse(SlotsUsed, Timestamp, PacketListLength) ->
-	checkTimestamp(TimeStamp, 
+%willSlotBeInUse(SlotsUsed, Timestamp, PacketListLength) ->
+%	checkTimestamp(TimeStamp, 
 
 %Liefert true oder false zurück, je nachdem ob der Slot
 %im nächsten Frame von einer anderen Station in Gebrauch sein wird.
