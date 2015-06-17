@@ -178,28 +178,28 @@ extractIntervall(_Rest, _From, To, Counter) when Counter > To ->
 %Ob der Slot im nächsten Frame schon von einer anderen Station
 %in Gebrauch sein wird.
 getSlotNumber(SlotsUsed, Packet) ->
-	{_StationTyp,_Nutzdaten, SlotNumber,_Timestamp} = message_to_string(Packet),
+	{_StationTyp,_Nutzdaten, _SlotNumber,Timestamp} = message_to_string(Packet),
 	%Binary = binary:bin_to_list(Packet),
 	%SlotNumber = binary:decode_unsigned(lists:nth(26, Binary)),
 	io:format("in getslot: ~p ~p~n", [SlotsUsed, SlotNumber]),
-	{willSlotBeInUse(SlotsUsed, SlotNumber), countSlotNumberUsed(SlotsUsed, SlotNumber)}
+	{willSlotBeInUse(SlotsUsed, Timestamp), countSlotNumberUsed(SlotsUsed, SlotNumber)}
 .
 
 %Liefert true oder false zurück, je nachdem ob der Slot
 %im nächsten Frame von einer anderen Station in Gebrauch sein wird.
 %Im Ausnahmefall wird corrupt zurückgeliefert, wenn die Slot-Nr. aus dem Paket > 25 war.
-willSlotBeInUse(SlotsUsed, SlotNumber) ->
-	willSlotBeInUse(SlotsUsed, SlotNumber, 1)
+willSlotBeInUse(SlotsUsed, Timestamp) ->
+	willSlotBeInUse(SlotsUsed, Timestamp, 1)
 .
 
 %Liefert true oder false zurück, je nachdem ob der Slot
 %im nächsten Frame von einer anderen Station in Gebrauch sein wird.
 %Im Ausnahmefall wird corrupt zurückgeliefert, wenn die Slot-Nr. aus dem Paket > 25 war.
-willSlotBeInUse([_First | Rest], SlotNumber, Counter) when SlotNumber > Counter ->
+willSlotBeInUse([_First | Rest], Timestamp, Counter) when SlotNumber > Counter ->
 	willSlotBeInUse(Rest, SlotNumber, Counter + 1);
-willSlotBeInUse([First | _Rest], SlotNumber, Counter) when (SlotNumber == Counter), (First /= 0) ->
+willSlotBeInUse([First | _Rest], Timestamp, Counter) when (SlotNumber == Counter), (First /= 0) ->
 	true;
-willSlotBeInUse([First | _Rest], SlotNumber, Counter) when (SlotNumber == Counter), (First == 0)->
+willSlotBeInUse([First | _Rest], Timestamp, Counter) when (SlotNumber == Counter), (First == 0)->
 	false;
 willSlotBeInUse([], _SlotNumber, _Counter) ->
 	corrupt
