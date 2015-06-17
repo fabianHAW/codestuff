@@ -55,7 +55,7 @@ accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived, FrameCounter) ->
 			SyncOffsetNew = berkley(string:equal(StationClass, "A"), TimeInSlot, SyncOffsetMs, TimesReceived + 1),
 			accurate(UtcOffsetMs, SyncOffsetNew, TimesReceived + 1, FrameCounter);
 		{getTime, SenderPID_MessageGenPID} ->
-			SenderPID_MessageGenPID ! {currentTime, SyncOffsetMs + UtcOffsetMs}, %TODO: SyncOffset Berechnen Berkley
+			SenderPID_MessageGenPID ! {currentTime, getUTC() + SyncOffsetMs + UtcOffsetMs}, %TODO: SyncOffset Berechnen Berkley
 			accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived, FrameCounter);
 		{nextFrame} ->
 			{SyncOffsetMsNew, TimesReceivedNew, FrameCounterNew} = resetIfNeccessary(SyncOffsetMs, TimesReceived, FrameCounter + 1),

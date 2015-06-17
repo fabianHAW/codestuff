@@ -95,8 +95,7 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 			SlotsUsedNew = insertInSlotsUsed(initSlotPositions(24), InitialSlot),
 			sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
 			loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
-	end
-.
+	end.
 
 insertInSlotsUsed(SlotsUsed, SlotNumber) ->
 		insertInSlotsUsed(SlotsUsed, SlotNumber, 1)

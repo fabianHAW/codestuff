@@ -4,7 +4,7 @@
 
 -define(NAME, lists:flatten(io_lib:format("sender@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
--define(DEBUG, true).
+-define(DEBUG, false).
 
 start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 	MessageGenPID = spawn(messagegen, start, [self(), StationClass]),
@@ -42,7 +42,6 @@ loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservati
 		{message, Message, OldSlot} ->		
 			debug("received new message", ?DEBUG),
 
-			logging(?LOGFILE, lists:flatten(io_lib:format("package received from messagegen ~p ~n", [Message]))),
 			%{_StationClass, Slot, _Data} = Message,
 			%CheckedSlot = checkSlot(lists:nth(1, binary_to_list(Slot)), SlotReservationPID),
 			CheckedSlot = checkSlot(OldSlot, SlotReservationPID),

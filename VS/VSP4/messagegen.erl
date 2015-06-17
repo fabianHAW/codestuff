@@ -4,7 +4,7 @@
 
 -define(NAME, lists:flatten(io_lib:format("messagegen@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
--define(DEBUG, true).
+-define(DEBUG, false).
 -define(SENDTIMEOFFSET, 10).
 -define(SLOTLENGTH, 40).
 
@@ -60,9 +60,9 @@ loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlo
 			{NextSlot, KilledNew} = getNextSlot(SlotReservationPID),
 			SenderPID ! {nomessage};
 		true ->
-			{NextSlot, _Killed} = getNextSlot(SlotReservationPID),
-			{Message, KilledNew} = prepareMessage(NextSlot, StationClass, PufferPID),
-			logging(?LOGFILE, lists:flatten(io_lib:format("created new message expired ~p ~n", [Message]))),
+			{NextSlot, Killed} = getNextSlot(SlotReservationPID),
+			{Message, KilledNew} = prepareMessage(NextSlot, StationClass, PufferPID, Killed),
+			logging(?LOGFILE, lists:flatten(io_lib:format("created new message ~p ~n", [Message]))),
 			SenderPID ! {message, Message, OldSlot}
 	end,
 	
@@ -140,17 +140,17 @@ waitSendtime(Sendtime) ->
 	debug("wait sendtime", ?DEBUG),
 	timer:sleep(Sendtime).
 	
-prepareMessage(Slot, StationClass, PufferPID) ->
+prepareMessage(Slot, StationClass, PufferPID, Killed) ->
 	PufferPID ! getdata,
 	receive 
 		{newdata, Data} ->
 			debug("received new data", ?DEBUG),
-			Killed = false;
+			KilledNew = Killed;
 		kill ->
 			Data = -1,
-			Killed = true
+			KilledNew = true
 	end,
-	{{createBinaryS(StationClass), createBinaryNS(Slot), createBinaryD(Data)}, Killed}.
+	{{createBinaryS(StationClass), createBinaryNS(Slot), createBinaryD(Data)}, KilledNew}.
 
 
 debug(Text, true) ->
