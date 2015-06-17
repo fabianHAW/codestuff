@@ -1,11 +1,12 @@
 -module(station1).
 -export([start/1, startA/1]).
 
--define(MULTICASTADDRESS, {127,0,0,1}).
+-define(MULTICASTADDRESS, {225,10,1,2}).
+%-define(OWNADDRESS, {141,22,31,165}).
 -define(OWNADDRESS, {127,0,0,2}).
 -define(MULTICASTPORT, 15001).
 -define(OWNPORT, 15002).
--define(TIMETOSLEEP, 1000).
+-define(TIMETOSLEEP, 3000).
 
 start(0) ->
 	finished;

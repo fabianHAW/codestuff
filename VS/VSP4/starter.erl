@@ -40,7 +40,6 @@ readArgs(ArgsList) when length(ArgsList) == 6 ->
 
 registerAtLocalNameservice(Name) ->
 	register(Name, self()),
-	io:format("~p~n", [Name]),
 	debug("starter registered", ?DEBUG).
 	
 unregisterAtLocalNameservice(Name) ->
