@@ -85,7 +85,7 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 			InitialSlot = random:uniform(25),
 			ReceiverDeliveryPID ! {slot, InitialSlot},
 			MessageGenPID ! {initialSlot, InitialSlot},
-			SlotsUsedNew = insertInSlotsUsed(SlotsUsed, InitialSlot),
+			SlotsUsedNew = insertInSlotsUsed(initSlotPositions(24), InitialSlot),
 			sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
 			loop(Collisions, Received, [], Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
 	end
