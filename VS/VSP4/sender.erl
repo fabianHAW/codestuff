@@ -101,7 +101,9 @@ checkSlot(Slot, SlotReservationPID) ->
 	
 sendMulticast({StationClass, Slot, Data}, Socket, MulticastAddr, ReceivePort, Timestamp) ->
 	debug("send multicast", ?DEBUG),
-	gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))).
+	io:format("~p ~p ~p~n", [Socket, MulticastAddr, ReceivePort]),
+	Result = gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))),
+	io:format("~p~n", [Result]).
 
 	
 debug(Text, true) ->

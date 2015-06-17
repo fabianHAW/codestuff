@@ -66,6 +66,8 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 	io:format("1~n",[]),
 	%{ok, {Address, Port, Packet}} = gen_udp:recv(Socket, 34),
 	receive	
+		Any ->
+		  io:format("~p~n",[Any]);
 		{udp, _ReceiveSocket, Address, Port, Packet} -> 
 			io:format("1.5~n",[]),
 		{CollisionDetected, SlotsUsedNew} = getSlotNumber(SlotsUsed, Packet),
@@ -99,7 +101,7 @@ insertInSlotsUsed([], SlotNumber, _Counter) ->
 	[];
 insertInSlotsUsed([First | Rest], SlotNumber, Counter) when SlotNumber == Counter ->
 	lists:append([First + 1], Rest);
-insertInSlotsUsed([First | Rest], SlotNumber, Counter) when SlotNumber == Counter ->
+insertInSlotsUsed([First | Rest], SlotNumber, Counter) ->
 		lists:append([First], insertInSlotsUsed(Rest, SlotNumber, Counter + 1))
 .
 	
@@ -198,7 +200,10 @@ willSlotBeInUse([], _SlotNumber, _Counter) ->
 %Zählt die Anzahl der Stationen hoch, die den Slot SlotNumber im
 %nächsten Frame benutzen werden.
 countSlotNumberUsed(SlotsUsed, SlotNumber) ->
-	countSlotNumberUsed(SlotsUsed, SlotNumber, 1)
+	io:format("incout: ~p~n", [SlotsUsed]),
+	Result = countSlotNumberUsed(SlotsUsed, SlotNumber, 1),
+	io:format("result: ~p~n", [Result]),
+	Result
 .
 
 %Zählt die Anzahl der Stationen hoch, die den Slot SlotNumber im
