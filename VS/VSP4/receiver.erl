@@ -29,7 +29,7 @@ init(InterfaceName, MulticastAddr, {ReceivePort, _}, ReceiverDeliveryPID, TimeSy
 	HostAddress = getHostAddress(InterfaceName),
 	Socket = openRecA(MulticastAddr, HostAddress, ReceivePort),
 	gen_udp:controlling_process(Socket, self()),
-	SlotsUsed = initSlotPositions(24),
+	SlotsUsed = initSlotPositions(25),
 		SenderPID ! {getPID, self()},
 	receive
 		{pid, MessageGenPID} ->
@@ -85,7 +85,7 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 			InitialSlot = random:uniform(25),
 			ReceiverDeliveryPID ! {slot, InitialSlot},
 			MessageGenPID ! {initialSlot, InitialSlot},
-			sendFreeSlots(SlotsUsed, ReceiverDeliveryPID),
+			sendFreeSlots(SlotsUsed, ReceiverDeliveryPID, 1),
 			loop(Collisions, Received, [], Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
 	end
 .	
@@ -105,7 +105,7 @@ loop(false, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID) ->
 %Berechnung korrigieren
 isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID) when ((CurrentTime - OldTime)) >= 1000 ->
 	TimeSyncPID ! {getTime, self()},
-	sendFreeSlots(SlotsUsed, ReceiverDeliveryPID),
+	sendFreeSlots(SlotsUsed, ReceiverDeliveryPID, 1),
 
 	receive
 		{currentTime, CurrentTimeNew} ->
@@ -115,13 +115,13 @@ isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPI
 isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID)->
 	{SlotsUsed, CurrentTime}.
 
-sendFreeSlots([], _ReceiverDeliveryPID) ->
+sendFreeSlots([], _ReceiverDeliveryPID, _Counter) ->
 	ok;
-sendFreeSlots([First | Rest], ReceiverDeliveryPID) when First == 0 ->
-	ReceiverDeliveryPID ! {slot, First},
-	sendFreeSlots(Rest, ReceiverDeliveryPID);
-sendFreeSlots([First | Rest], ReceiverDeliveryPID) ->
-	sendFreeSlots(Rest, ReceiverDeliveryPID)
+sendFreeSlots([First | Rest], ReceiverDeliveryPID, Counter) when First == 0 ->
+	ReceiverDeliveryPID ! {slot, Counter},
+	sendFreeSlots(Rest, ReceiverDeliveryPID, Counter);
+sendFreeSlots([First | Rest], ReceiverDeliveryPID, Counter) ->
+	sendFreeSlots(Rest, ReceiverDeliveryPID, Counter)
 .
 
 
@@ -185,15 +185,15 @@ willSlotBeInUse([], _SlotNumber, _Counter) ->
 %Zählt die Anzahl der Stationen hoch, die den Slot SlotNumber im
 %nächsten Frame benutzen werden.
 countSlotNumberUsed(SlotsUsed, SlotNumber) ->
-	countSlotNumberUsed(SlotsUsed, SlotNumber, 0)
+	countSlotNumberUsed(SlotsUsed, SlotNumber, 1)
 .
 
 %Zählt die Anzahl der Stationen hoch, die den Slot SlotNumber im
 %nächsten Frame benutzen werden.
 countSlotNumberUsed([First | Rest], SlotNumber, Counter) when SlotNumber < Counter ->
-	[First] ++ countSlotNumberUsed(Rest, SlotNumber, Counter + 1);
+	lists:append([First], countSlotNumberUsed(Rest, SlotNumber, Counter + 1));
 countSlotNumberUsed([First | Rest], SlotNumber, Counter) when SlotNumber == Counter ->
-	[First + 1] ++ Rest;
+	lists:append([First + 1], Rest);
 countSlotNumberUsed(Rest, _SlotNumber, _Counter) ->
 	Rest
 .
