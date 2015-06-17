@@ -1,6 +1,6 @@
 -module(receiver).
 -import(werkzeug, [getUTC/0, openSe/2, openSeA/2, openRec/3, openRecA/3, logging/2]).
--export([delivery/3, init/6, start/6, loop/9]).
+-export([delivery/3, init/6, start/6, loop/11, loop/10]).
 
 -define(NAME, lists:flatten(io_lib:format("receiver@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
@@ -42,7 +42,7 @@ init(InterfaceName, MulticastAddr, {ReceivePort, _}, ReceiverDeliveryPID, TimeSy
 			debug("timestamp received", ?DEBUG)
 			%spawn(receiver, loop, [0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive, MessageGenPID])
 	end,
-	loop(0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive, MessageGenPID)
+	loop(0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive, MessageGenPID, 0, initialListen)
 .
 
 %Initialisert die Liste mit den Slot-Positionen.
@@ -59,12 +59,8 @@ initSlotPositions(SlotsUsed, _NumPos, _Counter) ->
 	SlotsUsed
 .
 
-%Stellt die Schleife dar.
-%In jedem Durchlauf wird ein neues Nachrichtenpaket empfangen,
-%Die Slot-Nr. extrahiert,
-%entschieden ob es eine Kollision gab,
-%und protokolliert.
-loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID) ->
+
+loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID, Frames) ->
 	%io:format("1~n",[]),
 	%{ok, {Address, Port, Packet}} = gen_udp:recv(Socket, 34),
 	receive	
@@ -80,8 +76,8 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 			TimeSyncPID ! {getTime, self()},
 			receive
 			      {currentTime, CurrentTime} ->
-				     {SlotsUsedNewNew, NewTime} = isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID),
-				     loop(CollisionsNew, ReceivdNew, SlotsUsedNewNew, Socket, ReceiverDeliveryPID, TimeSyncPID, NewTime, stationAlive, MessageGenPID)
+				     {SlotsUsedNewNew, NewTime, FramesNew} = isFrameFinished(CurrentTime, OldTime, SlotsUsedNew, TimeSyncPID, ReceiverDeliveryPID, Frames),
+				     loop(CollisionsNew, ReceivdNew, SlotsUsedNewNew, Socket, ReceiverDeliveryPID, TimeSyncPID, NewTime, stationAlive, MessageGenPID, FramesNew)
 			end;
 		kill ->
 			kill(Socket, ReceiverDeliveryPID, TimeSyncPID)
@@ -94,9 +90,56 @@ loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, 
 			MessageGenPID ! {initialSlot, InitialSlot},
 			SlotsUsedNew = insertInSlotsUsed(initSlotPositions(24), InitialSlot),
 			sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
-			loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
+			logging(?LOGFILE, lists:flatten(io_lib:format("Frames Total: ~p!~n", [Frames + 1]))),
+			loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID, Frames + 1)
 	end
 .
+
+%Stellt die Schleife dar.
+%In jedem Durchlauf wird ein neues Nachrichtenpaket empfangen,
+%Die Slot-Nr. extrahiert,
+%entschieden ob es eine Kollision gab,
+%und protokolliert.
+loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID, Frames, initialListen) ->
+	%io:format("1~n",[]),
+	%{ok, {Address, Port, Packet}} = gen_udp:recv(Socket, 34),
+	receive	
+		%Any ->
+		 % io:format("~p~n",[Any]);
+		{udp,ReceiveSocket,Address,Port,Packet} -> 
+			debug("received new packet~n",?DEBUG),
+			%io:format("1.5~n",[]),
+			{CollisionDetected, SlotsUsedNew} = getSlotNumber(SlotsUsed, Packet),
+			TimeSyncPID ! {getTime, self()},
+			receive
+			      {currentTime, CurrentTime} ->
+				     {SlotsUsedNewNew, NewTime, FramesNew} = isFrameFinished(CurrentTime, OldTime, SlotsUsedNew, TimeSyncPID, ReceiverDeliveryPID, Frames),
+				     case FramesNew > Frames of
+						true ->
+							loop(CollisionsNew, ReceivdNew, SlotsUsedNewNew, Socket, ReceiverDeliveryPID, TimeSyncPID, NewTime, stationAlive, MessageGenPID, FramesNew);
+						false ->
+							loop(CollisionsNew, ReceivdNew, SlotsUsedNewNew, Socket, ReceiverDeliveryPID, TimeSyncPID, NewTime, stationAlive, MessageGenPID, FramesNew, initialListen)
+			end;
+		kill ->
+			kill(Socket, ReceiverDeliveryPID, TimeSyncPID)
+		%Any ->
+		%	io:format("Any: ~p~n", [Any])
+	after
+		1000 ->
+			InitialSlot = random:uniform(25),
+			ReceiverDeliveryPID ! {slot, reset, InitialSlot},
+			MessageGenPID ! {initialSlot, InitialSlot},
+			SlotsUsedNew = insertInSlotsUsed(initSlotPositions(24), InitialSlot),
+			sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
+<<<<<<< HEAD
+			loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID)
+	end.
+=======
+			logging(?LOGFILE, lists:flatten(io_lib:format("Frames Total: ~p!~n", [Frames + 1]))),
+			loop(Collisions, Received, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID, Frames + 1)
+	end
+.
+>>>>>>> 3c47f1d564ac5b9005215ae934f97f3b6cf16a61
 
 insertInSlotsUsed(SlotsUsed, SlotNumber) ->
 		insertInSlotsUsed(SlotsUsed, SlotNumber, 1)
@@ -124,9 +167,10 @@ loop(false, Collisions, Received, Packet, ReceiverDeliveryPID, TimeSyncPID) ->
 	{Collisions, Received + 1}.
 
 %Berechnung korrigieren
-isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID) when ((CurrentTime - OldTime)) >= 1000 ->
+isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID, Frames) when ((CurrentTime - OldTime)) >= 1000 ->
 	TimeSyncPID ! {getTime, self()},
 	TimeSyncPID ! {nextFrame},
+	logging(?LOGFILE, lists:flatten(io_lib:format("Frames Total: ~p!~n", [Frames]))),
 	
 	sendFreeSlots(SlotsUsed, ReceiverDeliveryPID, 1),
 
@@ -134,9 +178,9 @@ isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPI
 		{currentTime, CurrentTimeNew} ->
 			ok
 	end,
-	{[], CurrentTimeNew};
-isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID)->
-	{SlotsUsed, CurrentTime}.
+	{[], CurrentTimeNew, Frames + 1};
+isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPID, Frames)->
+	{SlotsUsed, CurrentTime, Frames}.
 
 sendFreeSlots([], _ReceiverDeliveryPID, _Counter) ->
 	ok;
@@ -157,9 +201,7 @@ analyse(Packet, ReceiverDeliveryPID, TimeSyncPID) ->
 	%TimeInSlot = extractIntervall(Binary, 27, 34),
 	{StationTyp, Nutzdaten, SlotNumber, Timestamp} = message_to_string(Packet),
 	ReceiverDeliveryPID ! {slot, SlotNumber},
-	TimeSyncPID ! {times, StationTyp, Timestamp},
-	
-	logging(?LOGFILE, lists:flatten(io_lib:format("Received Package: StationClass ~p  | Payload ~p | NextSlot ~p | Sendtime ~p ~n", [StationTyp, Nutzdaten, SlotNumber, Timestamp])))
+	TimeSyncPID ! {times, StationTyp, Timestamp}
 .
 
 %Extrahiert die Daten aus dem Paket von From bis To.	
@@ -180,18 +222,19 @@ extractIntervall(_Rest, _From, To, Counter) when Counter > To ->
 %Ob der Slot im nächsten Frame schon von einer anderen Station
 %in Gebrauch sein wird.
 getSlotNumber(SlotsUsed, Packet) ->
-	{_StationTyp,_Nutzdaten, SlotNumber,_Timestamp} = message_to_string(Packet),
+	{_StationTyp,_Nutzdaten, SlotNumber,Timestamp} = message_to_string(Packet),
 	%Binary = binary:bin_to_list(Packet),
 	%SlotNumber = binary:decode_unsigned(lists:nth(26, Binary)),
-	%io:format("in getslot: ~p ~p~n", [SlotsUsed, SlotNumber]),
+	io:format("in getslot: ~p ~p~n", [SlotsUsed, SlotNumber]),
 	{willSlotBeInUse(SlotsUsed, SlotNumber), countSlotNumberUsed(SlotsUsed, SlotNumber)}
 .
+	
 
 %Liefert true oder false zurück, je nachdem ob der Slot
 %im nächsten Frame von einer anderen Station in Gebrauch sein wird.
 %Im Ausnahmefall wird corrupt zurückgeliefert, wenn die Slot-Nr. aus dem Paket > 25 war.
-willSlotBeInUse(SlotsUsed, SlotNumber) ->
-	willSlotBeInUse(SlotsUsed, SlotNumber, 1)
+willSlotBeInUse(SlotsUsed, Timestamp) ->
+	willSlotBeInUse(SlotsUsed, Timestamp, 1)
 .
 
 %Liefert true oder false zurück, je nachdem ob der Slot
@@ -210,9 +253,9 @@ willSlotBeInUse([], _SlotNumber, _Counter) ->
 %Zählt die Anzahl der Stationen hoch, die den Slot SlotNumber im
 %nächsten Frame benutzen werden.
 countSlotNumberUsed(SlotsUsed, SlotNumber) ->
-	%io:format("incout: ~p~n", [SlotsUsed]),
+	io:format("incout: ~p~n", [SlotsUsed]),
 	Result = countSlotNumberUsed(SlotsUsed, SlotNumber, 1),
-	%io:format("result: ~p~n", [Result]),
+	io:format("result: ~p~n", [Result]),
 	Result
 .
 
@@ -243,7 +286,7 @@ message_to_string(Packet)	->
 	Nutzdaten= erlang:binary_to_list(Packet,2,25),
 	Slot = lists:nth(1, erlang:binary_to_list(Packet,26,26)),
 	Timestamp = erlang:binary_to_list(Packet,27,34),
-	%io:format("StationTyp ~p,Nutzdaten ~p,Slot ~p,Timestamp ~p~n", [StationTyp,Nutzdaten,Slot,Timestamp]),
+	io:format("StationTyp ~p,Nutzdaten ~p,Slot ~p,Timestamp ~p~n", [StationTyp,Nutzdaten,Slot,Timestamp]),
 	{StationTyp,Nutzdaten,Slot,Timestamp}.
 
 %%%%%%%%%%%%Receiver Services%%%%%%%%%%%%%
