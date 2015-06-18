@@ -42,7 +42,23 @@ init(InterfaceName, MulticastAddr, {ReceivePort, _}, ReceiverDeliveryPID, TimeSy
 		{currentTime, TimeStamp} ->
 			debug("timestamp received", ?DEBUG)
 	end,
-	loop(0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive, MessageGenPID, [], 0, initialListen)
+	
+	T = getUTC(),
+	AdditionalTimeToWait =  1000 - (T rem 1000),
+	timer:send_after(AdditionalTimeToWait, self(), startInitialListen),
+	wait(),
+	Time = getUTC(),
+	loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, Time, Time, [], 1)
+	
+	%loop(0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive, MessageGenPID, [], 0, initialListen)
+.
+
+%Warten bis Zeitdifferenz zu 1 Sekunde abgelaufen ist.
+wait() ->
+	receive
+		startInitialListen ->
+			ok
+	end
 .
 
 %Initialisert die Liste mit den Slot-Positionen.
@@ -59,11 +75,77 @@ initSlotPositions(SlotsUsed, _NumPos, _Counter) ->
 	SlotsUsed
 .
 
-%Stellt die Schleife dar.
-%In jedem Durchlauf wird ein neues Nachrichtenpaket empfangen,
-%Die Slot-Nr. extrahiert,
-%entschieden ob es eine Kollision gab,
-%und protokolliert.
+%1 Sekunde lang zuhören, Slots sammeln, dann freie Slots an die Slotreservation senden.
+loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, StartTime, RoundTime, PacketList, SlotCount) ->
+	receive
+		{udp, _ReceiveSocket, _Address, _Port, Packet} ->
+			{SlotsUsedNew, PacketListNew, SlotCountNew, RoundTimeNew} = listenAnalyse(PacketList, Packet, SlotsUsed, RoundTime, getUTC(), SlotCount),
+			WaitingTime = getUTC() - StartTime,
+			case SlotCount == 26 of
+				true ->
+					io:format("Receiver.erl: Waiting finished with WaitingTime: ~p. Goal: 1000 ~n",[WaitingTime]),
+					synchronize(PacketList, TimeSyncPID),
+					sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
+					ReceiverDeliveryPID ! {sendInitialSlot, MessageGenPID},
+					loop(0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, getUTC(), stationAlive, MessageGenPID, [], 1);
+				false ->
+					loopInitial(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, StartTime, RoundTimeNew, PacketListNew, SlotCountNew)
+			end
+	after
+		1000 ->
+			InitialSlot = crypto:rand_uniform(1, 26),%random:uniform(25),
+			ReceiverDeliveryPID ! {slot, reset, InitialSlot},
+			MessageGenPID ! {initialSlot, InitialSlot},
+			SlotsUsedNew = insertInSlotsUsed(initSlotPositions(24), InitialSlot),
+			sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
+			logging(?LOGFILE, lists:flatten(io_lib:format("Receiver.erl: Frames Total: ~p!~n", [1]))),
+			loop(0, 0, SlotsUsedNew, Socket, ReceiverDeliveryPID, TimeSyncPID, getUTC(), stationAlive, MessageGenPID, [],  1)
+	end
+.
+
+listenAnalyse(PacketList, Packet, SlotsUsed, RoundTime, NowTime, SlotCount) when (NowTime - RoundTime) >= 40 ->
+	{StationTyp, _Paylod, Slot, Timestamp} = message_to_string(Packet),
+	SlotsUsedNew = insertInSlotsUsed(SlotsUsed, Slot),
+	PacektListNew = lists:append(PacketList, {SlotCount, StationTyp, Timestamp, Slot}),
+	{SlotsUsedNew, PacketList, SlotCount + 1, getUTC()};
+listenAnalyse(PacketList, Packet, SlotsUsed, RoundTime, NowTime, SlotCount) when (NowTime - RoundTime) < 40 ->
+	{StationTyp, _Paylod, Slot, Timestamp} = message_to_string(Packet),
+	SlotsUsedNew = insertInSlotsUsed(SlotsUsed, Slot),
+	PacektListNew = lists:append(PacketList, {SlotCount, StationTyp, Timestamp, Slot}),
+	{SlotsUsedNew, PacketList, SlotCount, RoundTime}
+.
+
+synchronize([], _TimeSyncPID) ->
+	ok;
+synchronize([First | Rest], TimeSyncPID) ->
+		{SendFlag, List} = synchronize(First, Rest, searchCollisions),
+		synchronize(SendFlag, First, TimeSyncPID, send),
+		synchronize(List, TimeSyncPID)
+.
+
+synchronize(First, [], searchCollisions) ->
+	{true, []};
+synchronize(First, [Head | Tail], searchCollisions) when element(1, Head) == element(1, First)->
+		{false, skip(element(1, First), Tail)};
+synchronize(First, [Head | Tail], searchCollisions) when element(1, Head) /= element(1, First)->		
+		{true, lists:append(Head, Tail)}
+.
+
+synchronize(true, First, TimeSyncPID, send) ->
+	{_SlotCount, StationTyp, Timestamp, _Slot} = First,
+	TimeSyncPID ! {times, StationTyp, Timestamp};
+synchronize(false, _First, _TimeSyncPID, send) ->
+	ok
+.
+
+skip(_Slot, []) ->
+	[];
+skip(Slot, [Head | Tail]) when element(1, Head) == Slot ->
+	skip(Slot, Tail);
+skip(Slot, [Head | Tail]) ->
+	Tail
+.
+%ALT, wird nicht mehr benötigt wenn loopInitial funktioniert.
 loop(Collisions, Received, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, OldTime, stationAlive, MessageGenPID, PacketList, Frames, initialListen) ->
 	%io:format("1~n",[]),
 	%{ok, {Address, Port, Packet}} = gen_udp:recv(Socket, 34),
@@ -164,7 +246,7 @@ isFrameFinished(CurrentTime, OldTime, SlotsUsed, TimeSyncPID, ReceiverDeliveryPI
 	TimeSyncPID ! {getTime, self()},
 	TimeSyncPID ! {nextFrame},
 	logging(?LOGFILE, lists:flatten(io_lib:format("Frames Total: ~p!~n", [Frames]))),
-	
+	ReceiverDeliveryPID ! totalResetSlotreservation,
 	sendFreeSlots(SlotsUsed, ReceiverDeliveryPID, 1),
 
 	receive
@@ -296,6 +378,10 @@ delivery(stationAlive, SlotReservationPID, TimeSyncPID) ->
 		{times, StationClass, TimeInSlot} ->
 			TimeSyncPID ! {times, StationClass, TimeInSlot},
 			delivery(stationAlive, SlotReservationPID, TimeSyncPID);
+		{sendInitialSlot, MessageGenPID} ->
+			SlotReservationPID ! {getSlot, MessageGenPID};
+		totalResetSlotreservation ->
+			SlotReservationPID ! totalReset;
 		kill ->
 			SlotReservationPID ! kill,
 			debug("send kill to slotreservation~n",?DEBUG),

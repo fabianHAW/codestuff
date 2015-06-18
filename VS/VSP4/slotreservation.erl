@@ -18,6 +18,8 @@ loop(FreeSlots, SenderPID) ->
 	receive
 		{slot, reset, NextSlot} ->
 			loop([NextSlot], SenderPID);
+		totalReset ->
+			loop([], SenderPID);
 		{slot, NextSlot} ->
 			loop(lists:append(FreeSlots, [NextSlot]), SenderPID);
 		{getSlot, MessageGenPID} ->
