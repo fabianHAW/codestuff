@@ -109,7 +109,7 @@ checkSlot(Slot, SlotReservationPID) ->
 	
 sendMulticast({StationClass, Slot, Data}, Socket, MulticastAddr, ReceivePort, Timestamp) ->
 	debug("send multicast", ?DEBUG),
-	%logging(?LOGFILE, lists:flatten(io_lib:format("time at sender ~p ~n", [werkzeug:getUTC()]))),
+	logging(?LOGFILE, lists:flatten(io_lib:format("time at sender ~p ~n", [werkzeug:getUTC()]))),
 	gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))),
 	logging(?LOGFILE, lists:flatten(io_lib:format("package send to multicast ~p ~p ~p ~p ~n", [StationClass, Slot, Data, Timestamp]))).
 

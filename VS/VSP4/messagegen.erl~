@@ -68,7 +68,6 @@ loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlo
 		true ->
 			{NextSlot, KilledNewNew} = getNextSlot(SlotReservationPID, KilledNew),
 			%{Message, KilledNew} = prepareMessage(NextSlot, StationClass, PufferPID, Killed),
-			io:format("messageeeenn ~p~n", [NextSlot]),
 			Message = {MessageClass, createBinaryNS(NextSlot), MessageData},
 			%logging(?LOGFILE, lists:flatten(io_lib:format("created new message ~p ~n", [Message]))),
 			logging(?LOGFILE, lists:flatten(io_lib:format("sendtime: ~p currentslot ~p nextslot ~p~n", [Sendtime, NewSlot, NextSlot]))),

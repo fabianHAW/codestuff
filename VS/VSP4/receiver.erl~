@@ -195,7 +195,7 @@ synchronizeSlot(First, [Head | Tail], searchCollisions) when element(1, Head) /=
 
 synchronizeSlot(true, First, ReceiverDeliveryPID, send) ->
 	{_SlotCount, StationTyp, _Timestamp, Slot} = First,
-	ReceiverDeliveryPID ! {slotUsed, Slot};
+	ReceiverDeliveryPID ! {slot, Slot};
 synchronizeSlot(false, _First, _ReceiverDeliveryPID, send) ->
 	ok
 .
