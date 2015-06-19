@@ -66,7 +66,7 @@ accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived, FrameCounter) ->
 			kill()
 	end
 .
-resetIfNeccessary(_SyncOffsetMs, _TimesReceived, FrameCounter) when FrameCounter == 4 ->
+resetIfNeccessary(_SyncOffsetMs, _TimesReceived, FrameCounter) when FrameCounter == 2 ->
 	{0, 1, 0};
 resetIfNeccessary(SyncOffsetMs, TimesReceived, FrameCounter) ->
 	{SyncOffsetMs, TimesReceived, FrameCounter}

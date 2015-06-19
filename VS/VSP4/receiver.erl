@@ -1,5 +1,5 @@
 -module(receiver).
--import(werkzeug, [getUTC/0, openSe/2, openSeA/2, openRec/3, openRecA/3, logging/2]).
+-import(werkzeug, [getUTC/0, openSe/2, openSeA/2, openRec/3, openRecA/3, logging/2, reset_timer/3]).
 -export([delivery/3, init/6, start/6]).
 
 -define(NAME, lists:flatten(io_lib:format("receiver@~p", [node()]))).
@@ -47,9 +47,21 @@ init(InterfaceName, MulticastAddr, {ReceivePort, _}, ReceiverDeliveryPID, TimeSy
 	AdditionalTimeToWait =  1000 - (T rem 1000),
 	timer:send_after(AdditionalTimeToWait, self(), startInitialListen),
 	wait(),
-	Time = getUTC(),
-	loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, Time, Time, [], 1)
+	ReceiverPID = self(),
 	
+	TimeSyncPID ! {getTime, self()},
+	receive 
+		{currentTime, CurrentTimestamp} ->
+			debug("received currentTime", ?DEBUG)
+	end,
+	
+	%{ok, Timer} = timer:send_after(40, ReceiverPID, count),
+	%logging(?LOGFILE, lists:flatten(io_lib:format("Timer ~p!~n", [Timer]))),
+	SlotCounterPID = spawn_link(fun() -> countSlotNumber(ReceiverPID, 1) end),
+	
+	Time = getUTC(),
+	loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, SlotCounterPID, MessageGenPID, Time, Time, [], 1, CurrentTimestamp),
+	exit(SlotCounterPID, "receiver killed")
 	%loop(0, 0, SlotsUsed, Socket, ReceiverDeliveryPID, TimeSyncPID, TimeStamp, stationAlive, MessageGenPID, [], 0, initialListen)
 .
 
@@ -60,6 +72,22 @@ wait() ->
 			ok
 	end
 .
+countSlotNumber(ReceiverPID, Counter) ->
+  countSlotNumber(ReceiverPID, timer:send_after(40, self(), count), Counter).
+  
+countSlotNumber(ReceiverPID, Timer, Counter) when Counter < 26 ->
+	receive 
+	  count -> 
+	      %timer:cancel(Timer),
+	      {ok, TimerNew} = timer:send_after(40, self(), count),
+	      countSlotNumber(ReceiverPID, TimerNew, Counter + 1);
+	  getCounter ->
+	    ReceiverPID ! {counter, Counter},
+	    countSlotNumber(ReceiverPID, Timer, Counter)
+	end;
+countSlotNumber(ReceiverPID, Timer, Counter) ->
+	{ok, TimerNew} = timer:send_after(40, self(), count),
+	countSlotNumber(ReceiverPID, TimerNew, 1).
 
 %Initialisert die Liste mit den Slot-Positionen.
 %Hierbei gilt: Slot-Position = Slot-Nr.
@@ -76,27 +104,53 @@ initSlotPositions(SlotsUsed, _NumPos, _Counter) ->
 .
 
 %1 Sekunde lang zuhören, Slots sammeln, dann freie Slots an die Slotreservation senden.
-loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, StartTime, RoundTime, PacketList, SlotCount) ->
+loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, SlotCounterPID, MessageGenPID, StartTime, RoundTime, PacketList, SlotCount, OldTimestamp) ->
+
+	logging(?LOGFILE, lists:flatten(io_lib:format(": inside loopinitial~n", []))),
 	receive
 		{udp, _ReceiveSocket, _Address, _Port, Packet} ->
-			{SlotsUsedNew, PacketListNew, SlotCountNew, RoundTimeNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, getUTC(), SlotCount),
+			%SlotCounterPID ! getCounter,
+			%receive
+			 % {counter, Counter} ->
+			      %{SlotsUsedNew, PacketListNew, SlotCountNew, RoundTimeNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, getUTC(), OldTimestamp),
+			%end,
+			TimeSyncPID ! {getTime, self()},
+			receive 
+			    {currentTime, CurrentTimestamp} ->
+				debug("received currentTime", ?DEBUG)
+			end,
+			
+		      logging(?LOGFILE, lists:flatten(io_lib:format("CurrentTimestamp ~p OldTimestamp ~p~n", [CurrentTimestamp, OldTimestamp]))),
 			WaitingTime = getUTC() - StartTime,
-			case SlotCountNew == 26 of
+			%case (SlotCountOLD == 25) and (SlotCountNew == 1) of
+			case (CurrentTimestamp - OldTimestamp) > 999 of
 				true ->
+					TimeSyncPID ! {nextFrame},
+					{SlotsUsedNew, PacketListNew, SlotCountNew, RoundTimeNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, getUTC(), CurrentTimestamp),
+					logging(?LOGFILE, lists:flatten(io_lib:format(": inside loopinitial true~n", []))),
 					io:format("Receiver.erl: Waiting finished with WaitingTime: ~p. Goal: 1000 ~n",[WaitingTime]),
 					synchronize(PacketListNew, TimeSyncPID),
 					synchronizeSlot(PacketListNew, ReceiverDeliveryPID),
 					%sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
 					ReceiverDeliveryPID ! {sendInitialSlot, MessageGenPID},
+					ReceiverDeliveryPID ! totalResetSlotreservation,
 					Time = getUTC(),
-					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, Time, Time, [], 1);
+					%TimeSyncPID ! {getTime, self()},
+					%receive 
+					 % {currentTime, CurrentTimestampNew} ->
+					  %    debug("received currentTime", ?DEBUG)
+					%end,
+					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, SlotCounterPID, MessageGenPID, Time, Time, [], 1, CurrentTimestamp);
 				false ->
+					{SlotsUsedNew, PacketListNew, SlotCountNew, RoundTimeNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, getUTC(), OldTimestamp),
+					logging(?LOGFILE, lists:flatten(io_lib:format(": inside loopinitial false~n", []))),
 					synchronize(PacketListNew, TimeSyncPID),
 					synchronizeSlot(PacketListNew, ReceiverDeliveryPID),
-					loopInitial(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, StartTime, RoundTimeNew, PacketListNew, SlotCountNew)
+					loopInitial(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, SlotCounterPID, MessageGenPID, StartTime, RoundTimeNew, PacketListNew, SlotCountNew, OldTimestamp)
 			end
 	after
 		1000 ->
+			logging(?LOGFILE, lists:flatten(io_lib:format(": inside loopinitial 1000~n", []))),
 			InitialSlot = crypto:rand_uniform(1, 26),%random:uniform(25),
 			ReceiverDeliveryPID ! {slot, reset, InitialSlot},
 			MessageGenPID ! {initialSlot, InitialSlot},
@@ -104,30 +158,59 @@ loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, 
 			sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
 			logging(?LOGFILE, lists:flatten(io_lib:format("Receiver.erl: Frames Total: ~p!~n", [1]))),
 			Time = getUTC(),
-			loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, Time, Time, [], 1)
+			TimeSyncPID ! {getTime, self()},
+			receive 
+			    {currentTime, CurrentTimestampNew} ->
+				debug("received currentTime", ?DEBUG)
+			end,
+			logging(?LOGFILE, lists:flatten(io_lib:format(": after current time get 1000~n", []))),
+			loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, SlotCounterPID, MessageGenPID, Time, Time, [], 1, CurrentTimestampNew)
 	end.
 
-loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, StartTime, RoundTime, PacketList, SlotCount) ->
+loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, SlotCounterPID, MessageGenPID, StartTime, RoundTime, PacketList, SlotCount, OldTimestamp) ->
+
+	logging(?LOGFILE, lists:flatten(io_lib:format(": inside loop~n", []))),
 	receive
 		{udp, _ReceiveSocket, _Address, _Port, Packet} ->
-			{SlotsUsedNew, PacketListNew, SlotCountNew, RoundTimeNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, getUTC(), SlotCount),
+			
+			%SlotCounterPID ! getCounter,
+			%receive
+			%  {counter, Counter} ->
+			    %  {SlotsUsedNew, PacketListNew, SlotCountNew, RoundTimeNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, getUTC(), OldTimestamp),
+			%end,
+			TimeSyncPID ! {getTime, self()},
+			
+			receive 
+			    {currentTime, CurrentTimestamp} ->
+				debug("received currentTime", ?DEBUG)
+			end,
+			%{SlotsUsedNew, PacketListNew, SlotCountNew, RoundTimeNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, getUTC(), SlotCount),
+		      logging(?LOGFILE, lists:flatten(io_lib:format("CurrentTimestamp ~p OldTimestamp ~p~n", [CurrentTimestamp, OldTimestamp]))),
 			WaitingTime = getUTC() - StartTime,
-			case SlotCountNew == 26 of
+			case (CurrentTimestamp - OldTimestamp) > 999 of
 				true ->
+				      TimeSyncPID ! {nextFrame},
+					{SlotsUsedNew, PacketListNew, SlotCountNew, RoundTimeNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, getUTC(), CurrentTimestamp),
+					  
+					logging(?LOGFILE, lists:flatten(io_lib:format(": inside loop true~n", []))),
 					io:format("Receiver.erl: Waiting finished with WaitingTime: ~p. Goal: 1000 ~n",[WaitingTime]),
 					synchronize(PacketListNew, TimeSyncPID),
 					synchronizeSlot(PacketListNew, ReceiverDeliveryPID),
 					%sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
 					%ReceiverDeliveryPID ! {sendInitialSlot, MessageGenPID},
 					Time = getUTC(),
-					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, Time, Time, [], 1);
+					ReceiverDeliveryPID ! totalResetSlotreservation,
+					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, SlotCounterPID, MessageGenPID, Time, Time, [], 1, CurrentTimestamp);
 				false ->
+					 {SlotsUsedNew, PacketListNew, SlotCountNew, RoundTimeNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, getUTC(), OldTimestamp),
+					logging(?LOGFILE, lists:flatten(io_lib:format(": inside loop false~n", []))),
 					synchronize(PacketListNew, TimeSyncPID),
 					synchronizeSlot(PacketListNew, ReceiverDeliveryPID),
-					loopInitial(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, StartTime, RoundTimeNew, PacketListNew, SlotCountNew)
+					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, SlotCounterPID, MessageGenPID, StartTime, RoundTimeNew, PacketListNew, SlotCountNew, OldTimestamp)
 			end
 	after
 		1000 ->
+	logging(?LOGFILE, lists:flatten(io_lib:format(": inside loop1000~n", []))),
 			InitialSlot = crypto:rand_uniform(1, 26),%random:uniform(25),
 			ReceiverDeliveryPID ! {slot, reset, InitialSlot},
 			MessageGenPID ! {initialSlot, InitialSlot},
@@ -135,23 +218,58 @@ loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, StartTi
 			sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
 			logging(?LOGFILE, lists:flatten(io_lib:format("Receiver.erl: Frames Total: ~p!~n", [1]))),
 			Time = getUTC(),
-			loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, Time, Time, [], 1)
+			TimeSyncPID ! {getTime, self()},
+			receive 
+			    {currentTime, CurrentTimestampNew} ->
+				debug("received currentTime", ?DEBUG)
+			end,
+			loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, SlotCounterPID, MessageGenPID, Time, Time, [], 1, CurrentTimestampNew)
 	end.
 
+listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, NowTime, CurrentTimestamp) ->
+	{StationTyp, _Paylod, Slot, Timestamp} = message_to_string(Packet),
 
-listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, NowTime, SlotCount) when (NowTime - RoundTime) >= 40 ->
-	{StationTyp, _Paylod, Slot, Timestamp} = message_to_string(Packet),
+	SlotCount = timeCalc(CurrentTimestamp, TimeSyncPID),
+	ReceiverDeliveryPID ! {delete, SlotCount},
+	ReceiverDeliveryPID ! {slotUsed, Slot},
+	logging(?LOGFILE, lists:flatten(io_lib:format("SlotCount: ~p TimeStamp: ~p~n", [SlotCount, Packet]))),
 	SlotsUsedNew = insertInSlotsUsed(SlotsUsed, Slot),
 	PacektListNew = lists:append(PacketList, [{SlotCount, StationTyp, Timestamp, Slot}]),
-	%ReceiverDeliveryPID ! {delete, SlotCount},
-	{SlotsUsedNew, PacektListNew, SlotCount + 1, getUTC()};
-listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, NowTime, SlotCount) when (NowTime - RoundTime) < 40 ->
-	{StationTyp, _Paylod, Slot, Timestamp} = message_to_string(Packet),
-	SlotsUsedNew = insertInSlotsUsed(SlotsUsed, Slot),
-	PacektListNew = lists:append(PacketList, [{SlotCount, StationTyp, Timestamp, Slot}]),
-	%ReceiverDeliveryPID ! {delete, SlotCount},
-	{SlotsUsedNew, PacektListNew, SlotCount, RoundTime}
-.
+	{SlotsUsedNew, PacektListNew, SlotCount, getUTC()}.
+	
+timeCalc(Timestamp, TimeSyncPID) ->
+	%Timestampnew = getSecInMilli(Timestamp),
+	TimeSyncPID ! {getTime, self()},
+	receive 
+		{currentTime, CurrentTimestamp} ->
+		logging(?LOGFILE, lists:flatten(io_lib:format("received time~n", [])))
+	end,
+	Time = CurrentTimestamp - Timestamp,
+	logging(?LOGFILE, lists:flatten(io_lib:format("Time: ~p~n", [Time]))),
+	%CurrentTimestampNew = getSecInMilli(CurrentTimestamp),
+	%TimeNew = getSecInMilli(Time),
+	trunc(((Time rem 1000) / 40) + 1).
+	
+getSecInMilli(Timestamp) ->
+	list_to_integer(string:substr(integer_to_list(Timestamp), 10, 4)) rem 1000.
+	
+	
+	
+%listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, NowTime, SlotCount) when (NowTime - RoundTime) >= 40 ->
+%	{StationTyp, _Paylod, Slot, Timestamp} = message_to_string(Packet),
+%	logging(?LOGFILE, lists:flatten(io_lib:format("NowTime: ~p RountTime: ~p~n", [NowTime, RoundTime]))),
+%	SlotsUsedNew = insertInSlotsUsed(SlotsUsed, Slot),
+%	PacektListNew = lists:append(PacketList, [{SlotCount + 1, StationTyp, Timestamp, Slot}]),
+%	ReceiverDeliveryPID ! {delete, SlotCount + 1},
+%	{SlotsUsedNew, PacektListNew, SlotCount + 1, getUTC()};
+%listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, RoundTime, NowTime, SlotCount) when (NowTime - RoundTime) < 40 ->
+%	{StationTyp, _Paylod, Slot, Timestamp} = message_to_string(Packet),
+%	logging(?LOGFILE, lists:flatten(io_lib:format("NowTime: ~p RountTime: ~p~n", [NowTime, RoundTime]))),
+%	SlotsUsedNew = insertInSlotsUsed(SlotsUsed, Slot),
+%	PacektListNew = lists:append(PacketList, [{SlotCount, StationTyp, Timestamp, Slot}]),
+%	ReceiverDeliveryPID ! {delete, SlotCount},
+%	{SlotsUsedNew, PacektListNew, SlotCount, RoundTime}
+%.
 
 synchronize([], _TimeSyncPID) ->
 	ok;
