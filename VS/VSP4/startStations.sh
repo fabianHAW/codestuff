@@ -24,6 +24,8 @@
 # To use this script assign the appropriate values to the variables below.
 #
 #
+
+#Anforderungs-Nr.: 7.0; 7.1
 interfaceName=$1
 mcastAddress=$2
 receivePort=$3
@@ -76,8 +78,7 @@ then
 				for i in `seq $firstIndex $lastIndex`
 				do
 					# Launching data source and station.
-					./$dataSource $teamNo $i 60000| $stationCmdFirst$i $stationCmdSecond $i &
-					#$dataSource $teamNo $i | $stationCmd &
+					./$dataSource $teamNo $i | $stationCmdFirst$i $stationCmdSecond $i &
 					#
 					# If your are annoyed by all the output, try this instead:
 					#  $dataSource $teamNo $i | $stationCmd > /dev/null 2>&1 &

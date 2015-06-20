@@ -8,21 +8,17 @@
 start(SenderPID) ->
 	SenderPID ! {helloSlot, self()},
 	debug("send own pid to sender", ?DEBUG),
-	loop([], [], SenderPID, 0)
-.
+	loop([], [], SenderPID, 0).
 
+%Anforderungs-Nr.: 3.0; 3.1; 3.2
 %Antwortet auf Anfragen von MessageGen und Sender
 loop(FreeSlots, SlotsUsed, SenderPID, OwnNextSlot) ->
 	receive
 		{slot, reset, NextSlot} ->
-			werkzeug:logging(?LOGFILE, lists:flatten(io_lib:format("1 reset ~p~n", [NextSlot]))),
 			loop(getInverseList([NextSlot]), [], SenderPID, OwnNextSlot);
 		totalReset ->
-			werkzeug:logging(?LOGFILE, lists:flatten(io_lib:format("2totalreset ~p~n", [SlotsUsed]))),
-			werkzeug:logging(?LOGFILE, lists:flatten(io_lib:format("***************************************************** ~n", []))),
 			loop(lists:delete(OwnNextSlot, getInverseList(SlotsUsed)), [], SenderPID, OwnNextSlot);
 		{slotUsed, NextSlot} ->
-			werkzeug:logging(?LOGFILE, lists:flatten(io_lib:format("3nextslot ~p~n", [NextSlot]))),
 			case lists:member(NextSlot, SlotsUsed) of
 				true ->
 					loop(FreeSlots, SlotsUsed, SenderPID, OwnNextSlot);
@@ -30,7 +26,6 @@ loop(FreeSlots, SlotsUsed, SenderPID, OwnNextSlot) ->
 					loop(FreeSlots, lists:append(SlotsUsed, [NextSlot]), SenderPID, OwnNextSlot)
 			end;
 		{slotUnUsed, NextSlot} ->
-			werkzeug:logging(?LOGFILE, lists:flatten(io_lib:format("4nextslot ~p~n", [NextSlot]))),
 			case lists:member(NextSlot, FreeSlots) of
 				true ->
 					loop(FreeSlots, SlotsUsed, SenderPID, OwnNextSlot);
@@ -40,21 +35,16 @@ loop(FreeSlots, SlotsUsed, SenderPID, OwnNextSlot) ->
 		{getSlot, MessageGenPID} ->
 			NextSlot = getNewSlot(getInverseList(SlotsUsed)),
 			MessageGenPID ! {nextSlot, NextSlot},
-			werkzeug:logging(?LOGFILE, lists:flatten(io_lib:format("5getslot: ~p ~p ~p~n", [SlotsUsed, FreeSlots, NextSlot]))),
 			loop(FreeSlots, lists:append(SlotsUsed, [NextSlot]), SenderPID, NextSlot);
 		{collision, Slot, NextSlot} ->
-			werkzeug:logging(?LOGFILE, lists:flatten(io_lib:format("6collision ~p~n", [Slot]))),
 			sendCollisionAnswer(lists:member(Slot, FreeSlots), SenderPID),
 			case lists:min(SlotsUsed) == NextSlot of
 				true ->
-					werkzeug:logging(?LOGFILE, lists:flatten(io_lib:format("6.2collision ~n", []))),
 					loop(lists:delete(OwnNextSlot, getInverseList(SlotsUsed)), [], SenderPID, OwnNextSlot);
 				false ->	
-					werkzeug:logging(?LOGFILE, lists:flatten(io_lib:format("6.3collision ~n", []))),
 					loop(FreeSlots, SlotsUsed, SenderPID, OwnNextSlot)
 			end;
 		{delete, Slot} ->
-			werkzeug:logging(?LOGFILE, lists:flatten(io_lib:format("7delete ~p~n", [Slot]))),
 			loop(lists:delete(Slot, FreeSlots), SlotsUsed, SenderPID, OwnNextSlot);
 		kill ->
 			kill()
@@ -72,12 +62,9 @@ getNewSlot(List) ->
 %Sendet {collision, true} an den Sender, wenn der Slot in dem
 %der Sender sende möchte, nicht in der Liste der freien Slots ist,
 %sonst {collision, false}
-
 sendCollisionAnswer(true, SenderPID) ->
-	werkzeug:logging(?LOGFILE, lists:flatten(io_lib:format("6.1 collision true~n", []))),
 	SenderPID ! {collision, true};
 sendCollisionAnswer(false, SenderPID) ->
-	werkzeug:logging(?LOGFILE, lists:flatten(io_lib:format("6.1 collision false~n", []))),
 	SenderPID ! {collision, false}.	
 
 		

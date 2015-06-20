@@ -6,6 +6,7 @@
 -define(DEBUG, false).
 	
 start(ArgsList) ->
+	%Anforderungs-Nr.: 4.3; 7.1 
 	{InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber, UtcOffsetMs} = readArgs(ArgsList),
 
 	SenderPID = spawn(sender, start, [InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber]),

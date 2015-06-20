@@ -6,6 +6,7 @@
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, false).
 -define(SENDTIMEOFFSET, 10).
+%Anforderungs-Nr.: 9.1
 -define(SLOTLENGTH, 40).
 
 start(SenderPID, StationClass) ->
@@ -32,9 +33,9 @@ start(SenderPID, StationClass) ->
 	debug("getdatafromsource killed", ?DEBUG),
 	debug("messagegen terminated", ?DEBUG).
 	
+%Hauptschleife in der Berechnet wird, wie lange eine Station warten muss, bis sie senden darf.
+%Ebenso die Nachricht soweit vorbereiten, dass sie kurz vor dem Senden an den Sender übermittelt werden kann
 loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlot, NewSlot, false) ->
-	
-	
 	TimeSyncPID ! {getTime, self()},
 	receive 
 		{currentTime, CurrentTimestamp} ->
@@ -50,27 +51,20 @@ loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlo
 	TimeToGetDataNew = getUTC() - TimeToGetData,
 	Sendtime = calcSendTime(NewSlot, OldSlot, CurrentTimestamp, TimeToGetDataNew),
 	
-	logging(?LOGFILE, lists:flatten(io_lib:format("Sendtime ~p~n", [Sendtime]))),
-	
 	Timestamp = getUTC(),
 	waitSendtime(Sendtime),
 	Time = getUTC() - Timestamp,
-	logging(?LOGFILE, lists:flatten(io_lib:format("2sendtime ~p~n", [Time]))),
 	
 	%Sendtime expired?
 	case Sendtime =< (Time + ((?SLOTLENGTH / 2) - ?SENDTIMEOFFSET)) of
 		false ->
 			debug("sendtime expired", ?DEBUG),
-			logging(?LOGFILE, lists:flatten(io_lib:format("sendtime expired ~n", []))),
 			{NextSlot, KilledNewNew} = getNextSlot(SlotReservationPID, KilledNew),
 			SenderPID ! {nomessage};
 		true ->
-			Time1 = getUTC(),
 			{NextSlot, KilledNewNew} = getNextSlot(SlotReservationPID, KilledNew),
-			logging(?LOGFILE, lists:flatten(io_lib:format("waitingtime ~p~n", [getUTC() - Time1]))),
 			Message = {MessageClass, createBinaryNS(NextSlot), MessageData},
-			logging(?LOGFILE, lists:flatten(io_lib:format("sendtime: ~p currentslot ~p nextslot ~p~n", [Sendtime, NewSlot, NextSlot]))),
-	
+			debug("transfer message to sender", ?DEBUG),
 			SenderPID ! {message, Message, NewSlot, NextSlot}
 	end,
 	
@@ -78,7 +72,7 @@ loop(PufferPID, SenderPID, StationClass, TimeSyncPID, SlotReservationPID, OldSlo
 loop(_PufferPID, _SenderPID, _StationClass, _TimeSyncPID, _SlotReservationPID, _OldSlot, _NewSlot, true) ->
 	debug("killed", ?DEBUG).
 
-
+%Realisiert den Puffer zwischen Datenquelle und der Messagegen. Puffer enthält immer die aktuellen Nutzdaten.
 puffer(MessageGenPID, Data) ->
 	receive 
 		{data, DataNew} ->
@@ -90,13 +84,16 @@ puffer(MessageGenPID, Data) ->
 			DataNew = Data
 	end,
 	puffer(MessageGenPID, DataNew).
-	
+
+%Anforderungs-Nr.: 8.0
+%Erhält die Nutzdaten aus der Datenquelle und legt sie in den Puffer.
 getDataFromSource(PufferPID) ->
 	Data = io:get_chars("", 24),
 	PufferPID ! {data, Data},
 	debug("send new data to puffer", ?DEBUG),
 	getDataFromSource(PufferPID).
-	
+
+%Wartet auf die PIDs des TimeSync-Prozesses und des SlotReservation-Prozesses.
 waitForInitialValues(PIDList) when length(PIDList) == 2 ->
 	PIDList;
 waitForInitialValues(PIDList) ->
@@ -110,6 +107,7 @@ waitForInitialValues(PIDList) ->
 	end,
 	waitForInitialValues(lists:append(PIDList, ListElement)).
 
+%Holt den ersten initialen Slot vom SlotReservation-Prozess.
 getInitialSlot() ->
 	receive 
 		{initialSlot, NewSlot} ->
@@ -118,7 +116,8 @@ getInitialSlot() ->
 			debug("received next slot", ?DEBUG)
 	end,
 	NewSlot.
-	
+
+%Holt den nächsten Slot in dem im nächsten Frame gesendet werden soll.
 getNextSlot(SlotReservationPID, Killed) ->
 	SlotReservationPID ! {getSlot, self()},
 	receive 
@@ -130,24 +129,29 @@ getNextSlot(SlotReservationPID, Killed) ->
 	end,
 	{NextSlot, KilledNew}.
 
-%Berechnet die Sendezeit, wenn ein Frame-lang kein Slot erhalten wurde.
+%Errechnet die Sendezeit, wann der Sender-Prozess geweckt werden muss.
 calcSendTime(NewSlot, 0, _CurrentTimestamp, TimeToGetDataEnd) ->
 	debug("calculate sendtime", ?DEBUG),
 	(((NewSlot - 1) * ?SLOTLENGTH) + ?SENDTIMEOFFSET) - TimeToGetDataEnd;
 calcSendTime(NewSlot, _OldSlot, CurrentTimestamp, TimeToGetDataEnd) ->
 	debug("calculate sendtime", ?DEBUG),
+	%Anforderungs-Nr.: 2.1
 	(1000 - getSecInMilli(CurrentTimestamp) + ?SENDTIMEOFFSET) + (((NewSlot - 1) * ?SLOTLENGTH) + ?SENDTIMEOFFSET) - TimeToGetDataEnd.
 
 getSecInMilli(Timestamp) ->
 	list_to_integer(string:substr(integer_to_list(Timestamp), 10, 4)) rem 1000.
 
+%Legt sich solange schlafen bis die Sendezeit vorüber ist.
 waitSendtime(Sendtime) ->
 	debug("wait sendtime", ?DEBUG),
 	timer:sleep(Sendtime).
 	
+%Bereitet die zu sendende Nachricht vor.
 prepareMessage(StationClass, PufferPID, Killed) ->
 	PufferPID ! getdata,
 	receive 
+		%Anforderungs-Nr.: 8.1
+		%liest die aktuellen Daten aus dem Puffer
 		{newdata, Data} ->
 			debug("received new data", ?DEBUG),
 			KilledNew = Killed;

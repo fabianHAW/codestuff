@@ -28,13 +28,16 @@ start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 			debug("send messagegenpid to receiver", ?DEBUG)
 	end,
 	
-	loop(Socket, HostAddress, MulticastAddr, ReceivePortNew, TimeSyncPID, SlotReservationPID, false),
+	loop(Socket, HostAddress, MulticastAddr, ReceivePortNew, TimeSyncPID, SlotReservationPID, 0, false),
 	gen_udp:close(Socket),
 	MessageGenPID ! kill,
 	debug("messagegen killed", ?DEBUG),
 	debug("sender terminated", ?DEBUG).
 
-loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, false) ->
+%Anforderungs-Nr.: 1.0
+%Hauptschleife die die Nachrichten von der MessageGen annimmt und dann über den Multicast leitet,
+%sofern keine weitere Station in dem jeweiligen Slot gesendet hat.
+loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, SendCounter, false) ->
 	receive 
 		{message, Message, OldSlot, NextSlot} ->		
 			debug("received new message", ?DEBUG),
@@ -42,26 +45,34 @@ loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservati
 			case CheckedSlot of
 				true ->
 					debug("detected collision", ?DEBUG),
-					logging(?LOGFILE, lists:flatten(io_lib:format("collision detected. nothing to send~n", [])));
+					SendCounterNew = SendCounter,
+					%Anforderungs-Nr.: 6.3
+					logging(?LOGFILE, lists:flatten(io_lib:format("Es wurde in folgenden Frame NICHT gesendet: ~p~n", [SendCounterNew])));
 				false ->
 					TimeSyncPID ! {getTime, self()},
 					receive
 						{currentTime, Timestamp} ->
 							debug("received new timestamp", ?DEBUG)
 					end,
-					sendMulticast(Message, Socket, MulticastAddr, ReceivePort, Timestamp)
+					sendMulticast(Message, Socket, MulticastAddr, ReceivePort, Timestamp),
+					SendCounterNew = SendCounter + 1,
+					%Anforderungs-Nr.: 6.2
+					logging(?LOGFILE, lists:flatten(io_lib:format("Es wurde in folgenden Frame gesendet: ~p~n", [SendCounterNew])))
 			end,
 			Killed = false;
 		{nomessage} ->
 			debug("sendtime expired", ?DEBUG),
+			SendCounterNew = SendCounter,
 			Killed = false;
 		kill ->
+			SendCounterNew = SendCounter,
 			Killed = true
 	end,
-	loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, Killed);
-loop(_Socket, _HostAddress, _MulticastAddr, _ReceivePort, _TimeSyncPID, _SlotReservationPID, true) ->
+	loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, SendCounterNew, Killed);
+loop(_Socket, _HostAddress, _MulticastAddr, _ReceivePort, _TimeSyncPID, _SlotReservationPID, _SendCounter, true) ->
 	debug("killed", ?DEBUG).
 
+%Wartet auf die PIDs des TimeSync-Prozesses und des SlotReservation-Prozesses.
 waitForInitialValues(_MessageGenPID, PIDList) when length(PIDList) == 2 ->
 	PIDList;
 waitForInitialValues(MessageGenPID, PIDList) ->
@@ -79,13 +90,14 @@ waitForInitialValues(MessageGenPID, PIDList) ->
 	end,
 	waitForInitialValues(MessageGenPID, lists:append(PIDList, ListElement)).
 
-
+%Ermittelt die Hostaddress des Hosts.
 getHostAddress(InterfaceName) ->
 	{ok, IfAddr} = inet:getifaddrs(),
 	{_Interface, Addresses} = lists:keyfind(atom_to_list(InterfaceName), 1, IfAddr),
 	{addr, HostAddress} = lists:keyfind(addr, 1, Addresses),
 	HostAddress.
-	
+
+%Fragt beim SlotReservation-Prozess an, ob der jeweilige Slot frei ist, damit keine Kollision auftritt.
 checkSlot(Slot, NextSlot, SlotReservationPID) ->
 	SlotReservationPID ! {collision, Slot, NextSlot},
 	receive
@@ -93,11 +105,11 @@ checkSlot(Slot, NextSlot, SlotReservationPID) ->
 			debug("received collisiondetection", ?DEBUG)
 	end,
 	CheckedSlot.
-	
+
+%Sendet die Nachricht über den Multicast.
 sendMulticast({StationClass, Slot, Data}, Socket, MulticastAddr, ReceivePort, Timestamp) ->
 	debug("send multicast", ?DEBUG),
-	gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))),
-	logging(?LOGFILE, lists:flatten(io_lib:format("package send to multicast ~p ~p ~p ~p ~n", [StationClass, Slot, Data, Timestamp]))).
+	gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))).
 
 	
 debug(Text, true) ->

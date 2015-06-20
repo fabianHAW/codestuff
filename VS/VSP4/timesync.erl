@@ -18,16 +18,17 @@ debug(Text, true) ->
 	io:format("timesync_module: ~p~n", [Text]);
 debug(_Text, false) ->
 	ok.
+	
+%Anforderungs-Nr.: 4.0 
 %Ist die eigene Station von der Klasse B (false),
 %Bleibt die Zeit ungenau.
 %Sonst soll die Zeit synchronisiert werden.
 getNewTime(UtcOffsetMs, false) ->
 	inaccurate(UtcOffsetMs, getUTC());
 getNewTime(UtcOffsetMs, true) ->
-	accurate(UtcOffsetMs, 0, 0, 0)
-.
+	accurate(UtcOffsetMs, 0, 0, 0).
 
-%Nicht mehr benötigt!
+%Anforderungs-Nr.: 4.4; 4.5 
 %Zeit wird nicht synchronisiert, da die eigene Station von der Klasse B ist.
 %Erhält Anfragen von Sender u. MessageGen, ignoriert Zeitmitteilung vom Receiver.
 inaccurate(UtcOffsetMs, Time) ->
@@ -48,6 +49,7 @@ inaccurate(UtcOffsetMs, Time) ->
 			inaccurate(UtcOffsetMs, Time)
 	end.
 
+%Anforderungs-Nr.: 4.1; 4.2 
 %Zeit wird synchronisiert, da die eigene Staion von der Klasse A ist.
 %Erhält Anfragen von Sender u. MessageGen, berücksichtigt Zeitmitteilungen vom Receiver.
 accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived, FrameCounter) ->
@@ -56,7 +58,7 @@ accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived, FrameCounter) ->
 			SyncOffsetNew = berkley(string:equal(StationClass, "A"), TimeInSlot, SyncOffsetMs, TimesReceived + 1),
 			accurate(UtcOffsetMs, SyncOffsetNew, TimesReceived + 1, FrameCounter);
 		{getTime, SenderPID_MessageGenPID} ->
-			SenderPID_MessageGenPID ! {currentTime, getUTC() + SyncOffsetMs + UtcOffsetMs}, %TODO: SyncOffset Berechnen Berkley
+			SenderPID_MessageGenPID ! {currentTime, getUTC() + SyncOffsetMs + UtcOffsetMs},
 			accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived, FrameCounter);
 		{nextFrame} ->
 			{SyncOffsetMsNew, TimesReceivedNew, FrameCounterNew} = resetIfNeccessary(SyncOffsetMs, TimesReceived, FrameCounter + 1),
@@ -70,7 +72,6 @@ resetIfNeccessary(_SyncOffsetMs, _TimesReceived, FrameCounter) when FrameCounter
 resetIfNeccessary(SyncOffsetMs, TimesReceived, FrameCounter) ->
 	{SyncOffsetMs, TimesReceived, FrameCounter}.
 
-%Evtl. RTT, Jitter reinnehmen
 berkley(false, _TimeInSlot, SyncOffsetMs, _TimesReceived) ->
 	SyncOffsetMs;
 berkley(true, TimeInSlot, SyncOffsetMs, TimesReceived) ->
