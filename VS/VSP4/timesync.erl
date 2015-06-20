@@ -15,7 +15,7 @@ start(StationClass, UtcOffsetMs, SenderPID) ->
 
 		
 debug(Text, true) ->
-	io:format("starter_module: ~p~n", [Text]);
+	io:format("timesync_module: ~p~n", [Text]);
 debug(_Text, false) ->
 	ok.
 %Ist die eigene Station von der Klasse B (false),
@@ -46,8 +46,7 @@ inaccurate(UtcOffsetMs, Time) ->
 			kill();
 		_Any ->
 			inaccurate(UtcOffsetMs, Time)
-	end
-.
+	end.
 
 %Zeit wird synchronisiert, da die eigene Staion von der Klasse A ist.
 %Erhält Anfragen von Sender u. MessageGen, berücksichtigt Zeitmitteilungen vom Receiver.
@@ -64,24 +63,20 @@ accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived, FrameCounter) ->
 			accurate(UtcOffsetMs, SyncOffsetMsNew, TimesReceivedNew, FrameCounterNew);
 		kill ->
 			kill()
-	end
-.
+	end.
+	
 resetIfNeccessary(_SyncOffsetMs, _TimesReceived, FrameCounter) when FrameCounter == 2 ->
 	{0, 1, 0};
 resetIfNeccessary(SyncOffsetMs, TimesReceived, FrameCounter) ->
-	{SyncOffsetMs, TimesReceived, FrameCounter}
-.
+	{SyncOffsetMs, TimesReceived, FrameCounter}.
 
 %Evtl. RTT, Jitter reinnehmen
 berkley(false, _TimeInSlot, SyncOffsetMs, _TimesReceived) ->
 	SyncOffsetMs;
 berkley(true, TimeInSlot, SyncOffsetMs, TimesReceived) ->
 	Diff = getUTC() - TimeInSlot,
-	(SyncOffsetMs + Diff) / TimesReceived
-.
+	(SyncOffsetMs + Diff) / TimesReceived.
 
 
 kill() ->
-	%TODO Loggen
-	debug("Shutdown TimeSync ~n", ?DEBUG)
-.
+	debug("Shutdown TimeSync ~n", ?DEBUG).

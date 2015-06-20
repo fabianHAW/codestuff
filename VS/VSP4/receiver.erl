@@ -1,6 +1,6 @@
 -module(receiver).
 -import(werkzeug, [getUTC/0, openSe/2, openSeA/2, openRec/3, openRecA/3, logging/2, reset_timer/3]).
--export([delivery/2, init/6, start/6, test/0]).
+-export([delivery/2, init/6, start/6]).
 
 -define(NAME, lists:flatten(io_lib:format("receiver@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
@@ -19,7 +19,7 @@ start(InterfaceName, MulticastAddr, ReceivePort, SenderPID, StationClass, UtcOff
 	spawn(receiver, init, [InterfaceName, MulticastAddr, string:to_integer(atom_to_list(ReceivePort)), ReceiverDeliveryPID, TimeSyncPID, SenderPID]).
 
 debug(Text, true) ->
-	io:format("starter_module: ~p~n", [Text]);
+	io:format("receiver_module: ~p~n", [Text]);
 debug(_Text, false) ->
 	ok.
 
@@ -86,7 +86,6 @@ loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, 
 					TimeSyncPID ! {nextFrame},
 					logging(?LOGFILE, lists:flatten(io_lib:format("1send total reset~n", []))),
 					ReceiverDeliveryPID ! totalResetSlotreservation,
-					%{SlotsUsedNew, PacketListNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, CurrentTimestamp),
 					{SlotsUsedNew, PacketListNew} = listenAnalyse([], Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
 					
 					synchronize(PacketListNew, TimeSyncPID),
@@ -100,9 +99,11 @@ loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, 
 					{SlotsUsedNew, PacketListNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
 					
 					synchronize(PacketListNew, TimeSyncPID),
-					%synchronizeSlot(PacketListNew, ReceiverDeliveryPID),
+					synchronizeSlot(PacketListNew, ReceiverDeliveryPID),
 					loopInitial(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketListNew, OldTimestamp)
-			end
+			end;
+		kill ->
+			kill(Socket, ReceiverDeliveryPID, TimeSyncPID) 
 	after
 		1000 ->
 			InitialSlot = crypto:rand_uniform(1, 26),
@@ -139,7 +140,6 @@ loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketL
 				    TimeSyncPID ! {nextFrame},
 					logging(?LOGFILE, lists:flatten(io_lib:format("2send total reset~n", []))),
 					ReceiverDeliveryPID ! totalResetSlotreservation,
-					%{SlotsUsedNew, PacketListNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, CurrentTimestamp),
 					{SlotsUsedNew, PacketListNew} = listenAnalyse([], Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
 					  
 					synchronize(PacketListNew, TimeSyncPID),
@@ -154,33 +154,17 @@ loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketL
 					synchronize(PacketListNew, TimeSyncPID),
 					synchronizeSlot(PacketListNew, ReceiverDeliveryPID),
 					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketListNew, OldTimestamp)
-			end
-	%after
-	%	1000 ->
-	%		InitialSlot = crypto:rand_uniform(1, 26),
-	%		%ReceiverDeliveryPID ! {slot, reset, InitialSlot},
-	%		ReceiverDeliveryPID ! totalReset,
-	%		MessageGenPID ! {initialSlot, InitialSlot},
-	%		%SlotsUsedNew = insertInSlotsUsed(initSlotPositions(24), InitialSlot),
-	%		%sendFreeSlots(SlotsUsedNew, ReceiverDeliveryPID, 1),
-	%		
-	%		TimeSyncPID ! {getTime, self()},
-	%		receive 
-	%		    {currentTime, CurrentTimestamp} ->
-	%			debug("received currentTime", ?DEBUG)
-	%		end,
-	%		CurrentTimestampNew = CurrentTimestamp - CurrentTimestamp rem 1000,
-	%		loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], CurrentTimestampNew)
+			end;
+		kill ->
+			kill(Socket, ReceiverDeliveryPID, TimeSyncPID) 
 	end.
 
-%listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, CurrentTimestamp) ->
 listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp) ->
 	{StationTyp, _Paylod, Slot, Timestamp} = message_to_string(Packet),
 
 	Timestamp2 = binary:decode_unsigned(erlang:binary_part(Packet, byte_size(Packet), -8), big),
 	
 	SlotCount = timeCalc(OldTimestamp, TimeSyncPID),
-	%SlotCount = timeCalc(CurrentTimestamp, Timestamp2, TimeSyncPID),
 	
 	ReceiverDeliveryPID ! {delete, SlotCount},
 	%ReceiverDeliveryPID ! {slotUsed, Slot},
@@ -191,35 +175,14 @@ listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, O
 	{SlotsUsedNew, PacektListNew}.
 	
 timeCalc(OldTimestamp, TimeSyncPID) ->
-	%Timestampnew = getSecInMilli(Timestamp),
 	TimeSyncPID ! {getTime, self()},
 	receive 
 		{currentTime, CurrentTimestamp} ->
 			logging(?LOGFILE, lists:flatten(io_lib:format("received time~p oldtime: ~p~n", [CurrentTimestamp, OldTimestamp])))
 	end,
 	Time = CurrentTimestamp - OldTimestamp,
-
 	logging(?LOGFILE, lists:flatten(io_lib:format("Time: ~p~n", [Time]))),
-	%CurrentTimestampNew = getSecInMilli(CurrentTimestamp),
-	%TimeNew = getSecInMilli(Time),
 	trunc(((Time rem 1000) / 40) + 1).
-	
-%getSecInMilli(Timestamp) ->
-%	list_to_integer(string:substr(integer_to_list(Timestamp), 10, 4)) rem 1000.
-	
-	
-test() ->
-	Time1 = getUTC(),
-	timer:sleep(989),
-	Time2 = getUTC(),
-	io:format("Time1 ~p Time2 ~p~n",[Time1, Time2]),
-	case Time2 - Time1 > 999 of
-		true ->
-			io:format("greater~n",[]);
-		false ->
-			io:format("not greater~n",[])
-	end.
-			
 
 synchronize([], _TimeSyncPID) ->
 	ok;

@@ -18,11 +18,8 @@ start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 	{_SlotreservationKey, SlotReservationPID} = lists:keyfind(slotreservationpid, 1, PIDList),
 	
 	HostAddress = getHostAddress(InterfaceName),
-	%passiv
-	%Socket = openSe(HostAddress, SendPort),
 	%aktiv
 	Socket = openSeA(HostAddress, SendPort),
-	%Socket = openSeA({127,0,0,2}, SendPort),
 	gen_udp:controlling_process(Socket, self()),
 	%auf Receiver-Anfrage warten
 	receive 
@@ -41,14 +38,7 @@ loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservati
 	receive 
 		{message, Message, OldSlot, NextSlot} ->		
 			debug("received new message", ?DEBUG),
-			
-			%{_StationClass, Slot, _Data} = Message,
-			%CheckedSlot = checkSlot(lists:nth(1, binary_to_list(Slot)), SlotReservationPID),
-			Time1 = werkzeug:getUTC(),
 			CheckedSlot = checkSlot(OldSlot, NextSlot, SlotReservationPID),
-			Time2Temp = werkzeug:getUTC(),
-			Time2 = Time2Temp - Time1,
-			logging(?LOGFILE, lists:flatten(io_lib:format("Time2 ~p ~n", [Time2]))),
 			case CheckedSlot of
 				true ->
 					debug("detected collision", ?DEBUG),
@@ -59,14 +49,11 @@ loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservati
 						{currentTime, Timestamp} ->
 							debug("received new timestamp", ?DEBUG)
 					end,
-					logging(?LOGFILE, lists:flatten(io_lib:format("Time3 ~p ~n", [werkzeug:getUTC() - Time2Temp]))),
-					
 					sendMulticast(Message, Socket, MulticastAddr, ReceivePort, Timestamp)
 			end,
 			Killed = false;
 		{nomessage} ->
 			debug("sendtime expired", ?DEBUG),
-			%logging(?LOGFILE, lists:flatten(io_lib:format("sendtime expired~n", []))),
 			Killed = false;
 		kill ->
 			Killed = true
@@ -109,12 +96,11 @@ checkSlot(Slot, NextSlot, SlotReservationPID) ->
 	
 sendMulticast({StationClass, Slot, Data}, Socket, MulticastAddr, ReceivePort, Timestamp) ->
 	debug("send multicast", ?DEBUG),
-	%logging(?LOGFILE, lists:flatten(io_lib:format("time at sender ~p ~n", [werkzeug:getUTC()]))),
 	gen_udp:send(Socket, MulticastAddr, ReceivePort, concatBinary(StationClass, Data, Slot, createBinaryT(Timestamp))),
 	logging(?LOGFILE, lists:flatten(io_lib:format("package send to multicast ~p ~p ~p ~p ~n", [StationClass, Slot, Data, Timestamp]))).
 
 	
 debug(Text, true) ->
-	io:format("starter_module: ~p~n", [Text]);
+	io:format("sender_module: ~p~n", [Text]);
 debug(_Text, false) ->
 	ok.
