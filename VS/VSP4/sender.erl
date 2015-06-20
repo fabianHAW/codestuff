@@ -4,7 +4,7 @@
 
 -define(NAME, lists:flatten(io_lib:format("sender@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
--define(DEBUG, true).
+-define(DEBUG, false).
 
 start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 	MessageGenPID = spawn(messagegen, start, [self(), StationClass]),

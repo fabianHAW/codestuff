@@ -4,7 +4,7 @@
 
 -define(NAME, lists:flatten(io_lib:format("receiver@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
--define(DEBUG, true).
+-define(DEBUG, false).
 
 start(InterfaceName, MulticastAddr, ReceivePort, SenderPID, StationClass, UtcOffsetMs) ->
 	%Diese Methode benoetigt beim ersten Aufruf einige ms die das Senden
@@ -87,7 +87,7 @@ loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, 
 				true ->
 					TimeSyncPID ! {nextFrame},
 					ReceiverDeliveryPID ! totalResetSlotreservation,
-					{SlotsUsedNew, PacketListNew, KilledNewNew} = listenAnalyse([], Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
+					{SlotsUsedNew, PacketListNew, KilledNewNew} = listenAnalyse([], Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp, KilledNew),
 					
 					synchronize(PacketListNew, TimeSyncPID),
 					CollisionsNew = synchronizeSlot(PacketListNew, ReceiverDeliveryPID, Collisions),
@@ -97,7 +97,7 @@ loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, 
 					CurrentTimestampNew = CurrentTimestamp - CurrentTimestamp rem 1000,
 					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], CurrentTimestampNew, CollisionsNew, KilledNewNew);
 				false ->
-					{SlotsUsedNew, PacketListNew, KilledNewNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
+					{SlotsUsedNew, PacketListNew, KilledNewNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp, KilledNew),
 					
 					synchronize(PacketListNew, TimeSyncPID),
 					CollisionsNew = synchronizeSlot(PacketListNew, ReceiverDeliveryPID, Collisions),
@@ -126,6 +126,7 @@ loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, 
 			loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], CurrentTimestampNew, Collisions, KilledNew)
 	end.
 
+%Hauptschleife, die die Pakete entgegen nimmt und weiter verarbeitet
 loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketList, OldTimestamp, Collisions, false) ->
 	receive
 		{udp, _ReceiveSocket, _Address, _Port, Packet} ->
@@ -142,7 +143,7 @@ loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketL
 				true ->
 				    TimeSyncPID ! {nextFrame},
 					ReceiverDeliveryPID ! totalResetSlotreservation,
-					{SlotsUsedNew, PacketListNew, KilledNewNew} = listenAnalyse([], Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
+					{SlotsUsedNew, PacketListNew, KilledNewNew} = listenAnalyse([], Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp, KilledNew),
 					  
 					synchronize(PacketListNew, TimeSyncPID),
 					CollisionsNew = synchronizeSlot(PacketListNew, ReceiverDeliveryPID, Collisions),
@@ -150,7 +151,7 @@ loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketL
 					CurrentTimestampNew = CurrentTimestamp - CurrentTimestamp rem 1000,
 					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], CurrentTimestampNew, CollisionsNew, KilledNewNew);
 				false ->
-					{SlotsUsedNew, PacketListNew, KilledNewNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
+					{SlotsUsedNew, PacketListNew, KilledNewNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp, KilledNew),
 					
 					synchronize(PacketListNew, TimeSyncPID),
 					CollisionsNew = synchronizeSlot(PacketListNew, ReceiverDeliveryPID, Collisions),
@@ -161,29 +162,32 @@ loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketL
 	end;
 loop(Socket, _SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, _MessageGenPID, _PacketList, _OldTimestamp, _Collisions, true) ->
 	kill(Socket, ReceiverDeliveryPID, TimeSyncPID).
-			
-listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp) ->
+	
+%Erhaltenes Paket analysieren und festhalten in welchem Slot dieses empfangen wurde	
+listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp, Killed) ->
 	{StationTyp, _Paylod, Slot, Timestamp} = message_to_string(Packet),
 
-	{SlotCount, Killed} = timeCalc(OldTimestamp, TimeSyncPID),
+	{SlotCount, KilledNew} = timeCalc(OldTimestamp, TimeSyncPID, Killed),
 	ReceiverDeliveryPID ! {delete, SlotCount},
 	
 	SlotsUsedNew = insertInSlotsUsed(SlotsUsed, Slot),
 	PacektListNew = lists:append(PacketList, [{SlotCount, StationTyp, Timestamp, Slot}]),
-	{SlotsUsedNew, PacektListNew, Killed}.
-	
-timeCalc(OldTimestamp, TimeSyncPID) ->
+	{SlotsUsedNew, PacektListNew, KilledNew}.
+
+%Slot berechnen in dem das Paket empfangen wurde
+timeCalc(OldTimestamp, TimeSyncPID, Killed) ->
 	TimeSyncPID ! {getTime, self()},
 	receive 
 		{currentTime, CurrentTimestamp} ->
 			debug("received currentTime", ?DEBUG),
-			Killed = true;
+			KilledNew = Killed;
 		kill ->
-			Killed = true,
+			KilledNew = true,
 			CurrentTimestamp = 0
 	end,
-	{trunc(((( CurrentTimestamp - OldTimestamp) rem 1000) / 40) + 1), Killed}.
+	{trunc(((( CurrentTimestamp - OldTimestamp) rem 1000) / 40) + 1), KilledNew}.
 
+%Wurde keine Kollision festgestellt, dann wird der Timestamp im Paket weiter an die TimeSync geleitet
 synchronize([], _TimeSyncPID) ->
 	ok;
 synchronize([First | Rest], TimeSyncPID) ->
@@ -191,7 +195,7 @@ synchronize([First | Rest], TimeSyncPID) ->
 		synchronize(SendFlag, First, TimeSyncPID, send),
 		synchronize(List, TimeSyncPID).
 
-synchronize(First, [], searchCollisions) ->
+synchronize(_First, [], searchCollisions) ->
 	{true, []};
 synchronize(First, [Head | Tail], searchCollisions) when element(1, Head) == element(1, First)->
 		{false, skip(element(1, First), Tail)};
@@ -205,6 +209,7 @@ synchronize(false, _First, _TimeSyncPID, send) ->
 	ok.
 
 %Anforderungs-Nr.: 5.1; 
+%Wurde keine Kollision festgestellt, dann wird der benutzte Slot im nächsten Frame an die SlotReservation geleitet
 synchronizeSlot([], _ReceiverDeliveryPID, Collisions) ->
 	Collisions;
 synchronizeSlot([First | Rest], ReceiverDeliveryPID, Collisions) ->
@@ -212,7 +217,7 @@ synchronizeSlot([First | Rest], ReceiverDeliveryPID, Collisions) ->
 	synchronizeSlot(SendFlag, First, ReceiverDeliveryPID, send),
 	synchronizeSlot(List, ReceiverDeliveryPID, CollisionsNew).
 		
-synchronizeSlot(First, [], searchCollisions, Collisions, check) ->
+synchronizeSlot(_First, [], searchCollisions, Collisions, check) ->
 	{true, [], Collisions};
 synchronizeSlot(First, [Head | Tail], searchCollisions, Collisions, check) when element(1, Head) == element(1, First)->
 	{false, skip(element(1, First), Tail), Collisions};
@@ -223,7 +228,7 @@ synchronizeSlot(First, [Head | Tail], searchCollisions, Collisions, check) when 
 	{true, lists:append([Head], Tail), CollisionsNew}.
 
 synchronizeSlot(true, First, ReceiverDeliveryPID, send) ->
-	{_SlotCount, StationTyp, _Timestamp, Slot} = First,
+	{_SlotCount, _StationTyp, _Timestamp, Slot} = First,
 	ReceiverDeliveryPID ! {slotUsed, Slot};
 synchronizeSlot(false, _First, _ReceiverDeliveryPID, send) ->
 	ok.
@@ -232,10 +237,10 @@ skip(_Slot, []) ->
 	[];
 skip(Slot, [Head | Tail]) when element(1, Head) == Slot ->
 	skip(Slot, Tail);
-skip(Slot, [Head | Tail]) ->
+skip(_Slot, [_Head | Tail]) ->
 	Tail.
 
-
+%Fügt den Slot in die Liste der zur Zeit benutzten Slots hinein
 insertInSlotsUsed(SlotsUsed, SlotNumber) ->
 		insertInSlotsUsed(SlotsUsed, SlotNumber, 1).
 
@@ -246,6 +251,7 @@ insertInSlotsUsed([First | Rest], SlotNumber, Counter) when SlotNumber == Counte
 insertInSlotsUsed([First | Rest], SlotNumber, Counter) ->
 		lists:append([First], insertInSlotsUsed(Rest, SlotNumber, Counter + 1)).
 	
+%Beendet die Receiver-seitig laufenden Prozesse
 kill(Socket, ReceiverDeliveryPID, TimeSyncPID) ->
 	gen_udp:close(Socket),
 	ReceiverDeliveryPID ! kill,
@@ -263,6 +269,7 @@ message_to_string(Packet) ->
 	{StationTyp, Paylod, Slot, Timestamp}.
 
 %%%%%%%%%%%%Receiver Services%%%%%%%%%%%%%
+%Leietet die Nachrichten an TimeSync und SlotReservation weiter
 delivery(SlotReservationPID, TimeSyncPID) ->
 	receive
 		{slot, reset, NextSlot} ->

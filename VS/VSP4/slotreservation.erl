@@ -3,7 +3,7 @@
 
 -define(NAME, lists:flatten(io_lib:format("slotreservation@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
--define(DEBUG, true).
+-define(DEBUG, false).
 
 start(SenderPID) ->
 	SenderPID ! {helloSlot, self()},
@@ -50,12 +50,11 @@ loop(FreeSlots, SlotsUsed, SenderPID, OwnNextSlot) ->
 			kill()
 	end.
 	
+%Berechnet das Inverse einer Liste
 getInverseList(SlotsUsed) ->
     lists:subtract(lists:seq(1,25), SlotsUsed).
 
-
-%Sendet den nächsten freien Slot an MessageGen oder {nextSlot, nok},
-%wenn kein freier Slot zur Verfügung steht.
+%Holt zufaellig einen naechsten Slot aus der Liste
 getNewSlot(List) ->
 	lists:nth(crypto:rand_uniform(1, length(List)), List).
 

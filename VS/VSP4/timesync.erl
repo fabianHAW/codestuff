@@ -4,14 +4,13 @@
 
 -define(NAME, lists:flatten(io_lib:format("timesync@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
--define(DEBUG, true).
+-define(DEBUG, false).
 
 
 start(StationClass, UtcOffsetMs, SenderPID) ->
 	SenderPID ! {helloTime, self()},
 	debug("send own pid to sender", ?DEBUG),
-	getNewTime(UtcOffsetMs, string:equal(StationClass, "A"))
-.
+	getNewTime(UtcOffsetMs, string:equal(StationClass, "A")).
 
 		
 debug(Text, true) ->
@@ -65,6 +64,7 @@ accurate(UtcOffsetMs, SyncOffsetMs, TimesReceived, FrameCounter) ->
 			kill()
 	end.
 	
+%Wurden 2 Frames empfangen, wird der gemittelte Timestamp resetet und ein neuer gebildet
 resetIfNeccessary(_SyncOffsetMs, _TimesReceived, FrameCounter) when FrameCounter == 2 ->
 	{0, 1, 0};
 resetIfNeccessary(SyncOffsetMs, TimesReceived, FrameCounter) ->

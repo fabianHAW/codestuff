@@ -12,6 +12,8 @@ $ ./startStations.sh lo 225.10.1.2 15001 1 5 A 0
 
 *******normal close the stations*******
 
+At the moment the receiver-process not terminate! Take the other way (via rpc) to close the application right.
+
 (w)erl -(s)name close -setcookie kekse
 1> make:all(). 
 2> send_kill:start(From, To)
@@ -24,7 +26,7 @@ The two indices must be same you gave to startStations.sh above!!
 
 **close via rpc**
 
-If there occures an exception, which we don't think, you can kill the processes like:
+If there occures an exception, or the kill-command not close all processes, you can kill the processes like:
 
 $ ./killStations.sh <from-station-index> <to-station-index> 
 The two indices must be same you gave to startStations.sh above!!
