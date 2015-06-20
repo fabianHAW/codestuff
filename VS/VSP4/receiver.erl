@@ -219,13 +219,13 @@ synchronizeSlot([First | Rest], ReceiverDeliveryPID, Collisions) ->
 		
 synchronizeSlot(_First, [], searchCollisions, Collisions, check) ->
 	{true, [], Collisions};
-synchronizeSlot(First, [Head | Tail], searchCollisions, Collisions, check) when element(1, Head) == element(1, First)->
-	{false, skip(element(1, First), Tail), Collisions};
-synchronizeSlot(First, [Head | Tail], searchCollisions, Collisions, check) when element(1, Head) /= element(1, First)->		
+synchronizeSlot(First, [Head | Tail], searchCollisions, Collisions, check) when element(1, Head) == element(1, First)->	
 	%Anforderungs-Nr.: 6.0; 
 	CollisionsNew = Collisions + 1,
 	logging(?LOGFILE, lists:flatten(io_lib:format("Kollision erkannt. Anzahl ist nun: ~p~n", [CollisionsNew]))),
-	{true, lists:append([Head], Tail), CollisionsNew}.
+	{false, skip(element(1, First), Tail), CollisionsNew};
+synchronizeSlot(First, [Head | Tail], searchCollisions, Collisions, check) when element(1, Head) /= element(1, First)->	
+	{true, lists:append([Head], Tail), Collisions}.
 
 synchronizeSlot(true, First, ReceiverDeliveryPID, send) ->
 	{_SlotCount, _StationTyp, _Timestamp, Slot} = First,
