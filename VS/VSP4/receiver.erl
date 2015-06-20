@@ -4,7 +4,7 @@
 
 -define(NAME, lists:flatten(io_lib:format("receiver@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
--define(DEBUG, false).
+-define(DEBUG, true).
 
 start(InterfaceName, MulticastAddr, ReceivePort, SenderPID, StationClass, UtcOffsetMs) ->
 	%Diese Methode benoetigt beim ersten Aufruf einige ms die das Senden
@@ -47,7 +47,7 @@ init(InterfaceName, MulticastAddr, {ReceivePort, _}, ReceiverDeliveryPID, TimeSy
 			debug("received currentTime", ?DEBUG)
 	end,
 
-	loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], CurrentTimestamp, 0).
+	loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], CurrentTimestamp, 0, false).
 	
 %Warten bis Zeitdifferenz zu 1 Sekunde abgelaufen ist.
 wait() ->
@@ -70,20 +70,24 @@ initSlotPositions(SlotsUsed, _NumPos, _Counter) ->
 
 %Anforderungs-Nr.: 1; 
 %1 Sekunde lang zuhören, Slots sammeln, dann freie Slots an die Slotreservation senden.
-loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketList, OldTimestamp, Collisions) ->
+loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketList, OldTimestamp, Collisions, false) ->
 	receive
 		{udp, _ReceiveSocket, _Address, _Port, Packet} ->
 			TimeSyncPID ! {getTime, self()},
 			receive 
 			    {currentTime, CurrentTimestamp} ->
-				debug("received currentTime", ?DEBUG)
+			    KilledNew = false,
+				debug("received currentTime", ?DEBUG);
+			kill -> 
+				KilledNew = true,
+				CurrentTimestamp = 0
 			end,
 			
 			case (CurrentTimestamp - OldTimestamp) > 999 of
 				true ->
 					TimeSyncPID ! {nextFrame},
 					ReceiverDeliveryPID ! totalResetSlotreservation,
-					{SlotsUsedNew, PacketListNew} = listenAnalyse([], Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
+					{SlotsUsedNew, PacketListNew, KilledNewNew} = listenAnalyse([], Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
 					
 					synchronize(PacketListNew, TimeSyncPID),
 					CollisionsNew = synchronizeSlot(PacketListNew, ReceiverDeliveryPID, Collisions),
@@ -91,16 +95,16 @@ loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, 
 					ReceiverDeliveryPID ! {sendInitialSlot, MessageGenPID},
 					
 					CurrentTimestampNew = CurrentTimestamp - CurrentTimestamp rem 1000,
-					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], CurrentTimestampNew, CollisionsNew);
+					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], CurrentTimestampNew, CollisionsNew, KilledNewNew);
 				false ->
-					{SlotsUsedNew, PacketListNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
+					{SlotsUsedNew, PacketListNew, KilledNewNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
 					
 					synchronize(PacketListNew, TimeSyncPID),
 					CollisionsNew = synchronizeSlot(PacketListNew, ReceiverDeliveryPID, Collisions),
-					loopInitial(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketListNew, OldTimestamp, CollisionsNew)
+					loopInitial(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketListNew, OldTimestamp, CollisionsNew, KilledNewNew)
 			end;
 		kill ->
-			kill(Socket, ReceiverDeliveryPID, TimeSyncPID) 
+			loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], OldTimestamp, Collisions, true)
 	after
 		1000 ->
 			InitialSlot = crypto:rand_uniform(1, 26),
@@ -111,61 +115,74 @@ loopInitial(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, 
 			TimeSyncPID ! {getTime, self()},
 			receive 
 			    {currentTime, CurrentTimestamp} ->
-					debug("received currentTime", ?DEBUG)
+					debug("received currentTime", ?DEBUG),
+					KilledNew = false;
+				kill ->
+					KilledNew = true,
+					CurrentTimestamp = 0
 			end,
 			
 			CurrentTimestampNew = CurrentTimestamp - CurrentTimestamp rem 1000,
-			loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], CurrentTimestampNew, Collisions)
+			loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], CurrentTimestampNew, Collisions, KilledNew)
 	end.
 
-loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketList, OldTimestamp, Collisions) ->
-
+loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketList, OldTimestamp, Collisions, false) ->
 	receive
 		{udp, _ReceiveSocket, _Address, _Port, Packet} ->
 			TimeSyncPID ! {getTime, self()},
 			receive 
 			    {currentTime, CurrentTimestamp} ->
-					debug("received currentTime", ?DEBUG)
+					KilledNew = false,
+					debug("received currentTime", ?DEBUG);
+				kill ->
+					KilledNew = true,
+					CurrentTimestamp = 0
 			end,
 			case (CurrentTimestamp - OldTimestamp) > 999 of
 				true ->
 				    TimeSyncPID ! {nextFrame},
 					ReceiverDeliveryPID ! totalResetSlotreservation,
-					{SlotsUsedNew, PacketListNew} = listenAnalyse([], Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
+					{SlotsUsedNew, PacketListNew, KilledNewNew} = listenAnalyse([], Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
 					  
 					synchronize(PacketListNew, TimeSyncPID),
 					CollisionsNew = synchronizeSlot(PacketListNew, ReceiverDeliveryPID, Collisions),
 					
 					CurrentTimestampNew = CurrentTimestamp - CurrentTimestamp rem 1000,
-					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], CurrentTimestampNew, CollisionsNew);
+					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], CurrentTimestampNew, CollisionsNew, KilledNewNew);
 				false ->
-					{SlotsUsedNew, PacketListNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
+					{SlotsUsedNew, PacketListNew, KilledNewNew} = listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp),
 					
 					synchronize(PacketListNew, TimeSyncPID),
 					CollisionsNew = synchronizeSlot(PacketListNew, ReceiverDeliveryPID, Collisions),
-					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketListNew, OldTimestamp, CollisionsNew)
+					loop(Socket, SlotsUsedNew, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, PacketListNew, OldTimestamp, CollisionsNew, KilledNewNew)
 			end;
 		kill ->
-			kill(Socket, ReceiverDeliveryPID, TimeSyncPID) 
-	end.
-
+			loop(Socket, SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, MessageGenPID, [], OldTimestamp, Collisions, true)
+	end;
+loop(Socket, _SlotsUsed, ReceiverDeliveryPID, TimeSyncPID, _MessageGenPID, _PacketList, _OldTimestamp, _Collisions, true) ->
+	kill(Socket, ReceiverDeliveryPID, TimeSyncPID).
+			
 listenAnalyse(PacketList, Packet, TimeSyncPID, ReceiverDeliveryPID, SlotsUsed, OldTimestamp) ->
 	{StationTyp, _Paylod, Slot, Timestamp} = message_to_string(Packet),
 
-	SlotCount = timeCalc(OldTimestamp, TimeSyncPID),
+	{SlotCount, Killed} = timeCalc(OldTimestamp, TimeSyncPID),
 	ReceiverDeliveryPID ! {delete, SlotCount},
 	
 	SlotsUsedNew = insertInSlotsUsed(SlotsUsed, Slot),
 	PacektListNew = lists:append(PacketList, [{SlotCount, StationTyp, Timestamp, Slot}]),
-	{SlotsUsedNew, PacektListNew}.
+	{SlotsUsedNew, PacektListNew, Killed}.
 	
 timeCalc(OldTimestamp, TimeSyncPID) ->
 	TimeSyncPID ! {getTime, self()},
 	receive 
 		{currentTime, CurrentTimestamp} ->
-			debug("received currentTime", ?DEBUG)
+			debug("received currentTime", ?DEBUG),
+			Killed = true;
+		kill ->
+			Killed = true,
+			CurrentTimestamp = 0
 	end,
-	trunc(((( CurrentTimestamp - OldTimestamp) rem 1000) / 40) + 1).
+	{trunc(((( CurrentTimestamp - OldTimestamp) rem 1000) / 40) + 1), Killed}.
 
 synchronize([], _TimeSyncPID) ->
 	ok;
@@ -232,10 +249,10 @@ insertInSlotsUsed([First | Rest], SlotNumber, Counter) ->
 kill(Socket, ReceiverDeliveryPID, TimeSyncPID) ->
 	gen_udp:close(Socket),
 	ReceiverDeliveryPID ! kill,
-	debug("send kill to receiver services~n", ?DEBUG),
+	debug("send kill to receiver services", ?DEBUG),
 	TimeSyncPID ! kill,
-	debug("send kill to timesync~n", ?DEBUG),
-	debug("Shutdown Receiver~n", ?DEBUG).
+	debug("send kill to timesync", ?DEBUG),
+	debug("Shutdown Receiver", ?DEBUG).
 
 message_to_string(Packet) ->
 	List = binary:bin_to_list(Packet),
@@ -271,8 +288,8 @@ delivery(SlotReservationPID, TimeSyncPID) ->
 			delivery(SlotReservationPID, TimeSyncPID);
 		kill ->
 			SlotReservationPID ! kill,
-			debug("send kill to slotreservation~n",?DEBUG),
-			debug("receiver services terminated~n",?DEBUG)
+			debug("send kill to slotreservation",?DEBUG),
+			debug("receiver services terminated",?DEBUG)
 	end.
 
 getHostAddress(InterfaceName) ->

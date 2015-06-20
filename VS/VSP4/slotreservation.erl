@@ -3,7 +3,7 @@
 
 -define(NAME, lists:flatten(io_lib:format("slotreservation@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
--define(DEBUG, false).
+-define(DEBUG, true).
 
 start(SenderPID) ->
 	SenderPID ! {helloSlot, self()},

@@ -4,7 +4,7 @@
 
 -define(NAME, lists:flatten(io_lib:format("timesync@~p", [node()]))).
 -define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
--define(DEBUG, false).
+-define(DEBUG, true).
 
 
 start(StationClass, UtcOffsetMs, SenderPID) ->
@@ -44,9 +44,7 @@ inaccurate(UtcOffsetMs, Time) ->
 			SenderPID_MessageGenPID ! {currentTime, Time},
 			inaccurate(UtcOffsetMs, Time);
 		kill ->
-			kill();
-		_Any ->
-			inaccurate(UtcOffsetMs, Time)
+			kill()
 	end.
 
 %Anforderungs-Nr.: 4.1; 4.2 
