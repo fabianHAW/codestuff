@@ -2,7 +2,7 @@
 -export([start/1]).
 
 -define(NAME, "station").
--define(LOGFILE, lists:flatten(io_lib:format("~p.log", [?NAME]))).
+-define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, false).
 	
 start(ArgsList) ->

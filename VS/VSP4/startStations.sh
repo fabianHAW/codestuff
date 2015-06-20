@@ -45,7 +45,7 @@ teamNo="1"
 # Example:    dataSource="~/somewhere/DataSource"
 #         or  dataSource="java -cp . datasource.DataSource"
 ########################################################################################################
-dataSource="DataSource64"
+dataSource="DataSource32"
 
 ########################################################################################################
 # TODO: Enter your station's start command.
@@ -53,7 +53,7 @@ dataSource="DataSource64"
 #
 # Example: stationCmd="java aufgabe4.MyStation $interfaceName $mcastAddress $receivePort $stationClass"
 ########################################################################################################
-stationCmdFirst="erl -name station"
+stationCmdFirst="erl -sname station"
 stationCmdSecond="-setcookie kekse -noshell -s starter start $interfaceName $mcastAddress $receivePort $stationClass $UTCoffsetMs"
 
 

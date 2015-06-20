@@ -3,7 +3,7 @@
 -import(werkzeug, [logging/2, openSe/2, openSeA/2, concatBinary/4, createBinaryT/1]).
 
 -define(NAME, lists:flatten(io_lib:format("sender@~p", [node()]))).
--define(LOGFILE, lists:flatten(io_lib:format("~p.log", [?NAME]))).
+-define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, false).
 
 start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
@@ -39,13 +39,13 @@ start(InterfaceName, MulticastAddr, ReceivePort, StationClass, StationNumber) ->
 
 loop(Socket, HostAddress, MulticastAddr, ReceivePort, TimeSyncPID, SlotReservationPID, false) ->
 	receive 
-		{message, Message, OldSlot} ->		
+		{message, Message, OldSlot, NextSlot} ->		
 			debug("received new message", ?DEBUG),
-
+			
 			%{_StationClass, Slot, _Data} = Message,
 			%CheckedSlot = checkSlot(lists:nth(1, binary_to_list(Slot)), SlotReservationPID),
 			Time1 = werkzeug:getUTC(),
-			CheckedSlot = checkSlot(OldSlot, SlotReservationPID),
+			CheckedSlot = checkSlot(OldSlot, NextSlot, SlotReservationPID),
 			Time2Temp = werkzeug:getUTC(),
 			Time2 = Time2Temp - Time1,
 			logging(?LOGFILE, lists:flatten(io_lib:format("Time2 ~p ~n", [Time2]))),
@@ -99,8 +99,8 @@ getHostAddress(InterfaceName) ->
 	{addr, HostAddress} = lists:keyfind(addr, 1, Addresses),
 	HostAddress.
 	
-checkSlot(Slot, SlotReservationPID) ->
-	SlotReservationPID ! {collision, Slot},
+checkSlot(Slot, NextSlot, SlotReservationPID) ->
+	SlotReservationPID ! {collision, Slot, NextSlot},
 	receive
 		{collision, CheckedSlot} ->
 			debug("received collisiondetection", ?DEBUG)

@@ -3,7 +3,7 @@
 -import(werkzeug, [getUTC/0, logging/2]).
 
 -define(NAME, lists:flatten(io_lib:format("timesync@~p", [node()]))).
--define(LOGFILE, lists:flatten(io_lib:format("~p.log", [?NAME]))).
+-define(LOGFILE, lists:flatten(io_lib:format("log/~p.log", [?NAME]))).
 -define(DEBUG, false).
 
 
