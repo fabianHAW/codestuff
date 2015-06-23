@@ -3,8 +3,6 @@ package haw.aip3.haw.web;
 import haw.aip3.haw.repositories.produkt.BauteilRepository;
 import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
 import haw.aip3.haw.services.produkt.ProduktService;
-import haw.aip3.haw.services.produkt.StuecklisteService;
-import haw.aip3.haw.services.produkt.StuecklistenPositionService;
 import haw.aip3.haw.entities.produkt.Arbeitsplan;
 import haw.aip3.haw.entities.produkt.Bauteil;
 import haw.aip3.haw.entities.produkt.EinfachesBauteil;
@@ -38,10 +36,10 @@ public class StartupInitializerWeb implements
 	private ProduktService bauteilService;
 
 	@Autowired
-	private StuecklisteService stuecklisteService;
+	private ProduktService stuecklisteService;
 
 	@Autowired
-	private StuecklistenPositionService stuecklistenPositionService;
+	private ProduktService stuecklistenPositionService;
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
