@@ -10,11 +10,11 @@ import haw.aip3.haw.entities.produkt.StuecklistenPosition;
 import haw.aip3.haw.entities.produkt.Vorgang;
 import haw.aip3.haw.entities.produkt.Vorgang.VorgangArtTyp;
 import haw.aip3.haw.repositories.fertigungsverwaltung.FertigungsauftragRepository;
-import haw.aip3.haw.repositories.fertigungsverwaltung.VorgangRepository;
 import haw.aip3.haw.repositories.produkt.ArbeitsplanRepository;
 import haw.aip3.haw.repositories.produkt.BauteilRepository;
 import haw.aip3.haw.repositories.produkt.StuecklisteRepository;
 import haw.aip3.haw.repositories.produkt.StuecklistenPostionRepository;
+import haw.aip3.haw.repositories.produkt.VorgangRepository;
 
 import java.util.ArrayList;
 import java.util.Date;

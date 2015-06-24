@@ -1,4 +1,4 @@
-package haw.aip3.haw.repositories.fertigungsverwaltung;
+package haw.aip3.haw.repositories.produkt;
 
 import haw.aip3.haw.entities.produkt.Vorgang;
 
