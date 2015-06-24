@@ -30,6 +30,10 @@ public class Angebot {
 		this.kundenID = kundenID;
 	}
 
+	public int getKundenID() {
+		return kundenID;
+	}
+
 	@Id
 	@GeneratedValue
 	private long angebotsNr;
