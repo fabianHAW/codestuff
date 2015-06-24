@@ -1,13 +1,16 @@
 package mps.rating.test;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
+import mps.rating.dto.SalesData;
 import mps.rating.graph.nodes.AuftragsPositionRelation;
 import mps.rating.graph.nodes.KundeNode;
 import mps.rating.graph.nodes.ProduktNode;
 import mps.rating.graph.repository.KundeGraphRepository;
 import mps.rating.graph.repository.ProduktGraphRepository;
+import mps.rating.services.RatingService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +39,9 @@ public class GraphStartupInitializer implements ApplicationListener<ContextRefre
 	@Autowired 
 	Neo4jTemplate template;
 
+
+	@Autowired
+	private RatingService r;
 	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -77,5 +83,10 @@ public class GraphStartupInitializer implements ApplicationListener<ContextRefre
 			}
 			kundeGraphRepository.save(kunde);
 		}
+		
+		Iterable<? extends SalesData> salesData = r.showProductSalesByCity("Hamburg");
+    	for(SalesData item : salesData){
+    		System.out.println(item.toString());
+    	}
 	}
 }

@@ -17,7 +17,7 @@ public class AuftragsRelation {
 	private GeschaeftspartnerNode kunde;
 
 	@EndNode
-	private BauteilNode produkt;
+	private BauteilNode bauteil;
 
 	private String stadt;
 	private double preis;
@@ -26,9 +26,9 @@ public class AuftragsRelation {
 	protected AuftragsRelation() {
 	}
 
-	public AuftragsRelation(GeschaeftspartnerNode kunde, BauteilNode produkt) {
+	public AuftragsRelation(GeschaeftspartnerNode kunde, BauteilNode bauteil) {
 		this.kunde = kunde;
-		this.produkt = produkt;
+		this.bauteil = bauteil;
 	}
 
 	public String getStadt() {
@@ -47,12 +47,12 @@ public class AuftragsRelation {
 		this.stadt = stadt;
 	}
 
-	public BauteilNode getProdukt() {
-		return produkt;
+	public BauteilNode getBauteil() {
+		return bauteil;
 	}
 
-	protected void setProdukt(BauteilNode produkt) {
-		this.produkt = produkt;
+	protected void setBauteil(BauteilNode bauteil) {
+		this.bauteil = bauteil;
 	}
 
 	public GeschaeftspartnerNode getKunde() {
@@ -66,7 +66,7 @@ public class AuftragsRelation {
 	@Override
 	public String toString() {
 		return "AuftragsPositionNode [kunde=" + getKunde().getKundenName()
-				+ ", produkt=" + getProdukt().getProduktName() + ", stadt="
+				+ ", produkt=" + getBauteil().getProduktName() + ", stadt="
 				+ stadt + "]";
 	}
 }

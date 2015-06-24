@@ -9,26 +9,26 @@ public class BauteilNode extends BaseNode {
 	
 	@Indexed 
 	@GraphProperty
-	private String produktName;
+	private String bauteilName;
 
 	protected BauteilNode() {}
 	
 	public BauteilNode(Long dbID, String name) {
 		super(dbID);
-		this.produktName = name;
+		this.bauteilName = name;
 	}
 
 	public String getProduktName() {
-		return produktName;
+		return bauteilName;
 	}
 	
-	public void setProduktName(String produktName) {
-		this.produktName = produktName;
+	public void setProduktName(String bauteilName) {
+		this.bauteilName = bauteilName;
 	}
 
 	@Override
 	public String toString() {
-		return "ProduktNode [id=" + id + ", name=" + getProduktName() + "]";
+		return "BauteilNode [id=" + id + ", name=" + getProduktName() + "]";
 	}
 	
 }

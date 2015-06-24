@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 		basePackages={AppConfiguration.PKG_PREFIX+".*.config",// all configurations need to be in config
 					  //AppConfiguration.PKG_PREFIX+".*.tasks",// all complex orchestration services
 					  //AppConfiguration.PKG_PREFIX+".*.policies",// all policy components
-					  AppConfiguration.PKG_PREFIX+".*.services2",// all service components
+					  AppConfiguration.PKG_PREFIX+".*.services",// all service components
 		})//AppConfiguration.PKG_PREFIX+".*.values"}) // all value object factories
 public class AppConfiguration {
 	// This is the base package all modules will use, i.e. PKG_PREFIX+<MODULE>+components, e.g. com.mondula.training.spring.auftrag.services

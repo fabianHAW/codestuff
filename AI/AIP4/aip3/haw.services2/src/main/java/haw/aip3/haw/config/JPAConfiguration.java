@@ -2,6 +2,7 @@ package haw.aip3.haw.config;
 
 import haw.aip3.haw.entities.auftragsverwaltung.KundenAuftrag;
 import haw.aip3.haw.entities.fertigungsverwaltung.Fertigungsauftrag;
+import haw.aip3.haw.entities.geschaeftspartner.Geschaeftspartner;
 import haw.aip3.haw.entities.produkt.Bauteil;
 import haw.aip3.haw.services.auftragsverwaltung.AuftragsService;
 import haw.aip3.haw.services.auftragsverwaltung.AuftragsServiceImpl;
@@ -67,7 +68,8 @@ public class JPAConfiguration {
 		String[] packagesToScan = new String[] {
 				KundenAuftrag.class.getPackage().getName(),
 				Fertigungsauftrag.class.getPackage().getName(),
-				Bauteil.class.getPackage().getName() };
+				Bauteil.class.getPackage().getName(),
+				Geschaeftspartner.class.getPackage().getName()};
 		AbstractJpaVendorAdapter jpaVendor = new HibernateJpaVendorAdapter();
 		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
 		if (persistenceUnitManager != null) {
