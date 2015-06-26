@@ -8,5 +8,6 @@ public interface SalesData {
 	BauteilNode getBauteil();
 
 	Integer getCount();
+	
 
 }

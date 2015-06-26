@@ -1,10 +1,13 @@
 package haw.aip3.haw.graph.rating.test;
 
 import haw.aip3.haw.graph.rating.dto.SalesData;
+import haw.aip3.haw.graph.rating.dto.SalesDataForOftenSalesPerRegion;
+import haw.aip3.haw.graph.rating.dto.SalesDataForRelatedProducts;
 import haw.aip3.haw.graph.rating.nodes.AuftragsRelation;
 import haw.aip3.haw.graph.rating.nodes.GeschaeftspartnerNode;
 import haw.aip3.haw.graph.rating.repositories.AuftragsRelationGraphRepository;
 import haw.aip3.haw.graph.rating.repositories.GeschaeftspartnerGraphRepository;
+import haw.aip3.haw.graph.rating.repositories.GeschaeftspartnerGraphRepository.SalesDataForRelatedProductsImpl;
 import haw.aip3.haw.graph.rating.services.RatingService;
 
 import java.util.Collection;
@@ -76,7 +79,22 @@ public class AuftragRatingTest {
     	System.out.println(city+"--"+newData+"--"+newData.getBauteil()+":"+newData.getCount());
     	Assert.notNull(newData);
     	Assert.isTrue(oldData.getCount()+(count*2) == newData.getCount()); // each added two so we should have count*2 more
+    
+    	Iterable<? extends SalesDataForOftenSalesPerRegion> sales1 = ratingService.showOftenProductsalesByCity();
+    	System.out.println("");
+    	System.out.println("Produkte, die sich in bestimmten Regionen häufiger verkaufen als in anderen:");
+    	for(SalesDataForOftenSalesPerRegion data : sales1){
+    		System.out.println(data);
+    	}
+    	
+    	Iterable<? extends SalesDataForRelatedProducts> sales2 = ratingService.showRelatedProducts();
+    	System.out.println("");
+    	System.out.println("Produkte, die sich häufig mit anderen zusammen verkaufen:");
+    	for(SalesDataForRelatedProducts data : sales2){
+    		System.out.println(data);
+    	}
     }
+    
 }
 
 

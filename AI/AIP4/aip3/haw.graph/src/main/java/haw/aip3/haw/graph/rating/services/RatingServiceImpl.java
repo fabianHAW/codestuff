@@ -3,12 +3,15 @@ package haw.aip3.haw.graph.rating.services;
 
 
 import haw.aip3.haw.graph.rating.dto.SalesData;
+import haw.aip3.haw.graph.rating.dto.SalesDataForOftenSalesPerRegion;
+import haw.aip3.haw.graph.rating.dto.SalesDataForRelatedProducts;
 import haw.aip3.haw.graph.rating.nodes.AuftragsRelation;
 import haw.aip3.haw.graph.rating.nodes.BauteilNode;
 import haw.aip3.haw.graph.rating.nodes.GeschaeftspartnerNode;
 import haw.aip3.haw.graph.rating.repositories.AuftragsRelationGraphRepository;
 import haw.aip3.haw.graph.rating.repositories.BauteilGraphRepository;
 import haw.aip3.haw.graph.rating.repositories.GeschaeftspartnerGraphRepository;
+import haw.aip3.haw.graph.rating.repositories.GeschaeftspartnerGraphRepository.SalesDataForOftenSalesPerRegionImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
@@ -67,6 +70,18 @@ public class RatingServiceImpl implements RatingService {
 		public void addBestellung(GeschaeftspartnerNode k, BauteilNode produkt, double preis) {
 			AuftragsRelation r = k.addBestellung(produkt, preis);
 			((Neo4jTemplate) auftragsPositionGraphRepository).save(r);
+		}
+
+		@Override
+		public Iterable<? extends SalesDataForOftenSalesPerRegion> showOftenProductsalesByCity() {
+			// TODO Auto-generated method stub
+			return kundeGraphRepository.showOftenProductsalesByCity();
+		}
+
+		@Override
+		public Iterable<? extends SalesDataForRelatedProducts> showRelatedProducts() {
+			// TODO Auto-generated method stub
+			return kundeGraphRepository.showRelatedProducts();
 		}
 	
 }
