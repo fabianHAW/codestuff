@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.JtaTransactionManagerFactoryBean;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
+import org.springframework.data.neo4j.core.TypeRepresentationStrategy;
 import org.springframework.data.transaction.ChainedTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -43,6 +44,7 @@ public class AppNeo4JConfiguration extends Neo4jConfiguration {
     @Autowired
     LocalContainerEntityManagerFactoryBean entityManagerFactory;
 
+  
 
     @Override // this is important! We need a ChainedTransactionManager otherwise JPA Commands will fail as no commit will be done.
     @Bean(name = "transactionManager")

@@ -16,7 +16,7 @@ public class GeschaeftspartnerNode extends BaseNode {
 	private String stadt;
 	
 	@Indexed 
-	private String kundenName;
+	private String name;
 	
 	@RelatedToVia(type = AuftragsRelation.RELATIONSHIP_TYPE, direction = Direction.OUTGOING)
     Set<AuftragsRelation> bestellungen = new HashSet<>();
@@ -25,7 +25,7 @@ public class GeschaeftspartnerNode extends BaseNode {
 	
 	public GeschaeftspartnerNode(Long id, String name, String stadt){
 		super(id);
-		this.kundenName = name;
+		this.name = name;
 		this.stadt = stadt;
 	}
 
@@ -34,7 +34,7 @@ public class GeschaeftspartnerNode extends BaseNode {
 	}
 
 	public String getKundenName() {
-		return kundenName;
+		return name;
 	}
 
 	public Set<AuftragsRelation> getBestellt() {
@@ -54,7 +54,7 @@ public class GeschaeftspartnerNode extends BaseNode {
 
 	@Override
 	public String toString() {
-		return "GeschaeftspartnerNode [id=" + id + ", stadt=" + stadt + ", name=" + kundenName
+		return "GeschaeftspartnerNode [id=" + id + ", stadt=" + stadt + ", name=" + name
 				+ ", bestellungen=" + bestellungen + "]";
 	}
 

@@ -82,8 +82,10 @@ public class GraphStartupInitializer implements ApplicationListener<ContextRefre
 			for(int j=0; j<(i%5); j++) {
 				BauteilNode produkt = produkte.get((i+j)%PRODUCT_COUNT);
 				AuftragsRelation bestellt = new AuftragsRelation(kunde, produkt);
-				//this.auftragsRelationGraphRepository.save(bestellt);
 				bestellt.setPreis((i+j)+2.76);
+				bestellt.setStadt(kunde.getStadt());
+				this.auftragsRelationGraphRepository.save(bestellt);
+				
 				kunde.getBestellt().add(bestellt);
 			}
 			kundeGraphRepository.save(kunde);

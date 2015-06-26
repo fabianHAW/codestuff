@@ -2,6 +2,7 @@ package haw.aip3.haw.graph.rating.nodes;
 
 import org.springframework.data.neo4j.annotation.EndNode;
 import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.GraphProperty;
 import org.springframework.data.neo4j.annotation.RelationshipEntity;
 import org.springframework.data.neo4j.annotation.StartNode;
 
@@ -19,7 +20,10 @@ public class AuftragsRelation {
 	@EndNode
 	private BauteilNode bauteil;
 
+	@GraphProperty
 	private String stadt;
+	
+	@GraphProperty
 	private double preis;
 	
 	// internal use only
