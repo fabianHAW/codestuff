@@ -91,12 +91,12 @@ public class GraphStartupInitializer implements ApplicationListener<ContextRefre
 			kundeGraphRepository.save(kunde);
 		}
 
-		System.out.println(this.kundeGraphRepository.count());
-		System.out.println(this.produktGraphRepository.count());
-		Iterable<? extends SalesData> salesData = r.showProductSalesByCity("Hamburg");
-    	for(SalesData item : salesData){
-    		System.out.println(item.toString());
-    	}
+		//System.out.println(this.kundeGraphRepository.count());
+		//System.out.println(this.produktGraphRepository.count());
+		//Iterable<? extends SalesData> salesData = r.showProductSalesByCity("Hamburg");
+//    	for(SalesData item : salesData){
+//    		System.out.println(item.toString());
+//    	}
 		System.out.println("end init");
 	}
 }

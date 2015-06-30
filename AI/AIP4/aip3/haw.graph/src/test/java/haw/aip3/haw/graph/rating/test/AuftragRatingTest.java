@@ -41,25 +41,25 @@ public class AuftragRatingTest {
 	
     @Test
     public void testRating() {
-    	System.out.println("start***********");
+    	//System.out.println("start***********");
     	String city = "Hamburg";
     	String product = "Produkt 3";
     	SalesData oldData = null;
     	SalesData newData = null;
     	Iterable<? extends SalesData> salesData = ratingService.showProductSalesByCity(city);
-    	System.out.println("after salesdata");
+    	//System.out.println("after salesdata");
 
     	
     	
     	for(SalesData data: salesData) {
-    		System.out.println(data.getBauteil());
+    		//System.out.println(data.getBauteil());
     		if(product.equals(data.getBauteil().getProduktName())) {
     			oldData = data;
     		}
 		}
-    	System.out.println("after foreach");
+    //	System.out.println("after foreach");
     	Assert.notNull(oldData);
-    	System.out.println(city+"-->"+oldData.getBauteil().getProduktName()+": "+oldData.getCount());
+    //	System.out.println(city+"-->"+oldData.getBauteil().getProduktName()+": "+oldData.getCount());
     	
     	// order new product
     	int count = 0;
