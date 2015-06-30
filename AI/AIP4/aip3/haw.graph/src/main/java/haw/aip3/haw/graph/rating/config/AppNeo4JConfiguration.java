@@ -15,39 +15,42 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
-
 @Configuration
-@EnableNeo4jRepositories(basePackages = AppNeo4JConfiguration.BASE_PKG+".repositories")
+@EnableNeo4jRepositories(basePackages = AppNeo4JConfiguration.BASE_PKG
+		+ ".repositories")
 public class AppNeo4JConfiguration extends Neo4jConfiguration {
-	
-	public static final String BASE_PKG = AppConfiguration.PKG_PREFIX+".aip3.haw.graph.rating";
-	
+
+	public static final String BASE_PKG = AppConfiguration.PKG_PREFIX
+			+ ".graph.rating";
+
 	public AppNeo4JConfiguration() {
-		super.setBasePackage(BASE_PKG+".nodes");
+		super.setBasePackage(BASE_PKG + ".nodes");
 	}
 
 	@Bean(destroyMethod = "shutdown")
 	public GraphDatabaseService graphDatabaseService() {
 		return new GraphDatabaseFactory().newEmbeddedDatabase("target/mps.db");
 	}
-	
-	// in case the database should be external 
-//    @Bean
-//    public GraphDatabaseService graphDatabaseService() {
-//        return new SpringRestGraphDatabase("http://localhost:7474/db/data/");
-//    }
-	
 
-    @Autowired
-    LocalContainerEntityManagerFactoryBean entityManagerFactory;
+	// in case the database should be external
+	// @Bean
+	// public GraphDatabaseService graphDatabaseService() {
+	// return new SpringRestGraphDatabase("http://localhost:7474/db/data/");
+	// }
 
-  
+	@Autowired
+	LocalContainerEntityManagerFactoryBean entityManagerFactory;
 
-    @Override // this is important! We need a ChainedTransactionManager otherwise JPA Commands will fail as no commit will be done.
-    @Bean(name = "transactionManager")
-    public PlatformTransactionManager neo4jTransactionManager() throws Exception {
-        return new ChainedTransactionManager(new JpaTransactionManager(entityManagerFactory.getObject()),
-                new JtaTransactionManagerFactoryBean(graphDatabaseService()).getObject());
-    }
-	
+	@Override
+	// this is important! We need a ChainedTransactionManager otherwise JPA
+	// Commands will fail as no commit will be done.
+	@Bean(name = "transactionManager")
+	public PlatformTransactionManager neo4jTransactionManager()
+			throws Exception {
+		return new ChainedTransactionManager(new JpaTransactionManager(
+				entityManagerFactory.getObject()),
+				new JtaTransactionManagerFactoryBean(graphDatabaseService())
+						.getObject());
+	}
+
 }

@@ -6,6 +6,7 @@ import haw.aip3.haw.graph.rating.nodes.GeschaeftspartnerNode;
 import haw.aip3.haw.graph.rating.repositories.AuftragsRelationGraphRepository;
 import haw.aip3.haw.graph.rating.repositories.BauteilGraphRepository;
 import haw.aip3.haw.graph.rating.repositories.GeschaeftspartnerGraphRepository;
+import haw.aip3.haw.graph.rating.services.RatingService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Transactional
-public class GraphStartupInitializer implements
-		ApplicationListener<ContextRefreshedEvent> {
-	// private static final Logger LOGGER =
-	// LoggerFactory.getLogger(GraphStartupInitializer.class);
+public class GraphStartupInitializer implements ApplicationListener<ContextRefreshedEvent> {
+	//private static final Logger LOGGER = LoggerFactory.getLogger(GraphStartupInitializer.class);
 
 	private static final int CUSTOMER_COUNT = 5;
-
-	private static final int PRODUCT_COUNT = 10;
-
+	
+	private static final int PRODUCT_COUNT 	= 10;
+	
 	@Autowired
 	private BauteilGraphRepository produktGraphRepository;
 
@@ -36,50 +35,54 @@ public class GraphStartupInitializer implements
 
 	@Autowired
 	private AuftragsRelationGraphRepository auftragsRelationGraphRepository;
-
+	
 	@Autowired
+	private RatingService r;
+	
+	@Autowired 
 	Neo4jTemplate template;
 
+	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		// startup of root context, refresh will trigger for initialization and
-		// refresh of context
+		// startup of root context, refresh will trigger for initialization and refresh of context
 		if (event.getApplicationContext().getParent() == null) {
 			configure();
 		}
 	}
 
 	private void configure() {
-		// LOGGER.info("setup graph.");
-		// cleanup
-		template.query("MATCH(n) OPTIONAL MATCH (n)-[r]-() DELETE n,r", null);
+		//LOGGER.info("setup graph.");
+		//cleanup
+		System.out.println("start init");
+		template.query("MATCH(n) OPTIONAL MATCH (n)-[r]-() DELETE n,r",null);
 
 		List<GeschaeftspartnerNode> kunden = new ArrayList<>();
 		List<BauteilNode> produkte = new ArrayList<>();
-
+		
 		// fixture
-		for (int i = 0; i < PRODUCT_COUNT; i++) {
-			BauteilNode p = new BauteilNode((long) i, "Produkt " + i);
+		for(int i=0; i<PRODUCT_COUNT; i++) {
+			BauteilNode p = new BauteilNode((long)i, "Produkt "+i);
 			produktGraphRepository.save(p);
 			produkte.add(p);
 		}
-		for (int i = 0; i < CUSTOMER_COUNT; i++) {
-			String stadt = i % 2 == 0 ? "Berlin" : "Hamburg";
-			GeschaeftspartnerNode k = new GeschaeftspartnerNode((long) i,
-					"Geschaeftspartner " + i, stadt);
+		for(int i=0; i<CUSTOMER_COUNT; i++) {
+			String stadt = i%2==0?"Berlin":"Hamburg";
+			GeschaeftspartnerNode k = new GeschaeftspartnerNode((long)i, "Geschaeftspartner "+i, stadt);
 			kundeGraphRepository.save(k);
 			kunden.add(k);
 		}
-
-		for (int i = 0; i < 10; i++) {
-			GeschaeftspartnerNode kunde = kunden.get(i % CUSTOMER_COUNT);
-			for (int j = 0; j < (i % 5); j++) {
-				BauteilNode produkt = produkte.get((i + j) % PRODUCT_COUNT);
+		
+		
+		for(int i=0; i<10; i++) {
+			GeschaeftspartnerNode kunde = kunden.get(i%CUSTOMER_COUNT);
+			for(int j=0; j<(i%5); j++) {
+				BauteilNode produkt = produkte.get((i+j)%PRODUCT_COUNT);
 				AuftragsRelation bestellt = new AuftragsRelation(kunde, produkt);
-				bestellt.setPreis((i + j) + 2.76);
+				bestellt.setPreis((i+j)+2.76);
 				bestellt.setStadt(kunde.getStadt());
 				this.auftragsRelationGraphRepository.save(bestellt);
-
+				
 				kunde.getBestellt().add(bestellt);
 			}
 			kundeGraphRepository.save(kunde);

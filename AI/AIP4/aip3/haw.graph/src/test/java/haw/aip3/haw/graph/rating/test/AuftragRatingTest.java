@@ -22,49 +22,20 @@ import org.springframework.util.Assert;
 
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = RatingTestConfig.class)
+@ContextConfiguration(classes=RatingTestConfig.class)
 public class AuftragRatingTest {
 
 	@Autowired
 	private RatingService ratingService;
-
+	
 	@Autowired
 	private GeschaeftspartnerGraphRepository geschaeftspartnerGraphRepository;
-
-	@Autowired
-	private Neo4jTemplate neo4jTemplate;
+	
+	@Autowired 
+    private Neo4jTemplate neo4jTemplate;
 
 	@Autowired
 	private AuftragsRelationGraphRepository auftragGraphRepository;
-<<<<<<< HEAD
-
-	@Test
-	public void testRating() {
-		String city = "Hamburg";
-		String product = "Produkt 3";
-		SalesData oldData = null;
-		SalesData newData = null;
-		Iterable<? extends SalesData> salesData = ratingService
-				.showProductSalesByCity(city);
-
-		for (SalesData data : salesData) {
-			if (product.equals(data.getBauteil().getProduktName())) {
-				oldData = data;
-			}
-		}
-		Assert.notNull(oldData);
-		System.out.println(city + "-->" + oldData.getBauteil().getProduktName()
-				+ ": " + oldData.getCount());
-
-		// order new product
-		int count = 0;
-		Collection<GeschaeftspartnerNode> kunden = geschaeftspartnerGraphRepository
-				.findByStadt(city);
-		for (GeschaeftspartnerNode k : kunden) {
-			AuftragsRelation r = k.addBestellung(oldData.getBauteil(), 2);
-			count++;
-			auftragGraphRepository.save(r);
-=======
 	
     @Test
     public void testRating() {
@@ -102,45 +73,26 @@ public class AuftragRatingTest {
     		if(product.equals(data.getBauteil().getProduktName())) {
     			newData = data;
     		}
->>>>>>> 06d170370dfb62f9432191b35018c971801881b4
 		}
-
-		salesData = ratingService.showProductSalesByCity(city);
-		for (SalesData data : salesData) {
-			if (product.equals(data.getBauteil().getProduktName())) {
-				newData = data;
-			}
-		}
-		System.out.println(city + "--" + newData + "--" + newData.getBauteil()
-				+ ":" + newData.getCount());
-		Assert.notNull(newData);
-		Assert.isTrue(oldData.getCount() + (count * 2) == newData.getCount()); // each
-																				// added
-																				// two
-																				// so
-																				// we
-																				// should
-																				// have
-																				// count*2
-																				// more
-
-		Iterable<? extends SalesDataForOftenSalesPerRegion> sales1 = ratingService
-				.showOftenProductsalesByCity();
-		System.out.println("");
-		System.out
-				.println("Produkte, die sich in bestimmten Regionen häufiger verkaufen als in anderen:");
-		for (SalesDataForOftenSalesPerRegion data : sales1) {
-			System.out.println(data);
-		}
-
-		Iterable<? extends SalesDataForRelatedProducts> sales2 = ratingService
-				.showRelatedProducts();
-		System.out.println("");
-		System.out
-				.println("Produkte, die sich häufig mit anderen zusammen verkaufen:");
-		for (SalesDataForRelatedProducts data : sales2) {
-			System.out.println(data);
-		}
-	}
-
+    	System.out.println(city+"--"+newData+"--"+newData.getBauteil()+":"+newData.getCount());
+    	Assert.notNull(newData);
+    	Assert.isTrue(oldData.getCount()+(count*2) == newData.getCount()); // each added two so we should have count*2 more
+    
+    	Iterable<? extends SalesDataForOftenSalesPerRegion> sales1 = ratingService.showOftenProductsalesByCity();
+    	System.out.println("");
+    	System.out.println("Produkte, die sich in bestimmten Regionen häufiger verkaufen als in anderen:");
+    	for(SalesDataForOftenSalesPerRegion data : sales1){
+    		System.out.println(data);
+    	}
+    	
+    	Iterable<? extends SalesDataForRelatedProducts> sales2 = ratingService.showRelatedProducts();
+    	System.out.println("");
+    	System.out.println("Produkte, die sich häufig mit anderen zusammen verkaufen:");
+    	for(SalesDataForRelatedProducts data : sales2){
+    		System.out.println(data);
+    	}
+    }
+    
 }
+
+

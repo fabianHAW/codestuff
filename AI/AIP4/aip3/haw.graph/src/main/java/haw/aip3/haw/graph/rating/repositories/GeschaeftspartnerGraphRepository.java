@@ -22,6 +22,9 @@ public interface GeschaeftspartnerGraphRepository extends
 	// vs. positional arguments
 	Collection<GeschaeftspartnerNode> findByStadt(@Param("0") String stadt);
 
+	@Query("MATCH (b:count) RETURN b")
+	Iterable<SalesDataImpl> showProduct(String stadt);
+
 	@Query("MATCH (geschaeftspartner:GeschaeftspartnerNode{stadt:{0}}), geschaeftspartner-[bestellung:"
 			+ AuftragsRelation.RELATIONSHIP_TYPE
 			+ "]->(bauteil) RETURN bauteil, SUM(bestellung.preis)")
@@ -35,7 +38,7 @@ public interface GeschaeftspartnerGraphRepository extends
 			+ "RETURN r.stadt as Stadt, produkt.name as Produkt, "
 			+ "count(produkt) as Verkäufe")
 	Iterable<SalesDataForOftenSalesPerRegionImpl> showOftenProductsalesByCity();
-
+	
 	@Query("match(gp1)-->(pr1) match(gp2)-->(pr2) "
 			+ "where not(pr1.name=pr2.name) and gp1.name=gp2.name "
 			+ "return pr1.name as ProduktA, pr2.name as ProduktB, count(pr2) as ProduktA_Und_ProduktB "
@@ -125,17 +128,17 @@ public interface GeschaeftspartnerGraphRepository extends
 		}
 
 	}
-
+	
 	@QueryResult
 	public class SalesDataForRelatedProductsImpl implements
 			SalesDataForRelatedProducts {
 
 		@ResultColumn("ProduktA")
 		String productA;
-
+		
 		@ResultColumn("ProduktB")
 		String productB;
-
+		
 		public void setProductA(String productA) {
 			this.productA = productA;
 		}
@@ -154,8 +157,7 @@ public interface GeschaeftspartnerGraphRepository extends
 		@Override
 		public String toString() {
 			return "SalesData [ProduktA= " + getPrduktA() + " ProduktB= "
-					+ getProduktB() + " ProduktA_Und_ProduktB= "
-					+ getProduktA_With_B() + "]";
+					+ getProduktB() + " ProduktA_Und_ProduktB= " + getProduktA_With_B() + "]";
 		}
 
 		@Override
