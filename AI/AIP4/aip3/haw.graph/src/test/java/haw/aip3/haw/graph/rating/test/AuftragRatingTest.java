@@ -36,6 +36,7 @@ public class AuftragRatingTest {
 
 	@Autowired
 	private AuftragsRelationGraphRepository auftragGraphRepository;
+<<<<<<< HEAD
 
 	@Test
 	public void testRating() {
@@ -63,6 +64,45 @@ public class AuftragRatingTest {
 			AuftragsRelation r = k.addBestellung(oldData.getBauteil(), 2);
 			count++;
 			auftragGraphRepository.save(r);
+=======
+	
+    @Test
+    public void testRating() {
+    	//System.out.println("start***********");
+    	String city = "Hamburg";
+    	String product = "Produkt 3";
+    	SalesData oldData = null;
+    	SalesData newData = null;
+    	Iterable<? extends SalesData> salesData = ratingService.showProductSalesByCity(city);
+    	//System.out.println("after salesdata");
+
+    	
+    	
+    	for(SalesData data: salesData) {
+    		//System.out.println(data.getBauteil());
+    		if(product.equals(data.getBauteil().getProduktName())) {
+    			oldData = data;
+    		}
+		}
+    //	System.out.println("after foreach");
+    	Assert.notNull(oldData);
+    //	System.out.println(city+"-->"+oldData.getBauteil().getProduktName()+": "+oldData.getCount());
+    	
+    	// order new product
+    	int count = 0;
+    	Collection<GeschaeftspartnerNode> kunden = geschaeftspartnerGraphRepository.findByStadt(city);
+    	for(GeschaeftspartnerNode k: kunden) {
+    		AuftragsRelation r = k.addBestellung(oldData.getBauteil(), 2);
+    		count++;
+    		auftragGraphRepository.save(r);
+    	}
+    	
+    	salesData = ratingService.showProductSalesByCity(city);
+    	for(SalesData data: salesData) {
+    		if(product.equals(data.getBauteil().getProduktName())) {
+    			newData = data;
+    		}
+>>>>>>> 06d170370dfb62f9432191b35018c971801881b4
 		}
 
 		salesData = ratingService.showProductSalesByCity(city);
