@@ -1,0 +1,39 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>haw.auftragsverwaltung</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<parent>
+		<artifactId>haw.parent</artifactId>
+		<version>1.0</version>
+		<relativePath>../haw.parent/pom.xml</relativePath>
+		<groupId>haw.aip3</groupId>
+	</parent>
+
+	<name>haw.auftragsverwaltung</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>haw.aip3</groupId>
+			<artifactId>haw.config</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>haw.aip3</groupId>
+			<artifactId>haw.base</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>haw.aip3</groupId>
+			<artifactId>haw.produkt</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>

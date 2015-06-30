@@ -1,7 +1,5 @@
 package haw.aip3.haw.graph.rating.config;
 
-
-
 import haw.aip3.haw.config.AppConfiguration;
 
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -12,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.JtaTransactionManagerFactoryBean;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
-import org.springframework.data.neo4j.core.TypeRepresentationStrategy;
 import org.springframework.data.transaction.ChainedTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
