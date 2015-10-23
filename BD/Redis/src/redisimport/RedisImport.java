@@ -1,4 +1,4 @@
-package redisimport;
+package src.redisimport;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -17,9 +17,9 @@ import redis.clients.jedis.Jedis;
 public class RedisImport {
 
 	public static void main(String[] args) throws IOException {
-		Jedis j = new Jedis("localhost");
+		Jedis j = new Jedis("localhost", 6379);
 		JSONParser parser = new JSONParser();
-		BufferedReader b = new BufferedReader(new FileReader("data/plz_.data"));
+		BufferedReader b = new BufferedReader(new FileReader("data/plz.data"));
 
 		String line = b.readLine();
 		do {
@@ -34,22 +34,26 @@ public class RedisImport {
 				
 				Map<String, String> m = new HashMap<String, String>();
 				m.put("city", s.getCity());
-				m.put("latitude", Double.toString((Double) s.getLoc().get(0)));
-				m.put("longitude", Double.toString((Double) s.getLoc().get(1)));
+				m.put("latitude", s.getLoc().get(0).toString());
+				m.put("longitude", s.getLoc().get(1).toString());
 				m.put("pop", Long.toString(s.getPop()));
 				m.put("state", s.getState());
 
 				j.hmset(s.getId(), m);
-
-				Map<String, String> m_ = j.hgetAll(s.getId());
+				
+				
+				
+				j.rpush(s.getCity(), s.getId());
+				/*Map<String, String> m_ = j.hgetAll(s.getId());
 				
 				for(Entry<String, String> item : m_.entrySet()){
 					System.out.print(item.getKey() + ": ");
 					System.out.println(item.getValue());
-				}
+				}*/
 
-			} catch (ParseException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				System.out.println(line);
 				e.printStackTrace();
 			}
 			line = b.readLine();

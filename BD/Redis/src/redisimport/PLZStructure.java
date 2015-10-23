@@ -1,4 +1,4 @@
-package redisimport;
+package src.redisimport;
 
 import org.json.simple.JSONArray;
 
