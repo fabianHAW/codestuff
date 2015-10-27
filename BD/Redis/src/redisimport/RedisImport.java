@@ -5,12 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import redis.clients.jedis.Jedis;
 
@@ -31,7 +29,7 @@ public class RedisImport {
 				s.setLoc((JSONArray) o.get("loc"));
 				s.setPop((Long) o.get("pop"));
 				s.setState((String) o.get("state"));
-				
+
 				Map<String, String> m = new HashMap<String, String>();
 				m.put("city", s.getCity());
 				m.put("latitude", s.getLoc().get(0).toString());
@@ -40,20 +38,11 @@ public class RedisImport {
 				m.put("state", s.getState());
 
 				j.hmset(s.getId(), m);
-				
-				
-				
+
 				j.rpush(s.getCity(), s.getId());
-				/*Map<String, String> m_ = j.hgetAll(s.getId());
-				
-				for(Entry<String, String> item : m_.entrySet()){
-					System.out.print(item.getKey() + ": ");
-					System.out.println(item.getValue());
-				}*/
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				System.out.println(line);
+				System.out.println("Zeile die einen Fehler geschmissen hat: " + line);
 				e.printStackTrace();
 			}
 			line = b.readLine();
