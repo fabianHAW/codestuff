@@ -15,10 +15,11 @@ import redis.clients.jedis.Jedis;
 public class RedisImport {
 
 	public static void main(String[] args) throws IOException {
+		System.out.println("Verbinde zu Redis auf localhost:6379");
 		Jedis j = new Jedis("localhost", 6379);
 		JSONParser parser = new JSONParser();
 		BufferedReader b = new BufferedReader(new FileReader("data/plz.data"));
-
+		long lineCounter = 0;
 		String line = b.readLine();
 		do {
 			try {
@@ -40,7 +41,9 @@ public class RedisImport {
 				j.hmset(s.getId(), m);
 
 				j.rpush(s.getCity(), s.getId());
-
+				
+				if(++lineCounter%50==0)
+					System.out.println(lineCounter + " Zeilen hinzugefügt. ");
 			} catch (Exception e) {
 				System.out.println("Zeile die einen Fehler geschmissen hat: " + line);
 				e.printStackTrace();
@@ -50,5 +53,6 @@ public class RedisImport {
 
 		b.close();
 		j.close();
+		System.out.println("Der Import ist fertig");
 	}
 }
