@@ -48,12 +48,12 @@ public class Main {
 				switch (input_val) {
 				case 0:
 					System.out.print("Bitte den Namen der Stadt eingeben: ");
-					input_str = buf.readLine();
+					input_str = buf.readLine().toUpperCase();
 					System.out.println("PLZ zu " + input_str + " lautet: " + getPlzByCity(input_str));
 					break;
 				case 1:
 					System.out.print("Bitte die PLZ der Stadt eingeben: ");
-					input_str = buf.readLine();
+					input_str = buf.readLine().toUpperCase();
 					System.out.println("Stadt zur PLZ " + input_str + " lautet: " + getCityAndStateByPlz(input_str));
 					break;
 				case -1:
