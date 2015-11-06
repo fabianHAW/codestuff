@@ -43,7 +43,7 @@ public class RedisImport {
 				j.rpush(s.getCity(), s.getId());
 				
 				if(++lineCounter%50==0)
-					System.out.println(lineCounter + " Zeilen hinzugefügt. ");
+					System.out.println(lineCounter + " Zeilen hinzugefuegt. ");
 			} catch (Exception e) {
 				System.out.println("Zeile die einen Fehler geschmissen hat: " + line);
 				e.printStackTrace();

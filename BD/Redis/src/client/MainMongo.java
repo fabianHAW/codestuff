@@ -3,13 +3,23 @@ package src.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.bson.Document;
+
+import com.mongodb.Block;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import redis.clients.jedis.Jedis;
 
-public class Main {
+public class MainMongo {
 
-	private static Jedis j = new Jedis("localhost", 6379);
+	private static MongoClient mongoClient = new MongoClient("localhost", 27017);
+	private static MongoDatabase database = mongoClient.getDatabase("plz");
+	private static MongoCollection<Document> collection = database.getCollection("plz");
 
 	/**
 	 * Ermittelt die PLZ (oder mehrere) die zur eingegebene Stadt gehoeren.
@@ -17,9 +27,15 @@ public class Main {
 	 * @param city
 	 * @return Liste von PLZ
 	 */
-	private static List<String> getPlzByCity(String city) {
-		return j.lrange(city, 0, -1);
-
+	static List<String> getPlzByCity(String city) {
+		final List<String> list = new ArrayList<>();
+		collection.find(new Document("city",city)).forEach(new Block<Document>() {
+		    @Override
+		    public void apply(final Document document) {
+		    	list.add(document.getString("_id"));
+		    }
+		});
+		return list;
 	}
 
 	/**
@@ -28,8 +44,16 @@ public class Main {
 	 * @param plz
 	 * @return Liste bestehend aus Stadt und Staat
 	 */
-	private static List<String> getCityAndStateByPlz(String plz) {
-		return j.hmget(plz, "city", "state");
+	static List<String> getCityAndStateByPlz(String plz) {
+		final List<String> list = new ArrayList<>();
+		collection.find(new Document("_id",plz)).forEach(new Block<Document>() {
+		    @Override
+		    public void apply(final Document document) {
+		    	
+		    	list.add("City: " + document.getString("city") + " State: " + document.getString("state") );
+		    }
+		});
+		return list;
 	}
 
 	public static void main(String[] args) {
@@ -37,6 +61,7 @@ public class Main {
 		BufferedReader buf = new BufferedReader(new InputStreamReader(System.in));
 		int input_val;
 		String input_str = "";
+		
 		while (inside) {
 			try {
 				System.out.println("Nach Stadt (0) oder PLZ (1) suchen? Oder Abbrechen (-1)? ");
@@ -59,7 +84,7 @@ public class Main {
 				case -1:
 					inside = false;
 					buf.close();
-					j.close();
+					mongoClient.close();
 					System.out.println("ByeBye!");
 					break;
 				default:
