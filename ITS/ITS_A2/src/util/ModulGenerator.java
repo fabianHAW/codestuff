@@ -12,69 +12,69 @@ public class ModulGenerator {
 	 * 3) Wenn modul durch 4 teilbar ist, dann auch faktor - 1. Sind diese nicht erfüllt
 	 * wird ein neues modul gesucht
 	 * 
-	 * @param modul
-	 * @param faktor
-	 * @param inkrement
+	 * @param modulus
+	 * @param multiplier
+	 * @param increment
 	 * @return
 	 */
-	public static long generateModul(long modul, long faktor, long inkrement) {
-		boolean gefunden = false;
+	public static long generateModul(long modulus, long multiplier, long increment) {
+		boolean found = false;
 
 		do {
-			if (ggT(inkrement, modul) == 1) {
-				System.out.println("inkrement und modul sind teilerfremd!");
-				Set<Long> primfaktoren = getPrimfaktoren(modul);
-				if (pruefePrimfaktorenVonModul(primfaktoren, faktor)) {
-					System.out.println("Primfaktoren von faktor wurden geprueft!");
-					if (pruefeModulUndFaktorDurchVier(modul, faktor)) {
-						System.out.println("modul und faktor sind durch 4 teilbar");
-						gefunden = true;
+			if (ggT(increment, modulus) == 1) {
+				System.out.println("increment and modulus are coprime!");
+				Set<Long> primfaktoren = getPrimfaktoren(modulus);
+				if (pruefePrimfaktorenVonModul(primfaktoren, multiplier)) {
+					System.out.println("prime factors from multiplier was checked!");
+					if (pruefeModulUndFaktorDurchVier(modulus, multiplier)) {
+						System.out.println("modulus and multiplier are divisible by 4!");
+						found = true;
 					}
 				}
 			}
 
-			if (!gefunden)
-				modul--;
-		} while (!gefunden ^ modul == 1);
+			if (!found)
+				modulus--;
+		} while (!found ^ modulus == 1);
 
-		return modul;
+		return modulus;
 	}
 
 	/**
 	 * Prueft, ob inkrement teilerfremd zu modul ist
 	 * 
-	 * @param inkrement
-	 * @param modul
+	 * @param increment
+	 * @param modulus
 	 * @return groessten gemeinsamen Teiler von inkrement und modul
 	 */
-	private static long ggT(long inkrement, long modul) {
+	private static long ggT(long increment, long modulus) {
 		long temp;
-		while (modul != 0) {
-			temp = inkrement;
-			inkrement = modul;
-			modul = temp % modul;
+		while (modulus != 0) {
+			temp = increment;
+			increment = modulus;
+			modulus = temp % modulus;
 		}
-		return inkrement;
+		return increment;
 	}
 
 	/**
 	 * Ermittelt alle Primfaktoren von modul
 	 * 
-	 * @param modul
+	 * @param modulus
 	 * @return Menge von Primfaktoren von modul
 	 */
-	private static Set<Long> getPrimfaktoren(Long modul) {
-		Set<Long> primfaktoren = new HashSet<Long>();
+	private static Set<Long> getPrimfaktoren(Long modulus) {
+		Set<Long> primefactors = new HashSet<Long>();
 
-		for (Long i = 2L; i <= Math.sqrt(modul); i++) {
-			if (modul % i == 0 && isPrim(i))
-				primfaktoren.add(i);
+		for (Long i = 2L; i <= Math.sqrt(modulus); i++) {
+			if (modulus % i == 0 && isPrim(i))
+				primefactors.add(i);
 		}
 
-		if (primfaktoren.isEmpty())
-			primfaktoren.add(modul);
+		if (primefactors.isEmpty())
+			primefactors.add(modulus);
 
-		return primfaktoren;
+		return primefactors;
 	}
 
 	/**
@@ -98,14 +98,14 @@ public class ModulGenerator {
 	/**
 	 * Prueft, ob jeder Primfaktor von modul faktor - 1 teilt
 	 * 
-	 * @param primfaktoren
+	 * @param primefactors
 	 *            Menge der Primfaktoren von modul
-	 * @param faktor
+	 * @param multiplier
 	 * @return true, wenn alle Primfaktoren faktor - 1 teilen, sonst false
 	 */
-	private static boolean pruefePrimfaktorenVonModul(Set<Long> primfaktoren, long faktor) {
-		for (Long item : primfaktoren) {
-			if ((faktor - 1) % item != 0)
+	private static boolean pruefePrimfaktorenVonModul(Set<Long> primefactors, long multiplier) {
+		for (Long item : primefactors) {
+			if ((multiplier - 1) % item != 0)
 				return false;
 		}
 
@@ -116,12 +116,12 @@ public class ModulGenerator {
 	 * Prueft, ob modul durch 4 teilbar ist und dann, ob auch faktor - 1 durch 4
 	 * teilbar ist
 	 * 
-	 * @param modul
-	 * @param faktor
+	 * @param modulus
+	 * @param multiplier
 	 * @return true, wenn modul und faktor - 1 durch 4 teilbar sind, sonst false
 	 */
-	private static boolean pruefeModulUndFaktorDurchVier(long modul, long faktor) {
-		if (modul % 4 == 0 && (faktor - 1) % 4 == 0)
+	private static boolean pruefeModulUndFaktorDurchVier(long modulus, long multiplier) {
+		if (modulus % 4 == 0 && (multiplier - 1) % 4 == 0)
 			return true;
 
 		return false;

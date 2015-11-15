@@ -25,30 +25,23 @@ public class TripleDES {
 		data_file_out = path + args[2];
 		status = args[3];
 
-		// byte[][] array_1 = new byte[][] {{ 1, 0, 1, 0, 1, 1 }};
-		// byte[][] array_2 = new byte[][] {{ 1, 0, 0, 1, 0, 1 }};
-		//
-		// byte[][] array_3 = new byte[1][6];
-		//
-		// xor(array_1, array_3, array_2, 0);
-		//
-		// for(byte item : array_3[0]){
-		// System.out.print(item);
-		// }
-
 		createDESInstances();
 
 		if (status.equals("encrypt")) {
-			System.out.println("Starte encrypt");
+			System.out.println("start encrypt");
 			encrypt();
 		} else if (status.equals("decrypt")) {
-			System.out.println("Starte decrypt");
+			System.out.println("star decrypt");
 			decrypt();
 		} else
-			usage();
+			usage(path);
 
 	}
 
+	/**
+	 * Create 3 DES instances with the given keys in the key-file and save the
+	 * init-vector.
+	 */
 	private static void createDESInstances() {
 		try {
 			FileInputStream in = new FileInputStream(key_file);
@@ -61,17 +54,18 @@ public class TripleDES {
 			}
 			in.read(temp, 0, 8);
 			System.arraycopy(temp, 0, iv, 0, 8);
-			System.out.println(new String(iv));
+
 			in.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Starts the 3DES and encrypts a given file and write it to the outputfile.
+	 */
 	private static void encrypt() {
 		byte[][] m = readFile();
 		int raw = m.length;
@@ -79,14 +73,16 @@ public class TripleDES {
 		byte[][] c_2 = new byte[raw][8];
 		byte[][] c_3 = new byte[raw][8];
 
-		cfb(m, c_1, 'e', 0);
-		cfb(c_1, c_2, 'd', 1);
-		cfb(c_2, c_3, 'e', 2);
+		cfb_enc(m, c_1, 'e', 0);
+		cfb_enc(c_1, c_2, 'd', 1);
+		cfb_enc(c_2, c_3, 'e', 2);
 
 		writeFile(m, c_3, raw);
-
 	}
 
+	/**
+	 * Starts the 3DES and decrypts a given file and write it to the outputfile.
+	 */
 	private static void decrypt() {
 		byte[][] c_3 = readFile();
 		int raw = c_3.length;
@@ -94,16 +90,77 @@ public class TripleDES {
 		byte[][] c_2 = new byte[raw][8];
 		byte[][] m = new byte[raw][8];
 
-		cfb(c_3, c_2, 'e', 2);
-		cfb(c_2, c_1, 'd', 1);
-		cfb(c_1, m, 'e', 0);
+		cfb_dec(c_3, c_2, 'e', 2);
+		cfb_dec(c_2, c_1, 'd', 1);
+		cfb_dec(c_1, m, 'e', 0);
 
 		writeFile(c_3, m, raw);
 	}
 
-	private static void cfb(byte[][] m, byte[][] c, char mode, int round) {
-		System.out.println("Starten mit der Runde: " + (round + 1));
-		System.out.println(new String(des[round].getKey()));
+	/**
+	 * The CFB-mode for the encryption of 3DES.
+	 * 
+	 * @param m
+	 *            2D input-byte-array
+	 * @param c
+	 *            2D Encrypted byte-array
+	 * @param mode
+	 *            e for encrypt with DES, or d for decrypt with DES
+	 * @param round
+	 *            Number of the key which will be used.
+	 */
+	private static void cfb_enc(byte[][] m, byte[][] c, char mode, int round) {
+		System.out.println("start with round: " + (round + 1) + " and key: " + new String(des[round].getKey()));
+
+		byte[][] c_temp = new byte[m.length][8];
+
+		for (int i = 0; i < m.length; i++) {
+
+			switch (mode) {
+			case 'e':
+				if (i == 0) {
+					des[round].encrypt(iv, 0, c_temp[i], 0);
+					xor(m, c_temp, c, i);
+					// System.out.print("encrypt iv m: ");
+					// System.out.println(new String(m[j]).toCharArray());
+					// System.out.print("encrypt iv c_temp: ");
+					// System.out.println(new String(c_temp[j]).toCharArray());
+					// System.out.print("encrypt iv c: " + j + " ");
+					// System.out.println(new String(c[j]).toCharArray());
+				} else {
+					des[round].encrypt(c[i - 1], 0, c_temp[i], 0);
+					xor(m, c_temp, c, i);
+				}
+				break;
+			case 'd':
+				if (i == 0) {
+					des[round].decrypt(iv, 0, c_temp[i], 0);
+					xor(m, c_temp, c, i);
+				} else {
+					des[round].decrypt(c[i - 1], 0, c_temp[i], 0);
+					xor(m, c_temp, c, i);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	/**
+	 * The CFB-mode for the decryption of 3DES.
+	 * 
+	 * @param m
+	 *            2D input-byte-array
+	 * @param c
+	 *            Encrypted 2D byte-array
+	 * @param mode
+	 *            e for encrypt with DES, or d for decrypt with DES
+	 * @param round
+	 *            Number of the key which will be used.
+	 */
+	private static void cfb_dec(byte[][] m, byte[][] c, char mode, int round) {
+		System.out.println("start with round: " + (round + 1) + " and key: " + new String(des[round].getKey()));
 
 		byte[][] c_temp = new byte[m.length][8];
 
@@ -114,56 +171,18 @@ public class TripleDES {
 				if (j == 0) {
 					des[round].encrypt(iv, 0, c_temp[j], 0);
 					xor(m, c_temp, c, j);
-
-//					 System.out.print("encrypt iv m: ");
-//					 System.out.println(new String(m[j]).toCharArray());
-					// System.out.print("encrypt iv c_temp: ");
-					// System.out.println(new String(c_temp[j]).toCharArray());
-//					 System.out.print("encrypt iv c: " + j + " ");
-//					 System.out.println(new String(c[j]).toCharArray());
 				} else {
-					// System.out.print("encrypt c-1: " + j + " ");
-					// System.out.println(new String(c[j-1]).toCharArray());
-
-					des[round].encrypt(c_temp[j - 1], 0, c_temp[j], 0);
-					//des[round].encrypt(c[j - 1], 0, c_temp[j], 0);
-					// des[runde].encrypt(iv, 0, c_temp[j], 0);
+					des[round].encrypt(m[j - 1], 0, c_temp[j], 0);
 					xor(m, c_temp, c, j);
-
-//					 System.out.print("encrypt m: ");
-//					 System.out.println(new String(m[j]).toCharArray());
-					// System.out.print("encrypt c-1: " + j + " ");
-					// System.out.println(new String(c_temp[j]).toCharArray());
-//					 System.out.print("encrypt c: ");
-//					 System.out.println(new String(c[j]).toCharArray());
 				}
 				break;
 			case 'd':
 				if (j == 0) {
 					des[round].decrypt(iv, 0, c_temp[j], 0);
 					xor(m, c_temp, c, j);
-
-//					 System.out.print("decrypt iv m: ");
-//					 System.out.println(new String(m[j]).toCharArray());
-					// System.out.print("decrypt iv c_temp: ");
-					// System.out.println(new String(c_temp[j]).toCharArray());
-//					 System.out.print("decrypt iv c: " + j + " ");
-//					 System.out.println(new String(c[j]).toCharArray());
 				} else {
-					// System.out.print("decrypt c-1: " + j + " ");
-					// System.out.println(new String(c[j-1]).toCharArray());
-
-					des[round].decrypt(c_temp[j - 1], 0, c_temp[j], 0);
-					//des[round].decrypt(c[j - 1], 0, c_temp[j], 0);
-					// des[runde].decrypt(iv, 0, c_temp[j], 0);
+					des[round].decrypt(m[j - 1], 0, c_temp[j], 0);
 					xor(m, c_temp, c, j);
-
-//					 System.out.print("decrypt m: ");
-//					 System.out.println(new String(m[j]).toCharArray());
-					// System.out.print("decrypt c-1 c_temp: ");
-					// System.out.println(new String(c_temp[j]).toCharArray());
-//					 System.out.print("decrypt c: ");
-//					 System.out.println(new String(c[j]).toCharArray());
 				}
 				break;
 			default:
@@ -172,6 +191,11 @@ public class TripleDES {
 		}
 	}
 
+	/**
+	 * Read the input-file.
+	 * 
+	 * @return input-file in 2D byte-array
+	 */
 	private static byte[][] readFile() {
 		byte[][] m = null;
 		try {
@@ -182,25 +206,34 @@ public class TripleDES {
 			for (int i = 0; i < m.length; i++) {
 				in.read(m[i], 0, 8);
 				in.skip(0);
-				// System.out.println(new String(m[i]).toCharArray());
 			}
 			in.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return m;
 	}
 
-	private static void writeFile(byte[][] sourceFile, byte[][] dest, int raw) {
+	/**
+	 * Write the 2D byte-array to output-file. If the the last byte of src
+	 * contains 0-bits at the end, they are going to write to output-file to
+	 * fill the last byte.
+	 * 
+	 * @param src
+	 *            The source-byte-array
+	 * @param dest
+	 *            The destination-byte-array
+	 * @param raw
+	 *            The last raw of source-byte-array
+	 */
+	private static void writeFile(byte[][] src, byte[][] dest, int raw) {
 		try {
 			FileOutputStream out = new FileOutputStream(data_file_out);
 			int counter = 0;
 			for (int i = 0; i < 8; i++) {
-				if (sourceFile[raw - 1][i] != 0)
+				if (src[raw - 1][i] != 0)
 					counter++;
 				else
 					break;
@@ -210,32 +243,39 @@ public class TripleDES {
 					out.write(dest[i], 0, counter);
 				else
 					out.write(dest[i], 0, 8);
-				// System.out.println(new String(c_3[i]).toCharArray());
 			}
-
 			out.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
+	/**
+	 * XOR the 2D-message-byte-array with the encrypted/decrypted
+	 * 2D-temporary-array.
+	 * 
+	 * @param m
+	 *            2D-message-byte-array
+	 * @param c_temp
+	 *            2D-temporary-array
+	 * @param c
+	 *            2D-destination-array
+	 * @param j
+	 *            Raw of the 2D-array
+	 */
 	private static void xor(byte[][] m, byte[][] c_temp, byte[][] c, int j) {
 		int i = 0;
-		// System.out.print("xor: ");
-		// System.out.println(new String(m[j]).toCharArray());
 		for (byte item : c_temp[j]) {
 			c[j][i] = (byte) (item ^ m[j][i++]);
-			// i++;
 		}
 	}
 
-	private static void usage() {
-
+	private static void usage(String path) {
+		System.out.println("usage: java " + TripleDES.class.getCanonicalName() + " <filename to encrypt/decrypt> "
+				+ "<key-filename> " + "<output filename> " + "<encrypt/decrypt>");
+		System.out.println("the files need to be in the directory: " + path);
 	}
 
 }
