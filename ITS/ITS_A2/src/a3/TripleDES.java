@@ -15,7 +15,8 @@ public class TripleDES {
 	private static String status = "";
 
 	private static DES des[] = new DES[3];
-	private static byte[] iv = new byte[8];
+	private static final int SIZE = 8;
+	private static byte[] iv = new byte[SIZE];
 
 	public static void main(String[] args) {
 		String path = System.getProperty("user.dir").replace("bin", "data") + System.getProperty("file.separator")
@@ -31,7 +32,7 @@ public class TripleDES {
 			System.out.println("start encrypt");
 			encrypt();
 		} else if (status.equals("decrypt")) {
-			System.out.println("star decrypt");
+			System.out.println("start decrypt");
 			decrypt();
 		} else
 			usage(path);
@@ -45,15 +46,16 @@ public class TripleDES {
 	private static void createDESInstances() {
 		try {
 			FileInputStream in = new FileInputStream(key_file);
-			byte[] temp = new byte[8];
+			byte[] temp = new byte[SIZE];
 
 			for (int i = 0; i < 3; i++) {
-				in.read(temp, 0, 7);
-				in.skip(1);
+				// in.read(temp, 0, SIZE - 1);
+				// in.skip(1);
+				in.read(temp, 0, SIZE);
 				des[i] = new DES(temp);
 			}
-			in.read(temp, 0, 8);
-			System.arraycopy(temp, 0, iv, 0, 8);
+			in.read(temp, 0, SIZE);
+			System.arraycopy(temp, 0, iv, 0, SIZE);
 
 			in.close();
 		} catch (FileNotFoundException e) {
@@ -69,9 +71,9 @@ public class TripleDES {
 	private static void encrypt() {
 		byte[][] m = readFile();
 		int raw = m.length;
-		byte[][] c_1 = new byte[raw][8];
-		byte[][] c_2 = new byte[raw][8];
-		byte[][] c_3 = new byte[raw][8];
+		byte[][] c_1 = new byte[raw][SIZE];
+		byte[][] c_2 = new byte[raw][SIZE];
+		byte[][] c_3 = new byte[raw][SIZE];
 
 		cfb_enc(m, c_1, 'e', 0);
 		cfb_enc(c_1, c_2, 'd', 1);
@@ -86,9 +88,9 @@ public class TripleDES {
 	private static void decrypt() {
 		byte[][] c_3 = readFile();
 		int raw = c_3.length;
-		byte[][] c_1 = new byte[raw][8];
-		byte[][] c_2 = new byte[raw][8];
-		byte[][] m = new byte[raw][8];
+		byte[][] c_1 = new byte[raw][SIZE];
+		byte[][] c_2 = new byte[raw][SIZE];
+		byte[][] m = new byte[raw][SIZE];
 
 		cfb_dec(c_3, c_2, 'e', 2);
 		cfb_dec(c_2, c_1, 'd', 1);
@@ -110,9 +112,10 @@ public class TripleDES {
 	 *            Number of the key which will be used.
 	 */
 	private static void cfb_enc(byte[][] m, byte[][] c, char mode, int round) {
-		System.out.println("start with round: " + (round + 1) + " and key: " + new String(des[round].getKey()));
+		System.out.println("start with round: " + (round + 1) + ", key: " + new String(des[round].getKey())
+				+ " and iv: " + new String(iv));
 
-		byte[][] c_temp = new byte[m.length][8];
+		byte[][] c_temp = new byte[m.length][SIZE];
 
 		for (int i = 0; i < m.length; i++) {
 
@@ -160,9 +163,10 @@ public class TripleDES {
 	 *            Number of the key which will be used.
 	 */
 	private static void cfb_dec(byte[][] m, byte[][] c, char mode, int round) {
-		System.out.println("start with round: " + (round + 1) + " and key: " + new String(des[round].getKey()));
+		System.out.println("start with round: " + (round + 1) + ", key: " + new String(des[round].getKey())
+				+ " and iv: " + new String(iv));
 
-		byte[][] c_temp = new byte[m.length][8];
+		byte[][] c_temp = new byte[m.length][SIZE];
 
 		for (int j = 0; j < m.length; j++) {
 
@@ -179,9 +183,11 @@ public class TripleDES {
 			case 'd':
 				if (j == 0) {
 					des[round].decrypt(iv, 0, c_temp[j], 0);
+					// des[round].encrypt(iv, 0, c_temp[j], 0);
 					xor(m, c_temp, c, j);
 				} else {
 					des[round].decrypt(m[j - 1], 0, c_temp[j], 0);
+					// des[round].encrypt(m[j - 1], 0, c_temp[j], 0);
 					xor(m, c_temp, c, j);
 				}
 				break;
@@ -200,12 +206,12 @@ public class TripleDES {
 		byte[][] m = null;
 		try {
 			FileInputStream in = new FileInputStream(data_file_in);
-			int raw = (int) Math.ceil((double) in.available() / 8);
-			m = new byte[raw][8];
+			int raw = (int) Math.ceil((double) in.available() / SIZE);
+			m = new byte[raw][SIZE];
 
 			for (int i = 0; i < m.length; i++) {
-				in.read(m[i], 0, 8);
-				in.skip(0);
+				in.read(m[i], 0, SIZE);
+				// in.skip(0);
 			}
 			in.close();
 		} catch (FileNotFoundException e) {
@@ -232,7 +238,7 @@ public class TripleDES {
 		try {
 			FileOutputStream out = new FileOutputStream(data_file_out);
 			int counter = 0;
-			for (int i = 0; i < 8; i++) {
+			for (int i = 0; i < SIZE; i++) {
 				if (src[raw - 1][i] != 0)
 					counter++;
 				else
@@ -242,7 +248,7 @@ public class TripleDES {
 				if (i == raw - 1)
 					out.write(dest[i], 0, counter);
 				else
-					out.write(dest[i], 0, 8);
+					out.write(dest[i], 0, SIZE);
 			}
 			out.close();
 		} catch (FileNotFoundException e) {
