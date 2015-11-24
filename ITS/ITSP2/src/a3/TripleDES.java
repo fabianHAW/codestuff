@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 import util.DES;
 
@@ -18,7 +20,7 @@ public class TripleDES {
 	private static final int SIZE = 8;
 	private static byte[] iv = new byte[SIZE];
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws UnsupportedEncodingException {
 		String path = System.getProperty("user.dir").replace("bin", "data") + System.getProperty("file.separator")
 				+ "a3" + System.getProperty("file.separator");
 
@@ -48,18 +50,31 @@ public class TripleDES {
 	 * Create 3 DES instances with the given keys in the key-file and save the
 	 * init-vector.
 	 */
+
 	private static void createDESInstances() {
 		try {
 			FileInputStream in = new FileInputStream(key_file);
+			InputStreamReader isr = new InputStreamReader(in, "ISO-8859-15");
 			byte[] temp = new byte[SIZE];
+			char[] tempc = new char[SIZE];
 
-			for (int i = 0; i < 3; i++) {
-				in.read(temp, 0, SIZE);
-				des[i] = new DES(temp);
+			for (int i = 0; i < 4; i++) {
+				isr.read(tempc, 0, SIZE);
+				// System.out.println(Arrays.toString(tempc));
+
+				for (int j = 0; j < tempc.length; j++) {
+					temp[j] = (byte) tempc[j];
+				}
+				if (i < 3)
+					des[i] = new DES(temp);
+				else {
+					for (int j = 0; j < tempc.length; j++) {
+						iv[j] = (byte) tempc[j];
+					}
+				}
 			}
-			in.read(temp, 0, SIZE);
-			System.arraycopy(temp, 0, iv, 0, SIZE);
 
+			isr.close();
 			in.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -70,8 +85,10 @@ public class TripleDES {
 
 	/**
 	 * Starts the 3DES and encrypts a given file and write it to the outputfile.
+	 * 
+	 * @throws UnsupportedEncodingException
 	 */
-	private static void encrypt() {
+	private static void encrypt() throws UnsupportedEncodingException {
 		byte[][] m = readFile();
 		int raw = m.length;
 		byte[][] c_1 = new byte[raw][SIZE];
@@ -87,8 +104,10 @@ public class TripleDES {
 
 	/**
 	 * Starts the 3DES and decrypts a given file and write it to the outputfile.
+	 * 
+	 * @throws UnsupportedEncodingException
 	 */
-	private static void decrypt() {
+	private static void decrypt() throws UnsupportedEncodingException {
 		byte[][] c_3 = readFile();
 		int raw = c_3.length;
 		byte[][] c_1 = new byte[raw][SIZE];
@@ -113,10 +132,11 @@ public class TripleDES {
 	 *            e for encrypt with DES, or d for decrypt with DES
 	 * @param round
 	 *            Number of the key which will be used.
+	 * @throws UnsupportedEncodingException
 	 */
-	private static void cfb_enc(byte[][] m, byte[][] c, char mode, int round) {
-		System.out.println("start with round: " + (round + 1) + ", key: " + new String(des[round].getKey())
-				+ " and iv: " + new String(iv));
+	private static void cfb_enc(byte[][] m, byte[][] c, char mode, int round) throws UnsupportedEncodingException {
+		System.out.println("start with round: " + (round + 1) + ", key: "
+				+ new String(des[round].getKey(), "ISO-8859-15") + " and iv: " + new String(iv, "ISO-8859-15"));
 
 		byte[][] c_temp = new byte[m.length][SIZE];
 
@@ -164,10 +184,11 @@ public class TripleDES {
 	 *            e for encrypt with DES, or d for decrypt with DES
 	 * @param round
 	 *            Number of the key which will be used.
+	 * @throws UnsupportedEncodingException
 	 */
-	private static void cfb_dec(byte[][] m, byte[][] c, char mode, int round) {
-		System.out.println("start with round: " + (round + 1) + ", key: " + new String(des[round].getKey())
-				+ " and iv: " + new String(iv));
+	private static void cfb_dec(byte[][] m, byte[][] c, char mode, int round) throws UnsupportedEncodingException {
+		System.out.println("start with round: " + (round + 1) + ", key: "
+				+ new String(des[round].getKey(), "ISO-8859-15") + " and iv: " + new String(iv, "ISO-8859-15"));
 
 		byte[][] c_temp = new byte[m.length][SIZE];
 
