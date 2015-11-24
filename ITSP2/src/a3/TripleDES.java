@@ -1,4 +1,4 @@
-package src.a3;
+package a3;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -54,8 +54,6 @@ public class TripleDES {
 			byte[] temp = new byte[SIZE];
 
 			for (int i = 0; i < 3; i++) {
-				// in.read(temp, 0, SIZE - 1);
-				// in.skip(1);
 				in.read(temp, 0, SIZE);
 				des[i] = new DES(temp);
 			}
@@ -188,11 +186,9 @@ public class TripleDES {
 			case 'd':
 				if (j == 0) {
 					des[round].decrypt(iv, 0, c_temp[j], 0);
-					// des[round].encrypt(iv, 0, c_temp[j], 0);
 					xor(m, c_temp, c, j);
 				} else {
 					des[round].decrypt(m[j - 1], 0, c_temp[j], 0);
-					// des[round].encrypt(m[j - 1], 0, c_temp[j], 0);
 					xor(m, c_temp, c, j);
 				}
 				break;
@@ -216,7 +212,6 @@ public class TripleDES {
 
 			for (int i = 0; i < m.length; i++) {
 				in.read(m[i], 0, SIZE);
-				// in.skip(0);
 			}
 			in.close();
 		} catch (FileNotFoundException e) {
