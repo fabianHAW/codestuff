@@ -15,7 +15,7 @@ public class LCG {
 		this.increment = 12820163L;
 		this.x0 = x0;
 		System.out.println(
-				"Modulus was checked: " + ModulGenerator.generateModul(this.modulus, this.multiplier, this.increment));
+				"Modulus was checked: " + ModulGenerator.pruefeModul(this.modulus, this.multiplier, this.increment));
 	}
 
 	/**

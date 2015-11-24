@@ -1,70 +1,67 @@
 package a2;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import a1.LCG;
 
 public class HC1 {
 
 	private static long startvalue;
-	private static long key;
-	private static String file_en = "data/test";
-	private static String file_de = "data/test_out";
-	private static String file_en_new = "data/test_en_neu";
+	private static String file = "";
+	private static byte numericKey;
 
 	public static void main(String[] args) {
-		// startwert = Long.valueOf(args[0]);
-		// datei = args[1];
-		startvalue = 123456789;
-		LCG lcg = new LCG(startvalue);
-		key = lcg.nextValue();
-		encrypt();
-		decrypt();
+		String path = System.getProperty("user.dir").replace("bin", "data") + System.getProperty("file.separator")
+				+ "a2" + System.getProperty("file.separator");
+
+		if (args.length < 2)
+			usage(path);
+		else {
+			startvalue = Long.valueOf(args[0]);
+			file = path + args[1];
+			LCG lcg = new LCG(startvalue);
+			numericKey = (byte) lcg.nextValue();
+			createsChiffreFile();
+		}
 	}
 
-	/**
-	 * Encrypt an input file with a given key with XOR and write it to a new
-	 * file.
-	 */
-	private static void encrypt() {
-		try {
-			DataInputStream din = new DataInputStream(new FileInputStream(file_en));
-			DataOutputStream dout = new DataOutputStream(new FileOutputStream(file_de));
+	public static void createsChiffreFile() {
+		File chiffreFile = new File(file + "_chiff");
 
-			while (din.available() != 0) {
-				dout.writeLong(din.readByte() ^ key);
+		try {
+			FileInputStream in = new FileInputStream(file);
+			FileOutputStream out = new FileOutputStream(chiffreFile);
+
+			byte[] buffer;
+			byte[] chiffreBuffer;
+
+			int a = in.available();
+			buffer = new byte[a];
+			in.read(buffer);
+			in.close();
+			chiffreBuffer = new byte[a];
+
+			for (int i = 0; i < a; i++) {
+				chiffreBuffer[i] = (byte) (numericKey ^ buffer[i]);
 			}
 
-			dout.close();
-			din.close();
-		} catch (Exception e) {
+			out.write(chiffreBuffer);
+			out.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	/**
-	 * Decrypt an input file with a given key with XOR and write it to a new
-	 * file.
-	 */
-	private static void decrypt() {
-		try {
-			DataInputStream din = new DataInputStream(new FileInputStream(file_de));
-			DataOutputStream dout = new DataOutputStream(new FileOutputStream(file_en_new));
-
-			while (din.available() != 0) {
-				dout.write((char) (din.readLong() ^ key));
-			}
-
-			dout.close();
-			din.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+	private static void usage(String path) {
+		System.out.println(
+				"usage: java " + HC1.class.getCanonicalName() + " <startvalue>" + " <filename to encrypt/decrypt> ");
+		System.out.println("the files need to be in the directory: " + path);
 	}
-
 }

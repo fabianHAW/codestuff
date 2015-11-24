@@ -17,7 +17,7 @@ public class ModulGenerator {
 	 * @param increment
 	 * @return
 	 */
-	public static long generateModul(long modulus, long multiplier, long increment) {
+	public static long pruefeModul(long modulus, long multiplier, long increment) {
 		boolean found = false;
 
 		do {

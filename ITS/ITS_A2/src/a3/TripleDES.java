@@ -21,21 +21,26 @@ public class TripleDES {
 	public static void main(String[] args) {
 		String path = System.getProperty("user.dir").replace("bin", "data") + System.getProperty("file.separator")
 				+ "a3" + System.getProperty("file.separator");
-		data_file_in = path + args[0];
-		key_file = path + args[1];
-		data_file_out = path + args[2];
-		status = args[3];
 
-		createDESInstances();
-
-		if (status.equals("encrypt")) {
-			System.out.println("start encrypt");
-			encrypt();
-		} else if (status.equals("decrypt")) {
-			System.out.println("start decrypt");
-			decrypt();
-		} else
+		if (args.length < 3)
 			usage(path);
+		else {
+			data_file_in = path + args[0];
+			key_file = path + args[1];
+			data_file_out = path + args[2];
+			status = args[3];
+
+			createDESInstances();
+
+			if (status.equals("encrypt")) {
+				System.out.println("start encrypt");
+				encrypt();
+			} else if (status.equals("decrypt")) {
+				System.out.println("start decrypt");
+				decrypt();
+			} else
+				usage(path);
+		}
 
 	}
 

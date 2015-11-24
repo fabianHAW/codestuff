@@ -3,9 +3,16 @@ package a1;
 public class LineareKongruenz {
 
 	public static void main(String[] args) {
-		long startwert = System.currentTimeMillis();
-		LCG l = new LCG(startwert);
-		System.out.println("nextValue von " + startwert + " lautet: " + l.nextValue());
+		if (args.length < 1)
+			usage();
+		else {
+			LCG l = new LCG(Long.valueOf(args[0]));
+			System.out.println("nextValue of " + args[0] + " is: " + l.nextValue());
+		}
+	}
+
+	private static void usage() {
+		System.out.println("usage: java " + LineareKongruenz.class.getCanonicalName() + " <startvalue>");
 	}
 
 }
