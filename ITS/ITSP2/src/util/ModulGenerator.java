@@ -6,10 +6,9 @@ import java.util.Set;
 public class ModulGenerator {
 
 	/**
-	 * Prueft modul auf die Voraussetzungen: 
-	 * 1) inkrement ist zum modul teilerfremd. 
-	 * 2) Jeder Primfaktor von modul teilt faktor - 1. 
-	 * 3) Wenn modul durch 4 teilbar ist, dann auch faktor - 1. Sind diese nicht erfüllt
+	 * Prueft modul auf die Voraussetzungen: 1) inkrement ist zum modul
+	 * teilerfremd. 2) Jeder Primfaktor von modul teilt faktor - 1. 3) Wenn
+	 * modul durch 4 teilbar ist, dann auch faktor - 1. Sind diese nicht erfüllt
 	 * wird ein neues modul gesucht
 	 * 
 	 * @param modulus
@@ -18,24 +17,24 @@ public class ModulGenerator {
 	 * @return
 	 */
 	public static long pruefeModul(long modulus, long multiplier, long increment) {
-		boolean found = false;
-
-		do {
-			if (ggT(increment, modulus) == 1) {
-				System.out.println("increment and modulus are coprime!");
-				Set<Long> primfaktoren = getPrimfaktoren(modulus);
-				if (pruefePrimfaktorenVonModul(primfaktoren, multiplier)) {
-					System.out.println("prime factors from multiplier was checked!");
-					if (pruefeModulUndFaktorDurchVier(modulus, multiplier)) {
-						System.out.println("modulus and multiplier are divisible by 4!");
-						found = true;
-					}
+		// boolean found = false;
+		//
+		// do {
+		if (ggT(increment, modulus) == 1) {
+			System.out.println("increment and modulus are coprime!");
+			Set<Long> primfaktoren = getPrimfaktoren(modulus);
+			if (pruefePrimfaktorenVonModul(primfaktoren, multiplier)) {
+				System.out.println("prime factors from multiplier was checked!");
+				if (pruefeModulUndFaktorDurchVier(modulus, multiplier)) {
+					System.out.println("modulus and multiplier are divisible by 4!");
+					// found = true;
 				}
 			}
+		}
 
-			if (!found)
-				modulus--;
-		} while (!found ^ modulus == 1);
+		// if (!found)
+		// modulus--;
+		// } while (!found ^ modulus == 1);
 
 		return modulus;
 	}

@@ -14,8 +14,9 @@ public class LCG {
 		this.multiplier = 16598013L;
 		this.increment = 12820163L;
 		this.x0 = x0;
-		System.out.println(
-				"Modulus was checked: " + ModulGenerator.pruefeModul(this.modulus, this.multiplier, this.increment));
+		ModulGenerator.pruefeModul(this.modulus, this.multiplier, this.increment);
+//		System.out.println(
+//				"Modulus was checked: " + ModulGenerator.pruefeModul(this.modulus, this.multiplier, this.increment));
 	}
 
 	/**
@@ -24,7 +25,8 @@ public class LCG {
 	 * @return Random value
 	 */
 	public long nextValue() {
-		return ((this.multiplier * this.x0) + this.increment) % this.modulus;
+		this.x0 = ((this.multiplier * this.x0) + this.increment) % this.modulus;
+		return this.x0;
 	}
 
 }

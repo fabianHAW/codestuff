@@ -10,6 +10,10 @@ import a1.LCG;
 
 public class HC1 {
 
+	/**
+	 * 2 Dateien mit diff -s file1 file2 vergleichen.
+	 */
+	
 	private static long startvalue;
 	private static String file = "";
 	private static byte numericKey;
@@ -23,8 +27,6 @@ public class HC1 {
 		else {
 			startvalue = Long.valueOf(args[0]);
 			file = path + args[1];
-			LCG lcg = new LCG(startvalue);
-			numericKey = (byte) lcg.nextValue();
 			createsChiffreFile();
 		}
 	}
@@ -32,6 +34,8 @@ public class HC1 {
 	public static void createsChiffreFile() {
 		File chiffreFile = new File(file + "_chiff");
 
+		LCG lcg = new LCG(startvalue);
+		
 		try {
 			FileInputStream in = new FileInputStream(file);
 			FileOutputStream out = new FileOutputStream(chiffreFile);
@@ -39,13 +43,14 @@ public class HC1 {
 			byte[] buffer;
 			byte[] chiffreBuffer;
 
-			int a = in.available();
+			int a = file.length();
 			buffer = new byte[a];
 			in.read(buffer);
 			in.close();
 			chiffreBuffer = new byte[a];
 
 			for (int i = 0; i < a; i++) {
+				numericKey = (byte) lcg.nextValue();
 				chiffreBuffer[i] = (byte) (numericKey ^ buffer[i]);
 			}
 
