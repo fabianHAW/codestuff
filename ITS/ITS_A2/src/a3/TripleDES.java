@@ -1,4 +1,4 @@
-package src.a3;
+package a3;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -6,6 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import util.DES;
+
+/**
+ * 
+ * nicht die richtige Version! CFB-Modus falsche angewendet.
+ *
+ */
 
 public class TripleDES {
 

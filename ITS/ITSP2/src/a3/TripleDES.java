@@ -9,6 +9,10 @@ import java.io.UnsupportedEncodingException;
 
 import util.DES;
 
+/**
+ * Korrekte Version! CFB korrekt angewendet.
+ */
+
 public class TripleDES {
 
 	private static String data_file_in = "";
