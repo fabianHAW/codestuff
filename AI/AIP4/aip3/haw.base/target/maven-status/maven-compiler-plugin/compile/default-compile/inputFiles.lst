@@ -1,9 +1,0 @@
-/media/Daten/Uni/gitRep/AI/AIP4/aip3/haw.base/src/main/java/haw/aip3/haw/base/entities/IArbeitsplan.java
-/media/Daten/Uni/gitRep/AI/AIP4/aip3/haw.base/src/main/java/haw/aip3/haw/base/entities/IBauteil.java
-/media/Daten/Uni/gitRep/AI/AIP4/aip3/haw.base/src/main/java/haw/aip3/haw/base/entities/IVorgang.java
-/media/Daten/Uni/gitRep/AI/AIP4/aip3/haw.base/src/main/java/haw/aip3/haw/base/entities/IStueckliste.java
-/media/Daten/Uni/gitRep/AI/AIP4/aip3/haw.base/src/main/java/haw/aip3/haw/base/entities/IAngebot.java
-/media/Daten/Uni/gitRep/AI/AIP4/aip3/haw.base/src/main/java/haw/aip3/haw/base/entities/IKundenAuftrag.java
-/media/Daten/Uni/gitRep/AI/AIP4/aip3/haw.base/src/main/java/haw/aip3/haw/base/entities/IGeschaeftspartner.java
-/media/Daten/Uni/gitRep/AI/AIP4/aip3/haw.base/src/main/java/haw/aip3/haw/base/entities/IStuecklistenPosition.java
-/media/Daten/Uni/gitRep/AI/AIP4/aip3/haw.base/src/main/java/haw/aip3/haw/base/entities/IFertigungsauftrag.java
