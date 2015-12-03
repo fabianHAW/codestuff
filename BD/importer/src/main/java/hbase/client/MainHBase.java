@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.NavigableMap;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -17,9 +18,15 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.filter.BinaryComparator;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.SubstringComparator;
+import org.apache.hadoop.hbase.filter.ValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.io.file.tfile.TFile.Reader.Scanner;
 
+import com.sun.org.apache.xml.internal.utils.StringComparable;
 import com.sun.tools.internal.xjc.model.SymbolSpace;
 
 public class MainHBase {
@@ -35,70 +42,40 @@ public class MainHBase {
 	static List<String> getPlzByCity(String city) {
 		// Connection connection = connect();
 		// if(connection != null){
-		Configuration config = HBaseConfiguration.create();
-		// config.setInt("timeout", 3);
-		config.set("hbase.master", "localhost:16000");
-		config.set("hbase.zookeeper.quorum", "localhost");
-		config.set("hbase.zookeeper.property.clientPort", "2222");
 
 		// HTableDescriptor tableD = new
 		// HTableDescriptor(TableName.valueOf("bigdata"));
 
 		Table table;
-		try (Connection connection = ConnectionFactory.createConnection(config); Admin admin = connection.getAdmin()) {
+		try (Connection connection = ConnectionFactory
+				.createConnection(getConf());
+				Admin admin = connection.getAdmin()) {
 			System.out.println("Connection aufgebaut");
 			table = connection.getTable(TableName.valueOf("bigdata"));
 
 			System.out.println(table.getName());
 			Scan scan = new Scan();
-			System.out.println("1");
-			scan.setStartRow(Bytes.toBytes("71646"));
-			System.out.println("2");
-			scan.setCaching(3);
-			System.out.println("3");
-			ResultScanner results = table.getScanner(scan);
-			System.out.println("4");
-			for (Result r : results) {
-				System.out.println(new String(r.getRow()));
-				// scanner.ProcessRow(r);
-				// if ( count++ >= 3 ) break;
+			scan.addColumn(Bytes.toBytes("plz"), Bytes.toBytes("city"));
+			
+			scan.setFilter(new ValueFilter(CompareOp.EQUAL, new BinaryComparator( Bytes.toBytes(city))));
+			ResultScanner scanner = table.getScanner(scan);
+			for (Result result = scanner.next(); (result != null); result = scanner
+					.next()) {
+				// if you want to get the entire row
+				Get get = new Get(result.getRow());
+				Result entireRow = table.get(get);			
+				String key = Bytes.toString(result.getRow());
+				System.out.println("plz:" + key);
+			
 			}
-			// for(byte[] item : table.getTableDescriptor().getFamiliesKeys()){
-			// System.out.println(new String(item));
-			// }
-			// ResultScanner scan = table.getScanner(Bytes.toBytes("plz"),
-			// Bytes.toBytes("city"));
-			//
-			// for (Result item : scan){
-			// System.out.println(new String(item.getRow()));
-			// }
-			// scan.close();
-
-			// Scan scan = new Scan();
-			// System.out.println("inside");
-			// scan.addColumn(Bytes.toBytes("plz"), Bytes.toBytes("city"));
-			// scan.addFamily(Bytes.toBytes("plz:city"));
-
-			// System.out.println(scan.getMaxResultSize());
-			// ResultScanner scanner = table.getScanner(scan);
-			// for (Result item : scanner) {
-			// System.out.println(Bytes.toString(item.getRow()));
-			// }
-
-			// Get g = new Get(Bytes.toBytes("07419:1"));
-			// System.out.println("inside");
-			// System.out.println(g.getMaxResultsPerColumnFamily());
-			// Result result = table.get(g);
-			// System.out.println("inside");
-			// System.out.println(Bytes.toString(result.getValue(Bytes.toBytes("plz"),
-			// Bytes.toBytes("city"))));
-
+			
 			table.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// }
+
 		return null;
 	}
 
@@ -108,12 +85,34 @@ public class MainHBase {
 	 * @param plz
 	 * @return Liste bestehend aus Stadt und Staat
 	 */
-	static List<String> getCityAndStateByPlz(String plz) {
-		Connection connection = connect();
-		if (connection != null) {
+	static String getCityAndStateByPlz(String plz) {
+	
+		try {
+			HTable table = new HTable(getConf(), "bigdata");
 
+			Get g = new Get(Bytes.toBytes(plz));
+			Result result = table.get(g);
+			byte[] city = result.getValue(Bytes.toBytes("plz"),
+					Bytes.toBytes("city"));
+			byte[] state = result.getValue(Bytes.toBytes("plz"),
+					Bytes.toBytes("state"));
+			return "city: " + Bytes.toString(city) + " state:"
+					+ Bytes.toString(state);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+	
 		return null;
+	}
+
+	private static Configuration getConf() {
+		Configuration config = HBaseConfiguration.create();
+		// config.setInt("timeout", 3);
+		config.set("hbase.master", "localhost:16000");
+		config.set("hbase.zookeeper.quorum", "localhost");
+		config.set("hbase.zookeeper.property.clientPort", "2222");
+		return config;
 	}
 
 	private static Connection connect() {
@@ -122,7 +121,7 @@ public class MainHBase {
 		config.set("hbase.master", "localhost:16000");
 		config.set("hbase.zookeeper.quorum", "localhost");
 		config.set("hbase.zookeeper.property.clientPort", "2222");
-		try (Connection connection = ConnectionFactory.createConnection(config); Admin admin = connection.getAdmin()) {
+		try (Connection connection = ConnectionFactory.createConnection(config)) {
 			System.out.println("Connection aufgebaut");
 			return connection;
 		} catch (IOException e) {
@@ -134,12 +133,14 @@ public class MainHBase {
 
 	public static void main(String[] args) {
 		boolean inside = true;
-		BufferedReader buf = new BufferedReader(new InputStreamReader(System.in));
+		BufferedReader buf = new BufferedReader(
+				new InputStreamReader(System.in));
 		int input_val;
 		String input_str = "";
 		while (inside) {
 			try {
-				System.out.println("Nach Stadt (0) oder PLZ (1) suchen? Oder Abbrechen (-1)? ");
+				System.out
+						.println("Nach Stadt (0) oder PLZ (1) suchen? Oder Abbrechen (-1)? ");
 				input_val = buf.read();
 				// Zeilenende auslesen, da diese sonst als naechste Eingabe
 				// gewertet wird
@@ -149,12 +150,13 @@ public class MainHBase {
 				case 0:
 					System.out.print("Bitte den Namen der Stadt eingeben: ");
 					input_str = buf.readLine().toUpperCase();
-					System.out.println("PLZ zu " + input_str + " lautet: " + getPlzByCity(input_str));
+					getPlzByCity(input_str);
 					break;
 				case 1:
 					System.out.print("Bitte die PLZ der Stadt eingeben: ");
 					input_str = buf.readLine().toUpperCase();
-					System.out.println("Stadt zur PLZ " + input_str + " lautet: " + getCityAndStateByPlz(input_str));
+					System.out.println("Stadt zur PLZ " + input_str
+							+ " lautet: " + getCityAndStateByPlz(input_str));
 					break;
 				case -1:
 					inside = false;
