@@ -12,3 +12,7 @@
 
 #classpath
 *.classpath
+
+#rsa-keys
+*.prv
+*.pub
