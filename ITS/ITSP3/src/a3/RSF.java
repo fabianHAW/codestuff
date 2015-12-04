@@ -60,13 +60,13 @@ public class RSF {
 			readPubKeyFile();
 			readPrvKeyFile();
 			readDataFile();
-			encryptAESKey();
+			decryptAESKey();
 			encryptDataFile();
 			writeDecryptedDataToFile();
 			if (checkSignature())
-				System.out.println("Signatur in Ordnung!");
+				System.out.println("Signatur erfolgreich verifiziert und Datei entschlüsselt!");
 			else
-				System.out.println("Signatur nicht in Ordnung");
+				System.out.println("Signatur nicht erfolgreich verifiziert!");
 		}
 	}
 
@@ -87,19 +87,14 @@ public class RSF {
 
 			dis.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die angegebene Datei wurde nicht gefunden: " + e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es liegt ein Eingabe-/Ausgabe-Fehler vor: " + e);
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es gibt keine Implementierung des RSA-Algorithmus: " + e);
 		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die Schlüssel Spezifikation ist nicht korrekt: " + e);
 		}
-
 	}
 
 	private static void readPrvKeyFile() {
@@ -119,18 +114,14 @@ public class RSF {
 
 			dis.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("Die angegebene Datei wurde nicht gefunden: " + e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es liegt ein Eingabe-/Ausgabe-Fehler vor: " + e);
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es gibt keine Implementierung des RSA-Algorithmus: " + e);
 		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die Schlüssel Spezifikation ist nicht korrekt: " + e);
 		}
-
 	}
 
 	private static void readDataFile() {
@@ -160,15 +151,13 @@ public class RSF {
 			dis.close();
 
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die angegebene Datei wurde nicht gefunden: " + e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es liegt ein Eingabe-/Ausgabe-Fehler vor: " + e);
 		}
 	}
 
-	private static void encryptAESKey() {
+	private static void decryptAESKey() {
 		try {
 			Cipher cipher = Cipher.getInstance("RSA");
 			cipher.init(Cipher.DECRYPT_MODE, prvKey);
@@ -177,19 +166,16 @@ public class RSF {
 			aesKeyDecBytes = concatenate(aesDec, aesRest);
 
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(
+					"Es gibt keine Implementierung des RSA-Algorithmus, oder beim Padding ist ein Fehler aufgetreten: "
+							+ e);
 		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Der RSA-Schlüssel ist nicht korrekt: " + e);
 		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die Blockgröße ist beim Entschlüsseln des AES-Schlüssels ist nicht korrekt: " + e);
 		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Das Padding ist nicht korrekt abgelaufen: " + e);
 		}
-
 	}
 
 	private static void encryptDataFile() {
@@ -205,25 +191,20 @@ public class RSF {
 			decDataTotal = concatenate(decData, decDataRest);
 
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(
+					"Es gibt keine Implementierung des AES-Algorithmus, oder beim Padding im AES/CTR/PKCS5Padding-Modus ist ein Fehler aufgetreten: "
+							+ e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es liegt ein Eingabe-/Ausgabe-Fehler vor: " + e);
 		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Der AES-Schlüssel ist nicht korrekt: " + e);
 		} catch (InvalidAlgorithmParameterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die Algorithmischen Parameter sind nicht korrekt: " + e);
 		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die Blockgröße beim Entschlüsseln der Daten ist nicht korrekt: " + e);
 		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Das Padding ist nicht korrekt abgelaufen: " + e);
 		}
-
 	}
 
 	private static void writeDecryptedDataToFile() {
@@ -232,11 +213,9 @@ public class RSF {
 			dos.write(decDataTotal);
 			dos.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die angegebene Datei wurde nicht gefunden: " + e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es liegt ein Eingabe-/Ausgabe-Fehler vor: " + e);
 		}
 	}
 
@@ -244,17 +223,14 @@ public class RSF {
 		try {
 			Signature sig = Signature.getInstance("SHA256withRSA");
 			sig.initVerify(pubKey);
-			sig.update(decDataTotal);
+			sig.update(aesKeyDecBytes);
 			return sig.verify(sigBytes);
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es gibt keine Implementierung des SHA256withRSA-Algorithmus: " + e);
 		} catch (SignatureException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Beim Verifizieren des AES-Schlüssel ist ein Fehler aufgetreten: " + e);
 		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Der angegeben öffentliche RSA-Schlüssel ist nicht korrekt: " + e);
 		}
 		return false;
 	}

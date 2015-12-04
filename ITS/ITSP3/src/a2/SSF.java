@@ -42,8 +42,6 @@ public class SSF {
 	private static SecretKey aesKey = null;
 	private static byte[] aesKeyEnc = null;
 	private static byte[] sigBytes = null;
-	// private static Signature rsaSig = null;
-	// private static Cipher cipher = null;
 
 	public static void main(String[] args) {
 		if (args.length < 4)
@@ -58,7 +56,11 @@ public class SSF {
 			generateAESKey();
 			generateSignatureAndSign();
 			encryptAESKey();
-			readAndEncryptData();
+			boolean succ = readAndEncryptData();
+			if(succ)
+				System.out.println("Datei erfolgreich angelegt!");
+			else
+				System.out.println("Es ist ein Fehler beim Erstellen der Datei aufgetreten!");
 		}
 	}
 
@@ -79,18 +81,14 @@ public class SSF {
 
 			dis.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("Die angegebene Datei wurde nicht gefunden: " + e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es liegt ein Eingabe-/Ausgabe-Fehler vor: " + e);
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es gibt keine Implementierung des RSA-Algorithmus: " + e);
 		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die Schlüssel Spezifikation ist nicht korrekt: " + e);
 		}
-
 	}
 
 	private static void readPubKeyFile() {
@@ -110,19 +108,14 @@ public class SSF {
 
 			dis.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die angegebene Datei wurde nicht gefunden: " + e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es liegt ein Eingabe-/Ausgabe-Fehler vor: " + e);
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es gibt keine Implementierung des RSA-Algorithmus: " + e);
 		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die Schlüssel Spezifikation ist nicht korrekt: " + e);
 		}
-
 	}
 
 	private static void generateAESKey() {
@@ -131,8 +124,7 @@ public class SSF {
 			kg.init(128);
 			aesKey = kg.generateKey();
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es gibt keine Implementierung des AES-Algorithmus: " + e);
 		}
 	}
 
@@ -143,14 +135,11 @@ public class SSF {
 			rsaSig.update(aesKey.getEncoded());
 			sigBytes = rsaSig.sign();
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es gibt keine Implementierung des SHA256withRSA-Algorithmus: " + e);
 		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Der angegebene private RSA-Schlüssel ist nicht korrekt: " + e);
 		} catch (SignatureException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Beim Signieren des AES-Schlüssel ist ein Fehler aufgetreten: " + e);
 		}
 	}
 
@@ -158,26 +147,24 @@ public class SSF {
 		try {
 			Cipher cipher = Cipher.getInstance("RSA");
 			cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-			//aesKeyEnc = cipher.update(aesKey.getEncoded());
-			 byte[] aesEncData = cipher.update(aesKey.getEncoded());
-			 byte[] aesEncRest = cipher.doFinal();
-			 aesKeyEnc = concatenate(aesEncData, aesEncRest);
+
+			byte[] aesEncData = cipher.update(aesKey.getEncoded());
+			byte[] aesEncRest = cipher.doFinal();
+			aesKeyEnc = concatenate(aesEncData, aesEncRest);
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(
+					"Es gibt keine Implementierung des RSA-Algorithmus, oder beim Padding ist ein Fehler aufgetreten: "
+							+ e);
 		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Der angegebene öffentliche RSA-Schlüssel ist nicht korrekt: " + e);
 		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die Blockgröße beim Verschlüsseln des AES-Schlüssels ist nicht korrekt: " + e);
 		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Das Padding ist nicht korrekt abgelaufen: " + e);
 		}
 	}
 
-	private static void readAndEncryptData() {
+	private static boolean readAndEncryptData() {
 		try {
 			DataInputStream dis = new DataInputStream(new FileInputStream(fileIn));
 			DataOutputStream dos = new DataOutputStream(new FileOutputStream(fileOut));
@@ -189,52 +176,47 @@ public class SSF {
 			Cipher cipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
 			byte[] cipherBytes = null;
 			byte[] apBytes = null;
-			
+
 			dis.read(fileInput);
 			dis.close();
-			
+
 			cipher.init(Cipher.ENCRYPT_MODE, aesKey);
 			encData = cipher.update(fileInput);
 			encDataRest = cipher.doFinal();
 			encDataTotal = concatenate(encData, encDataRest);
-			
+
 			dos.writeInt(aesKeyEnc.length);
 			dos.write(aesKeyEnc);
 			dos.writeInt(sigBytes.length);
 			dos.write(sigBytes);
-			
+
 			cipherBytes = cipher.getParameters().getEncoded();
 			AlgorithmParameters ap = AlgorithmParameters.getInstance("AES");
 			ap.init(cipherBytes);
 			apBytes = ap.getEncoded();
-			
+
 			dos.writeInt(apBytes.length);
 			dos.write(apBytes);
 			dos.write(encDataTotal);
 
 			dos.close();
+			return true;
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die angegebene Datei wurde nicht gefunden: " + e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es liegt ein Eingabe-/Ausgabe-Fehler vor: " + e);
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Es gibt keine Implementierung des AES/CTR/PKCS5Padding- oder AES-Algorithmus: " + e);
 		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Beim Padding ist ein Fehler aufgetreten: " + e);
 		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Der AES-Schlüssel ist nicht korrekt: " + e);
 		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Die Blockgröße beim Verschlüsseln der Daten ist nicht korrekt: " + e);
 		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Das Padding ist nicht korrekt abgelaufen: " + e);
 		}
+		return false;
 	}
 
 	/**

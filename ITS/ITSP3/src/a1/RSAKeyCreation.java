@@ -28,20 +28,20 @@ public class RSAKeyCreation {
 			createRSAKeyPair();
 			boolean succ = writeKeysToFile();
 			if (succ)
-				System.out.println("SUCCESS: generated new RSA-Key-Pair-Files in " + path);
+				System.out.println("Ein neues RSA-Paar wurde erzeugt und liegt im Ordner: " + path);
 			else
-				System.out.println("FAILED: something went wrong, while creating new RSA-Key-Pair-Files");
+				System.out.println("Es ist ein Fehler beim Erzeugen eines neuen RSA-Paars aufgetreten!");
 		}
 	}
 
 	private static void createRSAKeyPair() {
 		try {
-			//generate new RSA-Key-Pair
+			// generate new RSA-Key-Pair
 			KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
 			kpg.initialize(2048);
 			kp = kpg.generateKeyPair();
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			System.out.println("Es gibt keine Implementierung des RSA-Algorithmus: " + e);
 		}
 	}
 
@@ -87,9 +87,9 @@ public class RSAKeyCreation {
 			return true;
 
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("Die angegebene Datei wurde nicht gefunden: " + e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Es liegt ein Eingabe-/Ausgabe-Fehler vor: " + e);
 		}
 		return false;
 	}
