@@ -109,7 +109,8 @@ public class Vertex {
 	 * @return String A String representation of this Vertex
 	 */
 	public String toString() {
-		return "Vertex " + label + " Domain: " + domain.toString();
+		return label + " " + domain.toString();
+//		return "Vertex " + label + " Domain: " + domain.toString();
 	}
 
 	/**
