@@ -1,6 +1,8 @@
 package datastructs;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import constraints.Constraint;
 
@@ -73,6 +75,7 @@ public class Edge implements Comparable<Edge> {
 		this(one, two, 1);
 		constraintList = cL;
 	}
+	
 
 	/**
 	 * 

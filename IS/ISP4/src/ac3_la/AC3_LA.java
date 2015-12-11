@@ -1,5 +1,6 @@
 package ac3_la;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -7,6 +8,7 @@ import java.util.Set;
 import constraints.Constraint;
 import datastructs.Edge;
 import datastructs.Graph;
+import datastructs.Tupel;
 import datastructs.Vertex;
 
 public class AC3_LA {
@@ -65,9 +67,9 @@ public class AC3_LA {
 
 			if (revise(arc)) {
 				int k = Integer.valueOf(arc.getOne().getLabel());
-				System.out.print("k: " + k);
+//				System.out.print("k: " + k);
 				int m = Integer.valueOf(arc.getTwo().getLabel());
-				System.out.print(" m: " + m);
+//				System.out.print(" m: " + m);
 				List<Edge> neighborsOfK = constraintNetz.getVertex("" + k).getNeighbors();
 				// System.out.println(neighborsOfK);
 
@@ -75,7 +77,7 @@ public class AC3_LA {
 					int i = Integer.valueOf(item.getOne().getLabel());
 					if (i == k)
 						i = Integer.valueOf(item.getTwo().getLabel());
-					System.out.println(" i: " + i);
+//					System.out.println(" i: " + i);
 					if (/*i != k &&*/  i != m && i > cv) {
 						Edge e = new Edge(item.getTwo(), item.getOne(), item.getConstraintList());
 //						Edge e = new Edge(item.getOne(), item.getTwo(), item.getConstraintList());
@@ -94,7 +96,7 @@ public class AC3_LA {
 		boolean delete = false;
 		Set<Integer> delSet = new HashSet<Integer>();
 		Set<Integer> valueSet = new HashSet<Integer>();
-		int match = 0;
+//		int match = 0;
 //		for (int x : arc.getTwo().getDomain()) {
 		for (int x : arc.getOne().getDomain()) {
 //			if(arc.getOne().equals(assumptionVertex))
@@ -104,27 +106,38 @@ public class AC3_LA {
 //				valueSet = arc.getOne().getDomain();
 				valueSet = arc.getTwo().getDomain();
 			}
-			for (int y : valueSet) {
-				for (Constraint item : arc.getConstraintList()) {
-					if (item.operation(x, y)) {
-						if(arc.getTwo().equals(assumptionVertex)){
-							delSet.add(x);
-							delete = true;
-						}else
-							match++;
-//						 System.out.println("x: " + x + " y: " + y);
-//						 System.out.println(item.getName());
-//						delSet.add(x);
-//						delete = true;
-					}			
-					
-				}
-				if(match == valueSet.size()){
-					delSet.add(x);
-					delete = true;
-				}
-				
+			
+			List<Tupel> crossProduct = getCrossProduct(x, valueSet);
+			for(Tupel item : crossProduct){
+				System.out.print(" v" + arc.getOne().getLabel() + " X: " + item.getX() + " v" + arc.getTwo().getLabel() + " Y: " + item.getY());
 			}
+			System.out.println();
+			if(checkConstraints(crossProduct, arc.getConstraintList())){
+				delete = true;
+				delSet.add(x);				
+			}
+			
+//			for (int y : valueSet) {
+//				for (Constraint item : arc.getConstraintList()) {
+//					if (item.operation(x, y)) {
+////						if(arc.getTwo().equals(assumptionVertex)){
+//							delSet.add(x);
+//							delete = true;
+////						}
+////							match++;
+////						 System.out.println("x: " + x + " y: " + y);
+////						 System.out.println(item.getName());
+////						delSet.add(x);
+////						delete = true;
+//					}			
+//					
+//				}
+////				if(match == valueSet.size()){
+////					delSet.add(x);
+////					delete = true;
+////				}
+//				
+//			}
 			
 
 		}
@@ -136,6 +149,29 @@ public class AC3_LA {
 		return delete;
 	}
 
+	private List<Tupel> getCrossProduct(Integer x, Set<Integer> valueSet){
+		List<Tupel> crossProduct = new ArrayList<Tupel>();		
+		
+		for(Integer y : valueSet){
+			crossProduct.add(new Tupel(x, y));
+		}
+		
+		return crossProduct;
+	}
+	
+	private boolean checkConstraints(List<Tupel> crossProduct, List<Constraint> constraintList){
+		int counter = 0;
+		for(Tupel item : crossProduct){
+			for (Constraint constraint : constraintList){
+				if(constraint.operation(item.getX(), item.getY())){
+					counter++;
+				}
+			}
+		}
+		
+		return counter == crossProduct.size() ? true : false;
+	}
+	
 	public Graph getConstraintNetz() {
 		return constraintNetz;
 	}

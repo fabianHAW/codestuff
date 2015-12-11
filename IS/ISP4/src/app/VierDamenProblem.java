@@ -16,13 +16,14 @@ import constraints.Diff3Constraint;
 import constraints.UngleichConstraint;
 import datastructs.Edge;
 import datastructs.Graph;
+import datastructs.ObjectCloner;
 import datastructs.Vertex;
 
 public class VierDamenProblem {
 
 	public static void main(String[] args) {
 
-		Graph graph = new Graph();
+		Graph graph1 = new Graph();
 
 		Vertex[] vertices = new Vertex[4];
 		Set<Integer> domain = new HashSet<Integer>();
@@ -32,7 +33,7 @@ public class VierDamenProblem {
 
 		for (int i = 0; i < vertices.length; i++) {
 			vertices[i] = new Vertex("" + i, domain);
-			graph.addVertex(vertices[i], true);
+			graph1.addVertex(vertices[i], true);
 		}
 
 		List<Constraint> cL1 = new ArrayList<Constraint>();
@@ -48,11 +49,11 @@ public class VierDamenProblem {
 		for (int i = 0; i < vertices.length; i++) {
 			for (int j = i + 1; j < vertices.length; j++) {
 				if ((i == 0 && j == 1) || (i == 1 && j == 2) || (i == 2 && j == 3))
-					graph.addEdge(vertices[i], vertices[j], cL1);
+					graph1.addEdge(vertices[i], vertices[j], cL1);
 				if ((i == 0 && j == 2) || (i == 1 && j == 3))
-					graph.addEdge(vertices[i], vertices[j], cL2);
+					graph1.addEdge(vertices[i], vertices[j], cL2);
 				if ((i == 0 && j == 3))
-					graph.addEdge(vertices[i], vertices[j], cL3);
+					graph1.addEdge(vertices[i], vertices[j], cL3);
 			}
 		}
 //		for(Edge item : graph.getEdges()){
@@ -71,7 +72,18 @@ public class VierDamenProblem {
 		// System.out.println();
 		// }
 
-		AC3_LA ac3_la_alg = new AC3_LA(graph);
+
+		Graph graph2 = null;
+		
+		try {
+			graph2 = (Graph) ObjectCloner.deepCopy(graph1);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		AC3_LA ac3_la_alg = new AC3_LA(graph1);
 
 		Map<String, Integer> solutionMap = new HashMap<String, Integer>();
 		boolean solutionFound = false;
@@ -80,15 +92,15 @@ public class VierDamenProblem {
 		List<Integer> assumptionValueList = null;
 		int vertexCounter = 0;
 
-		assumptionVertex = graph.getVertex(String.valueOf(vertexCounter));
-		assumptionValueList = new ArrayList<Integer>(graph.getVertex(String.valueOf(vertexCounter++)).getDomain());
-		
+		assumptionVertex = graph1.getVertex(String.valueOf(vertexCounter));
+		assumptionValueList = new ArrayList<Integer>(graph1.getVertex(String.valueOf(vertexCounter++)).getDomain());
+		assumptionValue = assumptionValueList.get(0);
+		assumptionValueList.remove(0);
 //		assumptionValueList.forEach(l -> System.out.println(l));
 		
 		while (!solutionFound) {
 			// for (int i = 0; i < 4; i++) {
-			assumptionValue = assumptionValueList.get(0);
-			assumptionValueList.remove(0);
+
 			System.out.println("annahmeknoten: " + assumptionVertex.getLabel() + " annahmewert: " + assumptionValue);
 //			assumptionValueList.forEach(l -> System.out.println(l));
 //			System.out.println(assumptionValueList.get(0));
@@ -96,10 +108,11 @@ public class VierDamenProblem {
 			// while (true) {
 			if (ac3_la_alg.ac3_la_procedure(assumptionVertex, assumptionValue)) {
 				solutionMap.put(assumptionVertex.getLabel(), assumptionValue);
-				assumptionVertex = graph.getVertex(String.valueOf(vertexCounter));
+				assumptionVertex = graph1.getVertex(String.valueOf(vertexCounter));
 				assumptionValueList = new ArrayList<Integer>(
-						graph.getVertex(String.valueOf(vertexCounter++)).getDomain());
-				
+						graph1.getVertex(String.valueOf(vertexCounter++)).getDomain());
+				assumptionValue = assumptionValueList.get(0);
+				assumptionValueList.remove(0);
 				System.out.println("inside");
 				// i = 4;
 				// break;
@@ -111,6 +124,14 @@ public class VierDamenProblem {
 				// graph.getVertex(String.valueOf(vertexCounter++)).getDomain());
 				assumptionValue = assumptionValueList.get(0);
 				assumptionValueList.remove(0);
+				ac3_la_alg.setConstraintNetz(graph2);
+				System.out.println(graph2);
+				System.out.println(graph2.getVertex("0"));
+				System.out.println(graph2.getVertex("1"));
+				System.out.println(graph2.getVertex("2"));
+				System.out.println(graph2.getVertex("3"));
+				
+
 				System.out.println("else");
 				// i = 4;
 				// break;
