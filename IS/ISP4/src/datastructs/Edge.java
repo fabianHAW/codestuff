@@ -1,8 +1,7 @@
 package datastructs;
 
-import java.util.HashMap;
+import java.io.Serializable;
 import java.util.List;
-import java.util.Map.Entry;
 
 import constraints.Constraint;
 
@@ -23,8 +22,12 @@ import constraints.Constraint;
  * @author Michael Levet
  * @date June 09, 2015
  */
-public class Edge implements Comparable<Edge> {
+public class Edge implements Comparable<Edge>, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Vertex one, two;
 	private int weight;
 	private List<Constraint> constraintList;
@@ -50,15 +53,8 @@ public class Edge implements Comparable<Edge> {
 	 *            The weight of this Edge
 	 */
 	public Edge(Vertex one, Vertex two, int weight) {
-//		this.one = (one.getLabel().compareTo(two.getLabel()) <= 0) ? one : two;
-//		this.two = (this.one == one) ? two : one;
-//		if(Integer.valueOf(one.getLabel()) < Integer.valueOf(two.getLabel())){
-			this.one = one;
-			this.two = two;
-//		} else {
-//			this.one = two;
-//			this.two = one;
-//		}
+		this.one = one;
+		this.two = two;
 		this.weight = weight;
 	}
 
@@ -75,7 +71,6 @@ public class Edge implements Comparable<Edge> {
 		this(one, two, 1);
 		constraintList = cL;
 	}
-	
 
 	/**
 	 * 

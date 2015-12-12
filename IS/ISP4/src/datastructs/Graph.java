@@ -1,9 +1,6 @@
 package datastructs;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.*;
 
 import constraints.Constraint;
@@ -20,10 +17,19 @@ import constraints.Constraint;
  * @author Michael Levet
  * @date June 09, 2015
  */
-public class Graph implements Cloneable {
 
+// Quelle:
+// http://www.dreamincode.net/forums/topic/377473-graph-data-structure-tutorial/
+
+public class Graph implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private HashMap<String, Vertex> vertices;
 	private HashMap<Integer, Edge> edges;
+	private int vertexCounter = 0;
 
 	public Graph() {
 		this.vertices = new HashMap<String, Vertex>();
@@ -41,6 +47,7 @@ public class Graph implements Cloneable {
 	public Graph(ArrayList<Vertex> vertices) {
 		this.vertices = new HashMap<String, Vertex>();
 		this.edges = new HashMap<Integer, Edge>();
+		vertexCounter = vertices.size();
 
 		for (Vertex v : vertices) {
 			this.vertices.put(v.getLabel(), v);
@@ -125,15 +132,14 @@ public class Graph implements Cloneable {
 		}
 
 		edges.put(e.hashCode(), e);
-		// System.out.println(one.getLabel());
-		// System.out.println(two.getLabel());
-		// System.out.println(e);
 		one.addNeighbor(e);
 		two.addNeighbor(e);
 		return true;
 	}
 
 	/**
+	 * 
+	 * 
 	 * 
 	 * @param e
 	 *            The Edge to look up
@@ -204,6 +210,7 @@ public class Graph implements Cloneable {
 		}
 
 		vertices.put(vertex.getLabel(), vertex);
+		vertexCounter++;
 		return true;
 	}
 
@@ -220,6 +227,7 @@ public class Graph implements Cloneable {
 			this.removeEdge(v.getNeighbor((0)));
 		}
 
+		vertexCounter--;
 		return v;
 	}
 
@@ -239,26 +247,12 @@ public class Graph implements Cloneable {
 		return new HashSet<Edge>(this.edges.values());
 	}
 
-	public Object deepCopy() throws Exception {
-		ObjectOutputStream oos = null;
-		ObjectInputStream ois = null;
-		try {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream(); // A
-			oos = new ObjectOutputStream(bos); // B
-			// serialize and pass the object
-			oos.writeObject(this); // C
-			oos.flush(); // D
-			ByteArrayInputStream bin = new ByteArrayInputStream(bos.toByteArray()); // E
-			ois = new ObjectInputStream(bin); // F
-			// return the new object
-			return ois.readObject(); // G
-		} catch (Exception e) {
-			System.out.println("Exception in ObjectCloner = " + e);
-			throw (e);
-		} finally {
-			oos.close();
-			ois.close();
-		}
+	public int getVertexCounter() {
+		return vertexCounter;
+	}
+
+	public void setVertexCounter(int vertexCounter) {
+		this.vertexCounter = vertexCounter;
 	}
 
 }

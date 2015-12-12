@@ -7,26 +7,20 @@ public class ObjectCloner {
 	private ObjectCloner() {
 	}
 
-	// returns a deep copy of an object
-	static public Object deepCopy(Object oldObj) throws Exception {
-		ObjectOutputStream oos = null;
-		ObjectInputStream ois = null;
+	/**
+	 * This method makes a "deep clone" of any object it is given.
+	 */
+	public static Object deepClone(Object object) {
 		try {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream(); // A
-			oos = new ObjectOutputStream(bos); // B
-			// serialize and pass the object
-			oos.writeObject(oldObj); // C
-			oos.flush(); // D
-			ByteArrayInputStream bin = new ByteArrayInputStream(bos.toByteArray()); // E
-			ois = new ObjectInputStream(bin); // F
-			// return the new object
-			return ois.readObject(); // G
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(object);
+			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+			ObjectInputStream ois = new ObjectInputStream(bais);
+			return ois.readObject();
 		} catch (Exception e) {
-			System.out.println("Exception in ObjectCloner = " + e);
-			throw (e);
-		} finally {
-			oos.close();
-			ois.close();
+			e.printStackTrace();
+			return null;
 		}
 	}
 

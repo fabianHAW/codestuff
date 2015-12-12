@@ -14,7 +14,6 @@ import constraints.Diff1Constraint;
 import constraints.Diff2Constraint;
 import constraints.Diff3Constraint;
 import constraints.UngleichConstraint;
-import datastructs.Edge;
 import datastructs.Graph;
 import datastructs.ObjectCloner;
 import datastructs.Vertex;
@@ -23,7 +22,7 @@ public class VierDamenProblem {
 
 	public static void main(String[] args) {
 
-		Graph graph1 = new Graph();
+		Graph graphOrig = new Graph();
 
 		Vertex[] vertices = new Vertex[4];
 		Set<Integer> domain = new HashSet<Integer>();
@@ -33,7 +32,7 @@ public class VierDamenProblem {
 
 		for (int i = 0; i < vertices.length; i++) {
 			vertices[i] = new Vertex("" + i, domain);
-			graph1.addVertex(vertices[i], true);
+			graphOrig.addVertex(vertices[i], true);
 		}
 
 		List<Constraint> cL1 = new ArrayList<Constraint>();
@@ -49,108 +48,75 @@ public class VierDamenProblem {
 		for (int i = 0; i < vertices.length; i++) {
 			for (int j = i + 1; j < vertices.length; j++) {
 				if ((i == 0 && j == 1) || (i == 1 && j == 2) || (i == 2 && j == 3))
-					graph1.addEdge(vertices[i], vertices[j], cL1);
+					graphOrig.addEdge(vertices[i], vertices[j], cL1);
 				if ((i == 0 && j == 2) || (i == 1 && j == 3))
-					graph1.addEdge(vertices[i], vertices[j], cL2);
+					graphOrig.addEdge(vertices[i], vertices[j], cL2);
 				if ((i == 0 && j == 3))
-					graph1.addEdge(vertices[i], vertices[j], cL3);
+					graphOrig.addEdge(vertices[i], vertices[j], cL3);
 			}
 		}
-//		for(Edge item : graph.getEdges()){
-//			System.out.println(item.toString());
-//		}
 
-		// // display the initial setup- all vertices adjacent to each other
-		// for (int i = 0; i < vertices.length; i++) {
-		// System.out.println(vertices[i]);
-		//
-		// System.out.println(vertices[i].getNeighbors());
-		//// for (int j = 0; j < vertices[i].getNeighborCount(); j++) {
-		//// System.out.println(vertices[i].getNeighbor(j));
-		//// }
-		//
-		// System.out.println();
-		// }
-
-
-		Graph graph2 = null;
-		
-		try {
-			graph2 = (Graph) ObjectCloner.deepCopy(graph1);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		
-		AC3_LA ac3_la_alg = new AC3_LA(graph1);
-
-		Map<String, Integer> solutionMap = new HashMap<String, Integer>();
-		boolean solutionFound = false;
 		Vertex assumptionVertex = null;
 		int assumptionValue = 0;
 		List<Integer> assumptionValueList = null;
 		int vertexCounter = 0;
 
-		assumptionVertex = graph1.getVertex(String.valueOf(vertexCounter));
-		assumptionValueList = new ArrayList<Integer>(graph1.getVertex(String.valueOf(vertexCounter++)).getDomain());
+		assumptionVertex = graphOrig.getVertex(String.valueOf(vertexCounter));
+		assumptionValueList = new ArrayList<Integer>(graphOrig.getVertex(String.valueOf(vertexCounter++)).getDomain());
 		assumptionValue = assumptionValueList.get(0);
 		assumptionValueList.remove(0);
-//		assumptionValueList.forEach(l -> System.out.println(l));
-		
-		while (!solutionFound) {
-			// for (int i = 0; i < 4; i++) {
 
-			System.out.println("annahmeknoten: " + assumptionVertex.getLabel() + " annahmewert: " + assumptionValue);
-//			assumptionValueList.forEach(l -> System.out.println(l));
-//			System.out.println(assumptionValueList.get(0));
-			// for (int j = 0; j < 4; j++) {
-			// while (true) {
+		Map<String, Integer> solutionMap = solve(graphOrig, assumptionVertex, assumptionValueList, assumptionValue,
+				vertexCounter);
+
+		System.out.println("\n***SOLUTION***");
+		for (Entry<String, Integer> item : solutionMap.entrySet()) {
+			System.out.println("v" + item.getKey() + " mit dem Wert: " + item.getValue());
+		}
+
+	}
+
+	private static Map<String, Integer> solve(Graph graphOrig, Vertex assumptionVertex,
+			List<Integer> assumptionValueList, Integer assumptionValue, int vertexCounter) {
+		AC3_LA ac3_la_alg = new AC3_LA(graphOrig);
+
+		Map<String, Integer> solutionMap = new HashMap<String, Integer>();
+
+		Graph graphCopy = null;
+
+		try {
+			graphCopy = (Graph) ObjectCloner.deepClone(graphOrig);
+		} catch (Exception e) {
+			System.out.println("Beim kopieren des Graphen trat ein Fehler auf: " + e);
+		}
+
+		if (graphCopy != null) {
+			System.out.println("annahmeknoten: v" + assumptionVertex.getLabel() + " annahmewert: " + assumptionValue);
 			if (ac3_la_alg.ac3_la_procedure(assumptionVertex, assumptionValue)) {
 				solutionMap.put(assumptionVertex.getLabel(), assumptionValue);
-				assumptionVertex = graph1.getVertex(String.valueOf(vertexCounter));
+
+				if (vertexCounter == graphOrig.getVertexCounter())
+					return solutionMap;
+
+				assumptionVertex = graphOrig.getVertex(String.valueOf(vertexCounter));
 				assumptionValueList = new ArrayList<Integer>(
-						graph1.getVertex(String.valueOf(vertexCounter++)).getDomain());
+						graphOrig.getVertex(String.valueOf(vertexCounter++)).getDomain());
 				assumptionValue = assumptionValueList.get(0);
 				assumptionValueList.remove(0);
-				System.out.println("inside");
-				// i = 4;
-				// break;
+
+				solutionMap.putAll(
+						solve(graphOrig, assumptionVertex, assumptionValueList, assumptionValue, vertexCounter));
+
 			} else {
-				vertexCounter = 0;
-				// assumptionVertex =
-				// graph.getVertex(String.valueOf(vertexCounter));
-				// assumptionValueList = new ArrayList<Integer>(
-				// graph.getVertex(String.valueOf(vertexCounter++)).getDomain());
 				assumptionValue = assumptionValueList.get(0);
 				assumptionValueList.remove(0);
-				ac3_la_alg.setConstraintNetz(graph2);
-				System.out.println(graph2);
-				System.out.println(graph2.getVertex("0"));
-				System.out.println(graph2.getVertex("1"));
-				System.out.println(graph2.getVertex("2"));
-				System.out.println(graph2.getVertex("3"));
-				
-
-				System.out.println("else");
-				// i = 4;
-				// break;
-				// }
-				// }
+				solutionMap.putAll(
+						solve(graphCopy, assumptionVertex, assumptionValueList, assumptionValue, vertexCounter));
 			}
-			if (solutionMap.size() == 4)
-				solutionFound = true;
-			// vertexCounter++;
-		}
+		} else
+			return null;
 
-		for (Entry<String, Integer> item : solutionMap.entrySet()) {
-			System.out.println(item.getKey() + " " + item.getValue());
-		}
-
-//		 System.out.println(ac3_la_alg.ac3_la_procedure(graph.getVertex("0"),
-//		 1));
-		System.out.println(ac3_la_alg.getConstraintNetz().getEdges().toString());
-
+		return solutionMap;
 	}
 
 }

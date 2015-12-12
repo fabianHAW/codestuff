@@ -1,8 +1,13 @@
 package constraints;
 
+import java.io.Serializable;
 
-public abstract class Constraint {
+public abstract class Constraint implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name;
 
 	public Constraint(String name){

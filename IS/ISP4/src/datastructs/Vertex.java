@@ -1,5 +1,6 @@
 package datastructs;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -12,8 +13,12 @@ import java.util.Set;
  * @author Michael Levet
  * @date June 09, 2015
  */
-public class Vertex {
+public class Vertex implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Edge> neighborhood;
 	private String label;
 	private Set<Integer> domain;
@@ -154,7 +159,5 @@ public class Vertex {
 	public void setDomain(Set<Integer> domain) {
 		this.domain = domain;
 	}
-	
-	
 
 }

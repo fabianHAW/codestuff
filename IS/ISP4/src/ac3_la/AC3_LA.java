@@ -25,12 +25,10 @@ public class AC3_LA {
 		int cv = Integer.valueOf(assumptionVertex.getLabel());
 		this.assumptionVertex = assumptionVertex;
 		this.assumptionValue = assumptionValue;
-		
+
 		boolean consistent = true;
-		// Set<Edge> allEdges = constraintNetz.getEdges();
 		Set<Edge> q = new HashSet<Edge>();
 		List<Edge> neighborsOfCv = constraintNetz.getVertex("" + cv).getNeighbors();
-		// System.out.println(constraintNetz.getVertex(""+cv).getNeighbors());
 
 		/**
 		 * Menge Q erzeugen
@@ -38,51 +36,38 @@ public class AC3_LA {
 		for (Edge item : neighborsOfCv) {
 			if (Integer.valueOf(item.getTwo().getLabel()) > cv) {
 				Edge e = new Edge(item.getTwo(), item.getOne(), item.getConstraintList());
-//				Edge e = new Edge(item.getOne(), item.getTwo(), item.getConstraintList());
 				q.add(e);
-//				System.out.println(e);
 			}
 		}
 
 		while (!q.isEmpty() & consistent) {
 			System.out.println("Q: " + q.toString());
-//			Edge arc = q.iterator().next();
 			Edge arc = null;
 			boolean isAssumptionVertex = false;
-			for(Edge item : q){
-				if(item.getTwo().equals(assumptionVertex)){
+			for (Edge item : q) {
+				if (item.getTwo().equals(assumptionVertex)) {
 					arc = item;
 					isAssumptionVertex = true;
 					break;
 				}
 			}
-			if(!isAssumptionVertex){
+			if (!isAssumptionVertex) {
 				arc = q.iterator().next();
 			}
 			q.remove(arc);
-			// System.out.println(arc);
-//			System.out.println("gewählte arc: " + arc.toString());
-//			 System.out.println("Q enthält noch: " + q.toString());
-//			 System.out.println("Q Empty?: " + q.isEmpty());
 
 			if (revise(arc)) {
 				int k = Integer.valueOf(arc.getOne().getLabel());
-//				System.out.print("k: " + k);
 				int m = Integer.valueOf(arc.getTwo().getLabel());
-//				System.out.print(" m: " + m);
 				List<Edge> neighborsOfK = constraintNetz.getVertex("" + k).getNeighbors();
-				// System.out.println(neighborsOfK);
 
 				for (Edge item : neighborsOfK) {
 					int i = Integer.valueOf(item.getOne().getLabel());
 					if (i == k)
 						i = Integer.valueOf(item.getTwo().getLabel());
-//					System.out.println(" i: " + i);
-					if (/*i != k &&*/  i != m && i > cv) {
+					if (/* i != k && */ i != m && i > cv) {
 						Edge e = new Edge(item.getTwo(), item.getOne(), item.getConstraintList());
-//						Edge e = new Edge(item.getOne(), item.getTwo(), item.getConstraintList());
 						q.add(e);
-						System.out.println("edge " + e);
 					}
 					consistent = !constraintNetz.getVertex("" + k).getDomain().isEmpty();
 				}
@@ -96,82 +81,53 @@ public class AC3_LA {
 		boolean delete = false;
 		Set<Integer> delSet = new HashSet<Integer>();
 		Set<Integer> valueSet = new HashSet<Integer>();
-//		int match = 0;
-//		for (int x : arc.getTwo().getDomain()) {
+
 		for (int x : arc.getOne().getDomain()) {
-//			if(arc.getOne().equals(assumptionVertex))
-			if(arc.getTwo().equals(assumptionVertex))
+			// Ist der Annahmeknoten der Nachbar des zu beschraenkenden Knoten,
+			// muss der Annahmewert des Annahmeknoten verwendet werden
+			if (arc.getTwo().equals(assumptionVertex))
 				valueSet.add(assumptionValue);
-			else{
-//				valueSet = arc.getOne().getDomain();
+			else
 				valueSet = arc.getTwo().getDomain();
-			}
-			
-			List<Tupel> crossProduct = getCrossProduct(x, valueSet);
-			for(Tupel item : crossProduct){
-				System.out.print(" v" + arc.getOne().getLabel() + " X: " + item.getX() + " v" + arc.getTwo().getLabel() + " Y: " + item.getY());
-			}
-			System.out.println();
-			if(checkConstraints(crossProduct, arc.getConstraintList())){
+
+			List<Tupel> crossProduct = generateCrossProduct(x, valueSet);
+
+			// Iteration ueber die Menge Dj erfolgt in checkConstraints
+			if (checkTupelWithConstraints(crossProduct, arc.getConstraintList())) {
 				delete = true;
-				delSet.add(x);				
+				delSet.add(x);
 			}
-			
-//			for (int y : valueSet) {
-//				for (Constraint item : arc.getConstraintList()) {
-//					if (item.operation(x, y)) {
-////						if(arc.getTwo().equals(assumptionVertex)){
-//							delSet.add(x);
-//							delete = true;
-////						}
-////							match++;
-////						 System.out.println("x: " + x + " y: " + y);
-////						 System.out.println(item.getName());
-////						delSet.add(x);
-////						delete = true;
-//					}			
-//					
-//				}
-////				if(match == valueSet.size()){
-////					delSet.add(x);
-////					delete = true;
-////				}
-//				
-//			}
-			
 
 		}
-//		Set<Integer> newSet = new HashSet<Integer>(arc.getTwo().getDomain());
 		Set<Integer> newSet = new HashSet<Integer>(arc.getOne().getDomain());
 		newSet.removeAll(delSet);
-//		arc.getTwo().setDomain(newSet);
 		arc.getOne().setDomain(newSet);
 		return delete;
 	}
 
-	private List<Tupel> getCrossProduct(Integer x, Set<Integer> valueSet){
-		List<Tupel> crossProduct = new ArrayList<Tupel>();		
-		
-		for(Integer y : valueSet){
+	private List<Tupel> generateCrossProduct(Integer x, Set<Integer> valueSet) {
+		List<Tupel> crossProduct = new ArrayList<Tupel>();
+
+		for (Integer y : valueSet) {
 			crossProduct.add(new Tupel(x, y));
 		}
-		
+
 		return crossProduct;
 	}
-	
-	private boolean checkConstraints(List<Tupel> crossProduct, List<Constraint> constraintList){
+
+	private boolean checkTupelWithConstraints(List<Tupel> crossProduct, List<Constraint> constraintList) {
 		int counter = 0;
-		for(Tupel item : crossProduct){
-			for (Constraint constraint : constraintList){
-				if(constraint.operation(item.getX(), item.getY())){
+		for (Tupel item : crossProduct) {
+			for (Constraint constraint : constraintList) {
+				if (constraint.operation(item.getX(), item.getY())) {
 					counter++;
 				}
 			}
 		}
-		
+
 		return counter == crossProduct.size() ? true : false;
 	}
-	
+
 	public Graph getConstraintNetz() {
 		return constraintNetz;
 	}

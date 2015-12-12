@@ -2,6 +2,11 @@ package constraints;
 
 public class Diff3Constraint extends Constraint {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public Diff3Constraint(String name) {
 		super(name);
 	}
