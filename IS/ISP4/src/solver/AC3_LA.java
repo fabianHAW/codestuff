@@ -1,10 +1,11 @@
-package ac3_la;
+package solver;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import constraints.AllDiffConstraint;
 import constraints.Constraint;
 import datastructs.Edge;
 import datastructs.Graph;
@@ -117,12 +118,31 @@ public class AC3_LA {
 
 	private boolean checkTupelWithConstraints(List<Tupel> crossProduct, List<Constraint> constraintList) {
 		int counter = 0;
+		boolean alldiffValid = false;
+
 		for (Tupel item : crossProduct) {
 			for (Constraint constraint : constraintList) {
-				if (constraint.operation(item.getX(), item.getY())) {
+				if (constraint instanceof AllDiffConstraint) {
+					if (constraint.operation(item.getX(), item.getY())) {
+						counter = crossProduct.size();
+						// wenn AllDiffConstraint zutrifft, brauchen alle
+						// weiteren Constraints nicht mehr geprueft werden, da
+						// Wert x in jedem Fall geloescht wird
+						alldiffValid = true;
+						break;
+					}
+				} else if (constraint.operation(item.getX(), item.getY())) {
 					counter++;
+					// Sobald ein Constraint erfuellt ist, muessen die
+					// Restlichen nicht weiter betrachtet werden
+					break;
 				}
 			}
+			// Sobald der Alldifferent Constraint zugetroffen ist, muss der rest
+			// des Kreuzproduktes nicht weiter betrachtet werden, da x-Wert in
+			// jedem Fall geloescht wird
+			if (alldiffValid)
+				break;
 		}
 
 		return counter == crossProduct.size() ? true : false;

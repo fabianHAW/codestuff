@@ -21,9 +21,11 @@ public class Vertex implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Edge> neighborhood;
 	private String label;
+	private String name;
 	private Set<Integer> domain;
 
-	/**arg0
+	/**
+	 * arg0
 	 * 
 	 * @param label
 	 *            The unique label associated with this Vertex
@@ -32,8 +34,21 @@ public class Vertex implements Serializable {
 		this.label = label;
 		this.neighborhood = new ArrayList<Edge>();
 	}
-	
+
 	public Vertex(String label, Set<Integer> domain) {
+		this.label = label;
+		this.neighborhood = new ArrayList<Edge>();
+		this.domain = domain;
+	}
+
+	/**
+	 * Fuer Einstein-Raetsel, da hier zusätzlich Namen benoetigt werden.
+	 * 
+	 * @param label
+	 * @param name
+	 * @param domain
+	 */
+	public Vertex(String label, String name, Set<Integer> domain) {
 		this.label = label;
 		this.neighborhood = new ArrayList<Edge>();
 		this.domain = domain;
@@ -115,7 +130,7 @@ public class Vertex implements Serializable {
 	 */
 	public String toString() {
 		return label + " " + domain.toString();
-//		return "Vertex " + label + " Domain: " + domain.toString();
+		// return "Vertex " + label + " Domain: " + domain.toString();
 	}
 
 	/**
@@ -150,6 +165,14 @@ public class Vertex implements Serializable {
 	 */
 	public ArrayList<Edge> getNeighbors() {
 		return new ArrayList<Edge>(this.neighborhood);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Set<Integer> getDomain() {

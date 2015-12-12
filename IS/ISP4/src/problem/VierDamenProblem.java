@@ -1,28 +1,27 @@
-package app;
+package problem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import ac3_la.AC3_LA;
 import constraints.Constraint;
 import constraints.Diff1Constraint;
 import constraints.Diff2Constraint;
 import constraints.Diff3Constraint;
 import constraints.UngleichConstraint;
 import datastructs.Graph;
-import datastructs.ObjectCloner;
 import datastructs.Vertex;
+import solver.CSolver;
 
 public class VierDamenProblem {
 
 	public static void main(String[] args) {
 
 		Graph graphOrig = new Graph();
+		CSolver solver = new CSolver();
 
 		Vertex[] vertices = new Vertex[4];
 		Set<Integer> domain = new HashSet<Integer>();
@@ -66,57 +65,14 @@ public class VierDamenProblem {
 		assumptionValue = assumptionValueList.get(0);
 		assumptionValueList.remove(0);
 
-		Map<String, Integer> solutionMap = solve(graphOrig, assumptionVertex, assumptionValueList, assumptionValue,
-				vertexCounter);
+		Map<String, Integer> solutionMap = solver.solve(graphOrig, assumptionVertex, assumptionValueList,
+				assumptionValue, vertexCounter);
 
 		System.out.println("\n***SOLUTION***");
 		for (Entry<String, Integer> item : solutionMap.entrySet()) {
 			System.out.println("v" + item.getKey() + " mit dem Wert: " + item.getValue());
 		}
 
-	}
-
-	private static Map<String, Integer> solve(Graph graphOrig, Vertex assumptionVertex,
-			List<Integer> assumptionValueList, Integer assumptionValue, int vertexCounter) {
-		AC3_LA ac3_la_alg = new AC3_LA(graphOrig);
-
-		Map<String, Integer> solutionMap = new HashMap<String, Integer>();
-
-		Graph graphCopy = null;
-
-		try {
-			graphCopy = (Graph) ObjectCloner.deepClone(graphOrig);
-		} catch (Exception e) {
-			System.out.println("Beim kopieren des Graphen trat ein Fehler auf: " + e);
-		}
-
-		if (graphCopy != null) {
-			System.out.println("annahmeknoten: v" + assumptionVertex.getLabel() + " annahmewert: " + assumptionValue);
-			if (ac3_la_alg.ac3_la_procedure(assumptionVertex, assumptionValue)) {
-				solutionMap.put(assumptionVertex.getLabel(), assumptionValue);
-
-				if (vertexCounter == graphOrig.getVertexCounter())
-					return solutionMap;
-
-				assumptionVertex = graphOrig.getVertex(String.valueOf(vertexCounter));
-				assumptionValueList = new ArrayList<Integer>(
-						graphOrig.getVertex(String.valueOf(vertexCounter++)).getDomain());
-				assumptionValue = assumptionValueList.get(0);
-				assumptionValueList.remove(0);
-
-				solutionMap.putAll(
-						solve(graphOrig, assumptionVertex, assumptionValueList, assumptionValue, vertexCounter));
-
-			} else {
-				assumptionValue = assumptionValueList.get(0);
-				assumptionValueList.remove(0);
-				solutionMap.putAll(
-						solve(graphCopy, assumptionVertex, assumptionValueList, assumptionValue, vertexCounter));
-			}
-		} else
-			return null;
-
-		return solutionMap;
 	}
 
 }
