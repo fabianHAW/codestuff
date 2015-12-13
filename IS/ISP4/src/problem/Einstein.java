@@ -3,7 +3,9 @@ package problem;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import constraints.AllDiffConstraint;
 import constraints.Constraint;
@@ -155,14 +157,35 @@ public class Einstein {
 
 		graphOrig.addEdge(rot, brite, gleichList);
 		graphOrig.addEdge(gelb, dunhill, gleichList);
-		graphOrig.addEdge(hund, schwede, gleichList);
+		graphOrig.addEdge(schwede, hund, gleichList);
 		graphOrig.addEdge(deutscher, rothmanns, gleichList);
 		graphOrig.addEdge(gruen, kaffee, gleichList);
-		graphOrig.addEdge(tee, daene, gleichList);
+		graphOrig.addEdge(daene, tee, gleichList);
 		graphOrig.addEdge(bier, winfield, gleichList);
 		graphOrig.addEdge(vogel, pallmall, gleichList);
 		
-		//ungleich constraints anlegen..
+		graphOrig.addEdge(norweger, blau, ungleichList);
+		graphOrig.addEdge(wasser, malboro, ungleichList);
+		graphOrig.addEdge(pferd, dunhill, ungleichList);
+		graphOrig.addEdge(katze, malboro, ungleichList);
+		
+		Vertex assumptionVertex = null;
+		int assumptionValue = 0;
+		List<Integer> assumptionValueList = null;
+		int vertexCounter = 1;
+
+		assumptionVertex = graphOrig.getVertex(String.valueOf(vertexCounter));
+		assumptionValueList = new ArrayList<Integer>(graphOrig.getVertex(String.valueOf(vertexCounter++)).getDomain());
+		assumptionValue = assumptionValueList.get(0);
+		assumptionValueList.remove(0);
+
+		Map<String, Integer> solutionMap = solver.solve(graphOrig, assumptionVertex, assumptionValueList,
+				assumptionValue, vertexCounter);
+
+		System.out.println("\n***SOLUTION***");
+		for (Entry<String, Integer> item : solutionMap.entrySet()) {
+			System.out.println("v" + item.getKey() + " mit dem Wert: " + item.getValue());
+		}
 		
 	}
 

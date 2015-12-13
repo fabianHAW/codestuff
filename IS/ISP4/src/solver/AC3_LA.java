@@ -120,6 +120,9 @@ public class AC3_LA {
 		int counter = 0;
 		boolean alldiffValid = false;
 
+		// TODO: Constraintlist entfernen und pro Kante einen Constraint
+		// zulassen -> dafuer muessen mehrere Constraints auf mehrere Kanten
+		// aufgeteilt werden..
 		for (Tupel item : crossProduct) {
 			for (Constraint constraint : constraintList) {
 				if (constraint instanceof AllDiffConstraint) {
@@ -134,8 +137,8 @@ public class AC3_LA {
 				} else if (constraint.operation(item.getX(), item.getY())) {
 					counter++;
 					// Sobald ein Constraint erfuellt ist, muessen die
-					// Restlichen nicht weiter betrachtet werden
-					break;
+					// Restlichen nicht weiter betrachtet werden??
+//					 break;
 				}
 			}
 			// Sobald der Alldifferent Constraint zugetroffen ist, muss der rest
