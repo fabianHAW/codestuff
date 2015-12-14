@@ -26,23 +26,29 @@ public class CSolver {
 		}
 
 		if (graphCopy != null) {
-			System.out.println("annahmeknoten: v" + assumptionVertex.getLabel() + " annahmewert: " + assumptionValue);
+			System.out.println("annahmeknoten: " + assumptionVertex.getName() + " annahmewert: " + assumptionValue);
 			if (ac3_la_alg.ac3_la_procedure(assumptionVertex, assumptionValue)) {
-				solutionMap.put(assumptionVertex.getLabel(), assumptionValue);
+				solutionMap.put(assumptionVertex.getName(), assumptionValue);
 
-				if (vertexCounter == graphOrig.getVertexCounter())
+				if (vertexCounter >= graphOrig.getVertexCounter())
 					return solutionMap;
 
+				// war die Annahme in Ordnung, wird der naechste Knoten mit
+				// einem zur Verfuegung stehenden Wert gewaehlt
 				assumptionVertex = graphOrig.getVertex(String.valueOf(vertexCounter));
 				assumptionValueList = new ArrayList<Integer>(
 						graphOrig.getVertex(String.valueOf(vertexCounter++)).getDomain());
-				assumptionValue = assumptionValueList.get(0);
-				assumptionValueList.remove(0);
 
-				solutionMap.putAll(
-						solve(graphOrig, assumptionVertex, assumptionValueList, assumptionValue, vertexCounter));
+				if (!assumptionValueList.isEmpty()) {
+					assumptionValue = assumptionValueList.get(0);
+					assumptionValueList.remove(0);
 
+					solutionMap.putAll(
+							solve(graphOrig, assumptionVertex, assumptionValueList, assumptionValue, vertexCounter));
+				}
 			} else {
+				// Ist die vorherige Annahme falsch, wird die naechste des
+				// selben Knoten gewaehlt
 				if (assumptionValueList.isEmpty())
 					return solutionMap;
 

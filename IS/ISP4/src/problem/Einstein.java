@@ -4,17 +4,28 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import constraints.AllDiffConstraint;
-import constraints.Constraint;
+import constraints.BinaryConstraint;
 import constraints.GleichConstraint;
+import constraints.KleinerConstraint;
 import constraints.UngleichConstraint;
 import datastructs.Graph;
 import datastructs.Vertex;
 import solver.CSolver;
 
+/**
+ * Lösung: 1.In the yellow house the Norwegian drinks water, smokes Dunhills,
+ * and keeps cats. 2. In the blue house the Dane drinks tea, smokes Blends, and
+ * keeps horses. 3. In the red house the Englishman drinks milk, smokes
+ * PallMalls, and keeps birds. 4. In the green house the German drinks coffee,
+ * smokes Princes, and keeps fish. 5. In the white house the Swede drinks bier,
+ * smokes BlueMasters, and keeps dogs.
+ * 
+ * https://web.stanford.edu/~laurik/fsmbook/examples/Einstein'sPuzzle.html
+ */
 public class Einstein {
 
 	public static void main(String[] args) {
@@ -22,18 +33,20 @@ public class Einstein {
 		CSolver solver = new CSolver();
 
 		Set<Integer> fullDomain = new HashSet<Integer>();
-		Set<Integer> gruenDomain = new HashSet<Integer>();
-		Set<Integer> weissDomain = new HashSet<Integer>();
+		// Set<Integer> blauWeissDomain = new HashSet<Integer>();
+		// Set<Integer> gruenDomain = new HashSet<Integer>();
 		Set<Integer> norwegerDomain = new HashSet<Integer>();
 		Set<Integer> milchDomain = new HashSet<Integer>();
 
 		for (int i = 1; i < 6; i++) {
 			fullDomain.add(i);
-			if (i < 5)
-				gruenDomain.add(i);
-			if (i > 1)
-				weissDomain.add(i);
+			// if (i < 5)
+			// gruenDomain.add(i);
+			// if (i > 1) {
+			// blauWeissDomain.add(i);
+			// }
 		}
+
 		norwegerDomain.add(1);
 		milchDomain.add(3);
 
@@ -41,11 +54,11 @@ public class Einstein {
 		graphOrig.addVertex(rot, true);
 		Vertex blau = new Vertex("2", "blau", fullDomain);
 		graphOrig.addVertex(blau, true);
-		Vertex weiss = new Vertex("3", "weiss", weissDomain);
+		Vertex weiss = new Vertex("3", "weiss", fullDomain);
 		graphOrig.addVertex(weiss, true);
 		Vertex gelb = new Vertex("4", "gelb", fullDomain);
 		graphOrig.addVertex(gelb, true);
-		Vertex gruen = new Vertex("5", "gruen", gruenDomain);
+		Vertex gruen = new Vertex("5", "gruen", fullDomain);
 		graphOrig.addVertex(gruen, true);
 
 		Vertex brite = new Vertex("6", "brite", fullDomain);
@@ -92,13 +105,17 @@ public class Einstein {
 		Vertex rothmanns = new Vertex("25", "rothmanns", fullDomain);
 		graphOrig.addVertex(rothmanns, true);
 
-		List<Constraint> allDiffList = new ArrayList<Constraint>();
-		List<Constraint> ungleichList = new ArrayList<Constraint>();
-		List<Constraint> gleichList = new ArrayList<Constraint>();
-		
+		List<BinaryConstraint> allDiffList = new ArrayList<BinaryConstraint>();
+		List<BinaryConstraint> allDiffListAndLT = new ArrayList<BinaryConstraint>();
+		List<BinaryConstraint> ungleichList = new ArrayList<BinaryConstraint>();
+		List<BinaryConstraint> gleichList = new ArrayList<BinaryConstraint>();
+
 		allDiffList.add(new AllDiffConstraint("Alldifferent"));
 		ungleichList.add(new UngleichConstraint("Ungleich"));
 		gleichList.add(new GleichConstraint("Gleich"));
+
+		allDiffListAndLT.add(new AllDiffConstraint("Alldifferent"));
+		allDiffListAndLT.add(new KleinerConstraint("Kleiner"));
 
 		graphOrig.addEdge(rot, blau, allDiffList);
 		graphOrig.addEdge(rot, gelb, allDiffList);
@@ -109,8 +126,9 @@ public class Einstein {
 		graphOrig.addEdge(blau, gruen, allDiffList);
 		graphOrig.addEdge(gelb, weiss, allDiffList);
 		graphOrig.addEdge(gelb, gruen, allDiffList);
-		graphOrig.addEdge(weiss, gruen, allDiffList);
-		
+		// TODO: ggf. weiss und gruen tauschen..
+		graphOrig.addEdge(gruen, weiss, allDiffListAndLT);
+
 		graphOrig.addEdge(brite, norweger, allDiffList);
 		graphOrig.addEdge(brite, daene, allDiffList);
 		graphOrig.addEdge(brite, schwede, allDiffList);
@@ -120,8 +138,8 @@ public class Einstein {
 		graphOrig.addEdge(norweger, deutscher, allDiffList);
 		graphOrig.addEdge(daene, schwede, allDiffList);
 		graphOrig.addEdge(daene, deutscher, allDiffList);
-		graphOrig.addEdge(schwede, deutscher, allDiffList);	
-		
+		graphOrig.addEdge(schwede, deutscher, allDiffList);
+
 		graphOrig.addEdge(hund, katze, allDiffList);
 		graphOrig.addEdge(hund, vogel, allDiffList);
 		graphOrig.addEdge(hund, pferd, allDiffList);
@@ -163,12 +181,12 @@ public class Einstein {
 		graphOrig.addEdge(daene, tee, gleichList);
 		graphOrig.addEdge(bier, winfield, gleichList);
 		graphOrig.addEdge(vogel, pallmall, gleichList);
-		
+
 		graphOrig.addEdge(norweger, blau, ungleichList);
 		graphOrig.addEdge(wasser, malboro, ungleichList);
 		graphOrig.addEdge(pferd, dunhill, ungleichList);
 		graphOrig.addEdge(katze, malboro, ungleichList);
-		
+
 		Vertex assumptionVertex = null;
 		int assumptionValue = 0;
 		List<Integer> assumptionValueList = null;
@@ -179,14 +197,16 @@ public class Einstein {
 		assumptionValue = assumptionValueList.get(0);
 		assumptionValueList.remove(0);
 
+		System.out.println(assumptionVertex.getName());
+
 		Map<String, Integer> solutionMap = solver.solve(graphOrig, assumptionVertex, assumptionValueList,
 				assumptionValue, vertexCounter);
 
 		System.out.println("\n***SOLUTION***");
 		for (Entry<String, Integer> item : solutionMap.entrySet()) {
-			System.out.println("v" + item.getKey() + " mit dem Wert: " + item.getValue());
+			System.out.println(item.getKey() + " mit dem Wert: " + item.getValue());
 		}
-		
+
 	}
 
 }

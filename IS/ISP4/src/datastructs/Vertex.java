@@ -52,6 +52,7 @@ public class Vertex implements Serializable {
 		this.label = label;
 		this.neighborhood = new ArrayList<Edge>();
 		this.domain = domain;
+		this.name = name;
 	}
 
 	/**

@@ -3,7 +3,7 @@ package datastructs;
 import java.io.Serializable;
 import java.util.List;
 
-import constraints.Constraint;
+import constraints.BinaryConstraint;
 
 /**
  * This class models an undirected Edge in the Graph implementation. An Edge
@@ -30,7 +30,7 @@ public class Edge implements Comparable<Edge>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private Vertex one, two;
 	private int weight;
-	private List<Constraint> constraintList;
+	private List<BinaryConstraint> constraintList;
 
 	/**
 	 * 
@@ -67,7 +67,7 @@ public class Edge implements Comparable<Edge>, Serializable {
 	 * @param weight
 	 *            The weight of this Edge
 	 */
-	public Edge(Vertex one, Vertex two, List<Constraint> cL) {
+	public Edge(Vertex one, Vertex two, List<BinaryConstraint> cL) {
 		this(one, two, 1);
 		constraintList = cL;
 	}
@@ -164,11 +164,11 @@ public class Edge implements Comparable<Edge>, Serializable {
 		return e.one.equals(this.one) && e.two.equals(this.two);
 	}
 
-	public List<Constraint> getConstraintList() {
+	public List<BinaryConstraint> getConstraintList() {
 		return constraintList;
 	}
 
-	public void setConstraintList(List<Constraint> constraintList) {
+	public void setConstraintList(List<BinaryConstraint> constraintList) {
 		this.constraintList = constraintList;
 	}
 }

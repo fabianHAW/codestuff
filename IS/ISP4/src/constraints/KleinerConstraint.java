@@ -1,24 +1,24 @@
-
 package constraints;
 
-public class UngleichConstraint extends BinaryConstraint {
+public class KleinerConstraint extends BinaryConstraint {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public UngleichConstraint(String name) {
+	public KleinerConstraint(String name) {
 		super(name);
 	}
 
 	@Override
 	public boolean operationBinary(Integer x, Integer y) {
-		return x.intValue() != y.intValue();
+		return x < y;
 	}
 
 	@Override
 	public boolean operationUnary(Integer x) {
 		return false;
 	}
+
 }

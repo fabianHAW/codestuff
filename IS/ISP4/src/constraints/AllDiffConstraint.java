@@ -1,6 +1,6 @@
 package constraints;
 
-public class AllDiffConstraint extends Constraint {
+public class AllDiffConstraint extends BinaryConstraint {
 
 	/**
 	 * 
@@ -12,8 +12,13 @@ public class AllDiffConstraint extends Constraint {
 	}
 
 	@Override
-	public boolean operation(Integer x, Integer y) {
-		return x.intValue() == y.intValue();
+	public boolean operationBinary(Integer x, Integer y) {
+		return x.intValue() != y.intValue();
+	}
+
+	@Override
+	public boolean operationUnary(Integer x) {
+		return false;
 	}
 
 }

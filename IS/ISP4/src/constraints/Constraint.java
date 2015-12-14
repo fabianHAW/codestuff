@@ -1,26 +1,8 @@
 package constraints;
 
-import java.io.Serializable;
-
-public abstract class Constraint implements Serializable {
+public interface Constraint {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private String name;
+	public boolean operationBinary(Integer x, Integer y);
+	public boolean operationUnary(Integer x);
 
-	public Constraint(String name){
-		this.name = name;
-	}
-	
-	public abstract boolean operation(Integer x, Integer y);
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 }

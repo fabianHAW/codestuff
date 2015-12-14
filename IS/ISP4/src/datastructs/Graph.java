@@ -3,7 +3,7 @@ package datastructs;
 import java.io.Serializable;
 import java.util.*;
 
-import constraints.Constraint;
+import constraints.BinaryConstraint;
 
 /**
  * This class models a simple, undirected graph using an incidence list
@@ -115,7 +115,7 @@ public class Graph implements Serializable {
 	 *            The weight of the Edge
 	 * @return true iff no Edge already exists in the Graph
 	 */
-	public boolean addEdge(Vertex one, Vertex two, List<Constraint> cL) {
+	public boolean addEdge(Vertex one, Vertex two, List<BinaryConstraint> cL) {
 		if (one.equals(two)) {
 			return false;
 		}

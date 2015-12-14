@@ -1,6 +1,6 @@
 package constraints;
 
-public class Diff2Constraint extends Constraint {
+public class Diff2Constraint extends BinaryConstraint {
 
 	/**
 	 * 
@@ -12,7 +12,12 @@ public class Diff2Constraint extends Constraint {
 	}
 
 	@Override
-	public boolean operation(Integer x, Integer y) {
-		return (Math.abs(x - y) == 2) ? true : false;
+	public boolean operationBinary(Integer x, Integer y) {
+		return (Math.abs(x - y) == 2) ? false : true;
+	}
+
+	@Override
+	public boolean operationUnary(Integer x) {
+		return false;
 	}
 }

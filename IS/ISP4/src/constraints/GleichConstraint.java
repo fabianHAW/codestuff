@@ -1,7 +1,7 @@
 package constraints;
 
-public class GleichConstraint extends Constraint {
-	
+public class GleichConstraint extends BinaryConstraint {
+
 	/**
 	 * 
 	 */
@@ -12,8 +12,13 @@ public class GleichConstraint extends Constraint {
 	}
 
 	@Override
-	public boolean operation(Integer x, Integer y) {
-		return x.intValue() != y.intValue();
+	public boolean operationBinary(Integer x, Integer y) {
+		return x.intValue() == y.intValue();
+	}
+
+	@Override
+	public boolean operationUnary(Integer x) {
+		return false;
 	}
 
 }

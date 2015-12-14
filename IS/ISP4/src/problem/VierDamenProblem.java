@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import constraints.Constraint;
+import constraints.BinaryConstraint;
 import constraints.Diff1Constraint;
 import constraints.Diff2Constraint;
 import constraints.Diff3Constraint;
@@ -30,13 +30,13 @@ public class VierDamenProblem {
 		}
 
 		for (int i = 0; i < vertices.length; i++) {
-			vertices[i] = new Vertex("" + i, domain);
+			vertices[i] = new Vertex("" + i, "v" + i, domain);
 			graphOrig.addVertex(vertices[i], true);
 		}
 
-		List<Constraint> cL1 = new ArrayList<Constraint>();
-		List<Constraint> cL2 = new ArrayList<Constraint>();
-		List<Constraint> cL3 = new ArrayList<Constraint>();
+		List<BinaryConstraint> cL1 = new ArrayList<BinaryConstraint>();
+		List<BinaryConstraint> cL2 = new ArrayList<BinaryConstraint>();
+		List<BinaryConstraint> cL3 = new ArrayList<BinaryConstraint>();
 		cL1.add(new UngleichConstraint("Ungleich"));
 		cL1.add(new Diff1Constraint("Diff1"));
 		cL2.add(new UngleichConstraint("Ungleich"));
@@ -70,7 +70,7 @@ public class VierDamenProblem {
 
 		System.out.println("\n***SOLUTION***");
 		for (Entry<String, Integer> item : solutionMap.entrySet()) {
-			System.out.println("v" + item.getKey() + " mit dem Wert: " + item.getValue());
+			System.out.println(item.getKey() + " mit dem Wert: " + item.getValue());
 		}
 
 	}
