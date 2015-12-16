@@ -31,8 +31,8 @@ public class AC3_LA {
 		boolean consistent = true;
 		Set<Edge> q = new HashSet<Edge>();
 		List<Edge> neighborsOfCv = constraintNetz.getVertex("" + cv).getNeighbors();
-		
-		//nur zum loggen gedacht
+
+		// nur zum loggen gedacht
 		int leereWertemenge = 0;
 
 		/**
@@ -79,45 +79,83 @@ public class AC3_LA {
 				}
 			}
 		}
-		
-		if(!consistent){
-			System.out.println("Wertemenge von " + constraintNetz.getVertex("" + leereWertemenge).getLabel() + " ist leer");
+
+		if (!consistent) {
+			System.out.println(
+					"Wertemenge von " + constraintNetz.getVertex("" + leereWertemenge).getLabel() + " ist leer");
 			System.out.println("q: " + q.toString());
-		}else if(q.isEmpty())
+		} else if (q.isEmpty())
 			System.out.println("Menge Q ist leer");
 		else
 			System.out.println("consistent: " + consistent + " q: " + q.toString());
-		
+
 		return consistent;
 	}
 
 	private boolean revise(Edge arc) {
 		boolean delete = false;
 		Set<Integer> delSet = new HashSet<Integer>();
-		Set<Integer> valueSet = new HashSet<Integer>();
+		Set<Integer> domY = new HashSet<Integer>();
+
+		Set<Integer> domX = arc.getOne().getDomain();
+
+		// Ist der Annahmeknoten der Nachbar des zu beschraenkenden Knoten,
+		// muss der Annahmewert des Annahmeknoten verwendet werden
+		if (arc.getTwo().equals(assumptionVertex))
+			domY.add(assumptionValue);
+		else
+			domY = arc.getTwo().getDomain();
+
+		// checkDomainContent(domX, domY);
+		for (Constraint constraint : arc.getConstraintList()) {
+			if (constraint instanceof AllDiffConstraint) {
+				if (!domX.equals(domY)) {
+					domX.removeAll(getIntersection(domX, domY));
+				}
+			}
+		}
+		System.out.println(arc.getOne().getLabel() + " " + domX.toString() + "  " + arc.getTwo().getLabel() + " "
+				+ domY.toString());
+		// if (arc.getConstraintList().contains(AllDiffConstraint)) {
+		//
+		// }
 
 		for (int x : arc.getOne().getDomain()) {
-			// Ist der Annahmeknoten der Nachbar des zu beschraenkenden Knoten,
-			// muss der Annahmewert des Annahmeknoten verwendet werden
-			if (arc.getTwo().equals(assumptionVertex))
-				valueSet.add(assumptionValue);
-			else
-				valueSet = arc.getTwo().getDomain();
+			for (Constraint constraint : arc.getConstraintList()) {
+				if (!(constraint instanceof AllDiffConstraint)) {
+					List<Tupel> crossProduct = generateCrossProduct(x, domY);
 
-			List<Tupel> crossProduct = generateCrossProduct(x, valueSet);
+					// Iteration ueber die Menge Dj erfolgt in checkConstraints
+					if (checkTupelWithConstraints(crossProduct, arc.getConstraintList())) {
+						delete = true;
+						delSet.add(x);
+					}
 
-			// Iteration ueber die Menge Dj erfolgt in checkConstraints
-			if (checkTupelWithConstraints(crossProduct, arc.getConstraintList())) {
-				delete = true;
-				delSet.add(x);
+				}
 			}
 
 		}
+
 		Set<Integer> newSet = new HashSet<Integer>(arc.getOne().getDomain());
 		newSet.removeAll(delSet);
 		arc.getOne().setDomain(newSet);
 		return delete;
 	}
+
+	private Set<Integer> getIntersection(Set<Integer> domX, Set<Integer> domY) {
+		Set<Integer> res = new HashSet<Integer>();
+		for (int x : domX) {
+			if (domY.contains(x)) {
+				res.add(x);
+			}
+		}
+		System.out.println("getIntersection: " + res.toString());
+		return res;
+	}
+
+	// private void checkDomainContent(Set<Integer> domX, Set<Integer> domY){
+	// if()
+	// }
 
 	private List<Tupel> generateCrossProduct(Integer x, Set<Integer> valueSet) {
 		List<Tupel> crossProduct = new ArrayList<Tupel>();
@@ -135,24 +173,24 @@ public class AC3_LA {
 
 		for (Tupel item : crossProduct) {
 			for (Constraint constraint : constraintList) {
-//				if (constraint instanceof AllDiffConstraint) {
-//					if (!constraint.operationBinary(item.getX(), item.getY())) {
-//						counter = crossProduct.size();
-//						// wenn AllDiffConstraint zutrifft, brauchen alle
-//						// weiteren Constraints nicht mehr geprueft werden, da
-//						// Wert x in jedem Fall geloescht wird
-//						alldiffValid = true;
-//						break;
-//					}
-//				} else
+				// if (constraint instanceof AllDiffConstraint) {
+				// if (!constraint.operationBinary(item.getX(), item.getY())) {
+				// counter = crossProduct.size();
+				// // wenn AllDiffConstraint zutrifft, brauchen alle
+				// // weiteren Constraints nicht mehr geprueft werden, da
+				// // Wert x in jedem Fall geloescht wird
+				// alldiffValid = true;
+				// break;
+				// }
+				// } else
 				if (!constraint.operationBinary(item.getX(), item.getY()))
 					counter++;
 			}
 			// Sobald der Alldifferent Constraint zugetroffen ist, muss der rest
 			// des Kreuzproduktes nicht weiter betrachtet werden, da x-Wert in
 			// jedem Fall geloescht wird
-//			if (alldiffValid)
-//				break;
+			// if (alldiffValid)
+			// break;
 		}
 
 		return counter == crossProduct.size() ? true : false;
