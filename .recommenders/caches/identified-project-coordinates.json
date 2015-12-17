@@ -1,1 +1,1 @@
-[[{"location":"/usr/lib/jvm/java-7-openjdk-amd64","type":"JRE","hints":{}},"jre:jre:7.0.0"],[{"location":"/home/students/abp491/codestuff/IS/ISP4","type":"PROJECT","hints":{"PROJECT_NAME":"ISP4"}},"ABSENT"]]
+[[{"location":"/home/students/abp491/codestuff/ISP4Neu","type":"PROJECT","hints":{"PROJECT_NAME":"ISP4Neu"}},"ABSENT"],[{"location":"/usr/lib/jvm/java-7-openjdk-amd64","type":"JRE","hints":{}},"jre:jre:7.0.0"],[{"location":"/home/students/abp491/codestuff/ISP4Neu/lib/jgrapht-core-0.9.1.jar","type":"JAR","hints":{}},"org.jgrapht:jgrapht-core:0.9.1"]]

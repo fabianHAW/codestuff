@@ -1,19 +1,23 @@
 package constraints;
 
-public class GleichConstraint extends BinaryConstraint {
+public class NachbarMinusEinsConstraint extends BinaryConstraint {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public GleichConstraint(String name) {
+	public NachbarMinusEinsConstraint(String name) {
 		super(name);
 	}
 
 	@Override
 	public boolean operationBinary(Integer x, Integer y, String varName) {
-		return x.intValue() != y.intValue();
+		if(varName.equals("gruen"))
+//			return !(x == y - 1);
+			return x >= y;
+		return false;
+//		return x < 1;
 	}
 
 	@Override

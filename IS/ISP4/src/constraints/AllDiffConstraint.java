@@ -12,7 +12,7 @@ public class AllDiffConstraint extends BinaryConstraint {
 	}
 
 	@Override
-	public boolean operationBinary(Integer x, Integer y) {
+	public boolean operationBinary(Integer x, Integer y, String varName) {
 		return x.intValue() != y.intValue();
 	}
 

@@ -56,6 +56,9 @@ public class Edge implements Comparable<Edge>, Serializable {
 		this.one = one;
 		this.two = two;
 		this.weight = weight;
+//        this.one = (one.getLabel().compareTo(two.getLabel()) <= 0) ? two : one;
+//        this.two = (this.one == one) ? one : two;
+//        this.weight = weight;
 	}
 
 	/**

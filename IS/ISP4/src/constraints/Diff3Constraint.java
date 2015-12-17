@@ -12,7 +12,7 @@ public class Diff3Constraint extends BinaryConstraint {
 	}
 
 	@Override
-	public boolean operationBinary(Integer x, Integer y) {
+	public boolean operationBinary(Integer x, Integer y, String varName) {
 		return (Math.abs(x - y) == 3) ? false : true;
 	}
 

@@ -1,16 +1,21 @@
 package problem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.swing.event.ListSelectionEvent;
+
 import java.util.Set;
 
 import constraints.AllDiffConstraint;
 import constraints.BinaryConstraint;
 import constraints.GleichConstraint;
-import constraints.KleinerConstraint;
+import constraints.NachbarMinusEinsConstraint;
 import constraints.UngleichConstraint;
 import datastructs.Graph;
 import datastructs.Vertex;
@@ -46,76 +51,150 @@ public class Einstein {
 			// blauWeissDomain.add(i);
 			// }
 		}
+		Set<Integer> rotSet = new HashSet<Integer>();
+		Set<Integer> blauSet = new HashSet<Integer>();
+		Set<Integer> gelbSet = new HashSet<Integer>();
+		Set<Integer> gruenSet = new HashSet<Integer>();
+		Set<Integer> weissSet = new HashSet<Integer>();
 
+		gelbSet.add(1);
+		blauSet.add(2);
+		rotSet.add(3);;
+		gruenSet.add(4);
+		gruenSet.add(5);
+		weissSet.add(4);
+		weissSet.add(5);
+		
 		norwegerDomain.add(1);
 		milchDomain.add(3);
 
-		Vertex rot = new Vertex("1", "rot", fullDomain);
+//		Vertex rot = new Vertex("1", "rot", rotSet);
+//		graphOrig.addVertex(rot, true);
+//		Vertex blau = new Vertex("2", "blau", fullDomain);
+//		graphOrig.addVertex(blau, true);
+//		Vertex weiss = new Vertex("3", "weiss", fullDomain);
+//		graphOrig.addVertex(weiss, true);
+//		Vertex gelb = new Vertex("4", "gelb", fullDomain);
+//		graphOrig.addVertex(gelb, true);
+//		Vertex gruen = new Vertex("5", "gruen", fullDomain);
+//		graphOrig.addVertex(gruen, true);
+//
+//		Vertex brite = new Vertex("6", "brite", fullDomain);
+//		graphOrig.addVertex(brite, true);
+//		Vertex norweger = new Vertex("7", "norweger", norwegerDomain);
+//		graphOrig.addVertex(norweger, true);
+//		Vertex schwede = new Vertex("8", "schwede", fullDomain);
+//		graphOrig.addVertex(schwede, true);
+//		Vertex daene = new Vertex("9", "daene", fullDomain);
+//		graphOrig.addVertex(daene, true);
+//		Vertex deutscher = new Vertex("10", "deutscher", fullDomain);
+//		graphOrig.addVertex(deutscher, true);
+//
+//		Vertex hund = new Vertex("11", "hund", fullDomain);
+//		graphOrig.addVertex(hund, true);
+//		Vertex katze = new Vertex("12", "katze", fullDomain);
+//		graphOrig.addVertex(katze, true);
+//		Vertex vogel = new Vertex("13", "vogel", fullDomain);
+//		graphOrig.addVertex(vogel, true);
+//		Vertex pferd = new Vertex("14", "pferd", fullDomain);
+//		graphOrig.addVertex(pferd, true);
+//		Vertex fisch = new Vertex("15", "fisch", fullDomain);
+//		graphOrig.addVertex(fisch, true);
+//
+//		Vertex kaffee = new Vertex("16", "kaffee", fullDomain);
+//		graphOrig.addVertex(kaffee, true);
+//		Vertex tee = new Vertex("17", "tee", fullDomain);
+//		graphOrig.addVertex(tee, true);
+//		Vertex milch = new Vertex("18", "milch", milchDomain);
+//		graphOrig.addVertex(milch, true);
+//		Vertex wasser = new Vertex("19", "wasser", fullDomain);
+//		graphOrig.addVertex(wasser, true);
+//		Vertex bier = new Vertex("20", "bier", fullDomain);
+//		graphOrig.addVertex(bier, true);
+//
+//		Vertex dunhill = new Vertex("21", "dunhill", fullDomain);
+//		graphOrig.addVertex(dunhill, true);
+//		Vertex malboro = new Vertex("22", "malboro", fullDomain);
+//		graphOrig.addVertex(malboro, true);
+//		Vertex winfield = new Vertex("23", "winfield", fullDomain);
+//		graphOrig.addVertex(winfield, true);
+//		Vertex pallmall = new Vertex("24", "pallmall", fullDomain);
+//		graphOrig.addVertex(pallmall, true);
+//		Vertex rothmanns = new Vertex("25", "rothmanns", fullDomain);
+//		graphOrig.addVertex(rothmanns, true);
+
+		
+		
+		Vertex rot = new Vertex("1", "rot", rotSet);
 		graphOrig.addVertex(rot, true);
-		Vertex blau = new Vertex("2", "blau", fullDomain);
+		Vertex blau = new Vertex("2", "blau", blauSet);
 		graphOrig.addVertex(blau, true);
-		Vertex weiss = new Vertex("3", "weiss", fullDomain);
+		Vertex weiss = new Vertex("3", "weiss", weissSet);
 		graphOrig.addVertex(weiss, true);
-		Vertex gelb = new Vertex("4", "gelb", fullDomain);
+		Vertex gelb = new Vertex("4", "gelb", gelbSet);
 		graphOrig.addVertex(gelb, true);
-		Vertex gruen = new Vertex("5", "gruen", fullDomain);
+		Vertex gruen = new Vertex("5", "gruen", gruenSet);
 		graphOrig.addVertex(gruen, true);
 
-		Vertex brite = new Vertex("6", "brite", fullDomain);
+		Vertex brite = new Vertex("6", "brite", rotSet);
 		graphOrig.addVertex(brite, true);
 		Vertex norweger = new Vertex("7", "norweger", norwegerDomain);
 		graphOrig.addVertex(norweger, true);
-		Vertex schwede = new Vertex("8", "schwede", fullDomain);
+		Vertex schwede = new Vertex("8", "schwede", weissSet);
 		graphOrig.addVertex(schwede, true);
-		Vertex daene = new Vertex("9", "daene", fullDomain);
+		Vertex daene = new Vertex("9", "daene", blauSet);
 		graphOrig.addVertex(daene, true);
-		Vertex deutscher = new Vertex("10", "deutscher", fullDomain);
+		Vertex deutscher = new Vertex("10", "deutscher", gruenSet);
 		graphOrig.addVertex(deutscher, true);
 
-		Vertex hund = new Vertex("11", "hund", fullDomain);
+		Vertex hund = new Vertex("11", "hund", weissSet);
 		graphOrig.addVertex(hund, true);
-		Vertex katze = new Vertex("12", "katze", fullDomain);
+		Vertex katze = new Vertex("12", "katze", gelbSet);
 		graphOrig.addVertex(katze, true);
-		Vertex vogel = new Vertex("13", "vogel", fullDomain);
+		Vertex vogel = new Vertex("13", "vogel", rotSet);
 		graphOrig.addVertex(vogel, true);
-		Vertex pferd = new Vertex("14", "pferd", fullDomain);
+		Vertex pferd = new Vertex("14", "pferd", blauSet);
 		graphOrig.addVertex(pferd, true);
-		Vertex fisch = new Vertex("15", "fisch", fullDomain);
+		Vertex fisch = new Vertex("15", "fisch", gruenSet);
 		graphOrig.addVertex(fisch, true);
 
-		Vertex kaffee = new Vertex("16", "kaffee", fullDomain);
+		Vertex kaffee = new Vertex("16", "kaffee", gruenSet);
 		graphOrig.addVertex(kaffee, true);
-		Vertex tee = new Vertex("17", "tee", fullDomain);
+		Vertex tee = new Vertex("17", "tee", blauSet);
 		graphOrig.addVertex(tee, true);
 		Vertex milch = new Vertex("18", "milch", milchDomain);
 		graphOrig.addVertex(milch, true);
-		Vertex wasser = new Vertex("19", "wasser", fullDomain);
+		Vertex wasser = new Vertex("19", "wasser", gelbSet);
 		graphOrig.addVertex(wasser, true);
-		Vertex bier = new Vertex("20", "bier", fullDomain);
+		Vertex bier = new Vertex("20", "bier", weissSet);
 		graphOrig.addVertex(bier, true);
 
-		Vertex dunhill = new Vertex("21", "dunhill", fullDomain);
+		Vertex dunhill = new Vertex("21", "dunhill", gelbSet);
 		graphOrig.addVertex(dunhill, true);
-		Vertex malboro = new Vertex("22", "malboro", fullDomain);
+		Vertex malboro = new Vertex("22", "malboro", blauSet);
 		graphOrig.addVertex(malboro, true);
-		Vertex winfield = new Vertex("23", "winfield", fullDomain);
+		Vertex winfield = new Vertex("23", "winfield", weissSet);
 		graphOrig.addVertex(winfield, true);
-		Vertex pallmall = new Vertex("24", "pallmall", fullDomain);
+		Vertex pallmall = new Vertex("24", "pallmall", rotSet);
 		graphOrig.addVertex(pallmall, true);
-		Vertex rothmanns = new Vertex("25", "rothmanns", fullDomain);
+		Vertex rothmanns = new Vertex("25", "rothmanns", gruenSet);
 		graphOrig.addVertex(rothmanns, true);
-
+		
+		
 		List<BinaryConstraint> allDiffList = new ArrayList<BinaryConstraint>();
-		List<BinaryConstraint> allDiffListAndLT = new ArrayList<BinaryConstraint>();
-		List<BinaryConstraint> ungleichList = new ArrayList<BinaryConstraint>();
+		List<BinaryConstraint> allDiffListAndNeighboorMinusOne = new ArrayList<BinaryConstraint>();
+//		List<BinaryConstraint> ungleichList = new ArrayList<BinaryConstraint>();
 		List<BinaryConstraint> gleichList = new ArrayList<BinaryConstraint>();
+		List<BinaryConstraint> neighboorPlusMinusOne = new ArrayList<BinaryConstraint>();
 
 		allDiffList.add(new AllDiffConstraint("Alldifferent"));
-		ungleichList.add(new UngleichConstraint("Ungleich"));
+//		ungleichList.add(new UngleichConstraint("Ungleich"));
 		gleichList.add(new GleichConstraint("Gleich"));
 
-		allDiffListAndLT.add(new AllDiffConstraint("Alldifferent"));
-		allDiffListAndLT.add(new KleinerConstraint("Kleiner"));
+		allDiffListAndNeighboorMinusOne.add(new AllDiffConstraint("Alldifferent"));
+		allDiffListAndNeighboorMinusOne.add(new NachbarMinusEinsConstraint("NachbarMinusEins"));
+
+		neighboorPlusMinusOne.add(new NachbarMinusEinsConstraint("NachbarMinusEins"));
 
 		graphOrig.addEdge(rot, blau, allDiffList);
 		graphOrig.addEdge(rot, gelb, allDiffList);
@@ -127,7 +206,7 @@ public class Einstein {
 		graphOrig.addEdge(gelb, weiss, allDiffList);
 		graphOrig.addEdge(gelb, gruen, allDiffList);
 		// TODO: ggf. weiss und gruen tauschen..
-		graphOrig.addEdge(gruen, weiss, allDiffListAndLT);
+		graphOrig.addEdge(gruen, weiss, allDiffListAndNeighboorMinusOne);
 
 		graphOrig.addEdge(brite, norweger, allDiffList);
 		graphOrig.addEdge(brite, daene, allDiffList);
@@ -182,10 +261,15 @@ public class Einstein {
 		graphOrig.addEdge(bier, winfield, gleichList);
 		graphOrig.addEdge(vogel, pallmall, gleichList);
 
-		graphOrig.addEdge(norweger, blau, ungleichList);
-		graphOrig.addEdge(wasser, malboro, ungleichList);
-		graphOrig.addEdge(pferd, dunhill, ungleichList);
-		graphOrig.addEdge(katze, malboro, ungleichList);
+		graphOrig.addEdge(norweger, blau, neighboorPlusMinusOne);
+		graphOrig.addEdge(malboro, wasser, neighboorPlusMinusOne);
+		graphOrig.addEdge(pferd, dunhill, neighboorPlusMinusOne);
+		graphOrig.addEdge(malboro, katze, neighboorPlusMinusOne);
+//
+//		graphOrig.addEdge(norweger, blau, ungleichList);
+//		graphOrig.addEdge(wasser, malboro, ungleichList);
+//		graphOrig.addEdge(pferd, dunhill, ungleichList);
+//		graphOrig.addEdge(katze, malboro, ungleichList);
 
 		Vertex assumptionVertex = null;
 		int assumptionValue = 0;
@@ -197,16 +281,38 @@ public class Einstein {
 		assumptionValue = assumptionValueList.get(0);
 		assumptionValueList.remove(0);
 
-		System.out.println(assumptionVertex.getName());
-
 		Map<String, Integer> solutionMap = solver.solve(graphOrig, assumptionVertex, assumptionValueList,
 				assumptionValue, vertexCounter);
 
 		System.out.println("\n***SOLUTION***");
+
+		List<String> eins = new ArrayList<String>();
+		List<String> zwei = new ArrayList<String>();
+		List<String> drei = new ArrayList<String>();
+		List<String> vier = new ArrayList<String>();
+		List<String> fuenf = new ArrayList<String>();
+		
+		
 		for (Entry<String, Integer> item : solutionMap.entrySet()) {
-			System.out.println(item.getKey() + " mit dem Wert: " + item.getValue());
+			if(item.getValue() == 1)
+				eins.add(item.getKey());
+			else if(item.getValue() == 2)
+				zwei.add(item.getKey());
+			else if(item.getValue() == 3)
+				drei.add(item.getKey());
+			else if(item.getValue() == 4)
+				vier.add(item.getKey());
+			else if(item.getValue() == 5)
+				fuenf.add(item.getKey());
+			
+//			System.out.println(item.getKey() + " mit dem Wert: " + item.getValue());
 		}
 
+		System.out.println(Arrays.deepToString(eins.toArray()));
+		System.out.println(Arrays.deepToString(zwei.toArray()));
+		System.out.println(Arrays.deepToString(drei.toArray()));
+		System.out.println(Arrays.deepToString(vier.toArray()));
+		System.out.println(Arrays.deepToString(fuenf.toArray()));
 	}
 
 }

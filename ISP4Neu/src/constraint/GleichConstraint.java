@@ -1,19 +1,18 @@
-package constraints;
+package constraint;
 
-public class GleichConstraint extends BinaryConstraint {
+import java.io.Serializable;
+
+public class GleichConstraint implements Constraint, Serializable {
+
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public GleichConstraint(String name) {
-		super(name);
-	}
-
 	@Override
 	public boolean operationBinary(Integer x, Integer y, String varName) {
-		return x.intValue() != y.intValue();
+		return x.intValue() == y.intValue();
 	}
 
 	@Override

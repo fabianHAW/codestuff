@@ -5,32 +5,34 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import constraints.AllDiffConstraint;
-import constraints.BinaryConstraint;
-import constraints.Constraint;
+import org.jgrapht.UndirectedGraph;
+
+import constraint.AllDiffConstraint;
+import constraint.Constraint;
 import datastructs.Edge;
-import datastructs.Graph;
 import datastructs.Tupel;
 import datastructs.Vertex;
 
 public class AC3_LA {
 
-	private Graph constraintNetz = null;
+	private UndirectedGraph<Vertex, Edge> constraintNetz = null;
 	private Vertex assumptionVertex;
 	private int assumptionValue;
 
-	public AC3_LA(Graph g) {
+	public AC3_LA(UndirectedGraph<Vertex, Edge> g) {
 		constraintNetz = g;
 	}
 
 	public boolean ac3_la_procedure(Vertex assumptionVertex, int assumptionValue) {
-		int cv = Integer.valueOf(assumptionVertex.getLabel());
+		int cv = assumptionVertex.getId();
 		this.assumptionVertex = assumptionVertex;
 		this.assumptionValue = assumptionValue;
 
 		boolean consistent = true;
 		Set<Edge> q = new HashSet<Edge>();
-		List<Edge> neighborsOfCv = constraintNetz.getVertex("" + cv).getNeighbors();
+		List<Edge> neighborsOfCv = new ArrayList<Edge>(constraintNetz.edgesOf(assumptionVertex));
+		// this.getAllNeighbors(assumptionVertex);
+		// constraintNetz.getVertex("" + cv).getNeighbors();
 
 		// nur zum loggen gedacht
 		int leereWertemenge = 0;
@@ -39,9 +41,10 @@ public class AC3_LA {
 		 * Menge Q erzeugen
 		 */
 		for (Edge item : neighborsOfCv) {
-			if (Integer.valueOf(item.getTwo().getLabel()) > cv) {
-				Edge e = new Edge(item.getTwo(), item.getOne(), item.getConstraintList());
-				q.add(e);
+			if (((Vertex) item.getV2()).getId() == cv && ((Vertex) item.getV1()).getId() > cv)
+				q.add(item);
+			else if (((Vertex) item.getV1()).getId() == cv && ((Vertex) item.getV2()).getId() > cv) {
+				q.add(new Edge(((Vertex) item.getV2()), ((Vertex) item.getV1()), item.getConstraintList()));
 			}
 		}
 
@@ -50,7 +53,7 @@ public class AC3_LA {
 			Edge arc = null;
 			boolean isAssumptionVertex = false;
 			for (Edge item : q) {
-				if (item.getTwo().equals(assumptionVertex)) {
+				if (((Vertex) item.getV2()).equals(assumptionVertex)) {
 					arc = item;
 					isAssumptionVertex = true;
 					break;
@@ -63,31 +66,35 @@ public class AC3_LA {
 			System.out.println("gewählte arc: " + arc.toString());
 
 			if (revise(arc)) {
-				int k = Integer.valueOf(arc.getOne().getLabel());
-				int m = Integer.valueOf(arc.getTwo().getLabel());
-				List<Edge> neighborsOfK = constraintNetz.getVertex("" + k).getNeighbors();
+				Vertex vK = ((Vertex) arc.getV1());
+				int k = Integer.valueOf(vK.getId());
+				int m = Integer.valueOf(((Vertex) arc.getV2()).getId());
+				System.out.println(vK.toString());
+				List<Edge> neighborsOfK = new ArrayList<Edge>(constraintNetz.edgesOf(assumptionVertex));
 
 				for (Edge item : neighborsOfK) {
-					int i = Integer.valueOf(item.getOne().getLabel());
+					int i = Integer.valueOf(((Vertex) arc.getV1()).getId());
 					if (i == k)
-						i = Integer.valueOf(item.getTwo().getLabel());
-					if (/* i != k && */ i != m && i > cv) {
-						Edge e = null;
-						if(Integer.valueOf(item.getOne().getLabel()) < Integer.valueOf(item.getTwo().getLabel()))
-							e = new Edge(item.getTwo(), item.getOne(), item.getConstraintList());
-						else
-							e = new Edge(item.getOne(), item.getTwo(), item.getConstraintList());
-						q.add(e);
+						i = Integer.valueOf(((Vertex) arc.getV2()).getId());
+					if (i != k && i != m && i > cv) {
+						// Edge e = null;
+						// if(Integer.valueOf(item.getOne().getLabel()) <
+						// Integer.valueOf(item.getTwo().getLabel()))
+						// e = new Edge(item.getTwo(), item.getOne(),
+						// item.getConstraintList());
+						// else
+						// e = new Edge(item.getOne(), item.getTwo(),
+						// item.getConstraintList());
+						q.add(new Edge(item.getV2(), item.getV1(), item.getConstraintList()));
 					}
-					consistent = !constraintNetz.getVertex("" + k).getDomain().isEmpty();
+					consistent = !vK.getDomain().isEmpty();
 					leereWertemenge = k;
 				}
 			}
 		}
 
 		if (!consistent) {
-			System.out.println(
-					"Wertemenge von " + constraintNetz.getVertex("" + leereWertemenge).getLabel() + " ist leer");
+			System.out.println("Wertemenge von Vertex " + leereWertemenge + " ist leer");
 			System.out.println("q: " + q.toString());
 		} else if (q.isEmpty())
 			System.out.println("Menge Q ist leer");
@@ -102,38 +109,40 @@ public class AC3_LA {
 		Set<Integer> delSet = new HashSet<Integer>();
 		Set<Integer> domY = new HashSet<Integer>();
 
-		Set<Integer> domX = new HashSet<Integer>(arc.getOne().getDomain());
+		Set<Integer> domX = new HashSet<Integer>(((Vertex) arc.getV1()).getDomain());
 
 		// Ist der Annahmeknoten der Nachbar des zu beschraenkenden Knoten,
 		// muss der Annahmewert des Annahmeknoten verwendet werden
-		if (arc.getTwo().equals(assumptionVertex))
+		if (((Vertex) arc.getV2()).equals(assumptionVertex))
 			domY.add(assumptionValue);
 		else
-			domY = arc.getTwo().getDomain();
+			domY = ((Vertex) arc.getV2()).getDomain();
 
 		// checkDomainContent(domX, domY);
-		for (Constraint constraint : arc.getConstraintList()) {
+		List<Constraint> constraintList = (List<Constraint>) arc.getConstraintList();
+		for (Constraint constraint : constraintList) {
 			if (constraint instanceof AllDiffConstraint) {
 				if (!domX.equals(domY)) {
-					domX.removeAll(getIntersection(domX, domY));
-					delete = true;
+					delete = domX.removeAll(getIntersection(domX, domY));
 				}
 			}
 		}
-//		System.out.println(arc.getOne().getLabel() + " " + domX.toString() + "  " + arc.getTwo().getLabel() + " "
-//				+ domY.toString());
+		// System.out.println(arc.getOne().getLabel() + " " + domX.toString() +
+		// " " + arc.getTwo().getLabel() + " "
+		// + domY.toString());
 		// if (arc.getConstraintList().contains(AllDiffConstraint)) {
 		//
 		// }
 
-//		for (int x : arc.getOne().getDomain()) {
+		// for (int x : arc.getOne().getDomain()) {
 		for (int x : domX) {
-			for (Constraint constraint : arc.getConstraintList()) {
+			for (Constraint constraint : constraintList) {
 				if (!(constraint instanceof AllDiffConstraint)) {
 					List<Tupel> crossProduct = generateCrossProduct(x, domY);
 
 					// Iteration ueber die Menge Dj erfolgt in checkConstraints
-					if (checkTupelWithConstraints(crossProduct, arc.getConstraintList(), arc.getOne().getName())) {
+					if (checkTupelWithConstraints(crossProduct, arc.getConstraintList(),
+							((Vertex) arc.getV1()).getName())) {
 						delete = true;
 						delSet.add(x);
 					}
@@ -144,10 +153,10 @@ public class AC3_LA {
 		}
 
 		Set<Integer> newSet = new HashSet<Integer>(domX);
-//		newSet.removeAll(delSet);
+		// newSet.removeAll(delSet);
 		newSet.removeAll(delSet);
-//		arc.getOne().setDomain(newSet);
-		arc.getOne().setDomain(newSet);
+		// arc.getOne().setDomain(newSet);
+		((Vertex) arc.getV1()).setDomain(newSet);
 		return delete;
 	}
 
@@ -158,7 +167,7 @@ public class AC3_LA {
 				res.add(x);
 			}
 		}
-//		System.out.println("getIntersection: " + res.toString());
+		// System.out.println("getIntersection: " + res.toString());
 		return res;
 	}
 
@@ -176,7 +185,8 @@ public class AC3_LA {
 		return crossProduct;
 	}
 
-	private boolean checkTupelWithConstraints(List<Tupel> crossProduct, List<BinaryConstraint> constraintList, String varName) {
+	private boolean checkTupelWithConstraints(List<Tupel> crossProduct, List<Constraint> constraintList,
+			String varName) {
 		int counter = 0;
 		boolean alldiffValid = false;
 
@@ -192,7 +202,7 @@ public class AC3_LA {
 				// break;
 				// }
 				// } else
-				if (constraint.operationBinary(item.getX(), item.getY(), varName))
+				if (!constraint.operationBinary(item.getX(), item.getY(), varName))
 					counter++;
 			}
 			// Sobald der Alldifferent Constraint zugetroffen ist, muss der rest
@@ -205,11 +215,11 @@ public class AC3_LA {
 		return counter == crossProduct.size() ? true : false;
 	}
 
-	public Graph getConstraintNetz() {
+	public UndirectedGraph<Vertex, Edge> getConstraintNetz() {
 		return constraintNetz;
 	}
 
-	public void setConstraintNetz(Graph constraintNetz) {
+	public void setConstraintNetz(UndirectedGraph<Vertex, Edge> constraintNetz) {
 		this.constraintNetz = constraintNetz;
 	}
 
