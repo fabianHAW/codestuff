@@ -11,10 +11,12 @@ public class EquiConstraint extends Constraint{
 
 	@Override
 	public boolean isSatisfied(Type val1, Type val2) {
-		if(this.val1.getElem() == val1.getElem() && this.val2.getElem() == val2.getElem()){
+		if(this.val1.getElem() == val1.getElem() && this.val2.getElem() == val2.getElem()
+				|| (this.val1.getElem() == val2.getElem() && this.val2.getElem() == val1.getElem())){
 			return true;
 		}
-		if(this.val1.getElem() != val1.getElem() && this.val2.getElem() != val2.getElem()){
+		if(val1.getElem() != this.val1.getElem() && val1.getElem() != this.val2.getElem()
+				&& val2.getElem() != this.val1.getElem() && val2.getElem() != this.val1.getElem()){
 			return true;
 		}
 		return false;

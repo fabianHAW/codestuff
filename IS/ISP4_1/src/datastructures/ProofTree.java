@@ -13,7 +13,7 @@ public class ProofTree<T> {
 	public ProofTree(){
 		proofLevels = new HashMap<Integer, ProofLevel<T>>();
 		depth = 0;
-		currentDepth = 0;
+		currentDepth = 1;
 	}
 	
 	public void add(int depth, T n) throws Exception{

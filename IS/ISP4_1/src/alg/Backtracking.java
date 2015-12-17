@@ -18,44 +18,59 @@ public class Backtracking {
 
 	public static void solve(ConstraintNet net) throws Exception {
 		actualNode = net;
-
+		System.out.println("START");
 		for (Type val : actualNode.getDomain(1)) {
 			proofTree = new ProofTree<ConstraintNet>();
-			ConstraintNet tmpNet = actualNode.clone();
+			tmpNet = actualNode.clone();
 			tmpNet.assumeNodeValue(1, val);
 			proofTree.add(proofTree.getDepth(), tmpNet.clone());
 			proofTree.incDepth();
-			ConstraintNet solution = backtracking(1, tmpNet);
+			//System.out.println("count2: " + count2);
+			Backtracking.tmpNet = tmpNet.clone();
+			ConstraintNet solution = backtracking(1);
+			System.out.println("#############################");
+			System.out.println("#############################");
+			System.out.println("#############################");
 			printSolution(solution);
+			System.out.println("#############################");
+			System.out.println("#############################");
+			System.out.println("#############################");
+			
 		}
 	}
-
-	private static ConstraintNet backtracking(int id, ConstraintNet actualNode)
+	static int count = 0;
+	static int count2 = 0;
+	static ConstraintNet tmpNet;
+	
+	private static ConstraintNet backtracking(int id)
 			throws CloneNotSupportedException, Exception {
 		int nodeID = id;
-		ConstraintNet net = actualNode.clone();
 
-		while (!net.isSolved() && net != null) {
-			if (ac3_la(nodeID, net)) {
-				if ((nodeID + 1) < net.getNodes().size()) {
-					for (Type val : net.getDomain(nodeID + 1)) {
-						net.assumeNodeValue(nodeID + 1, val);
-						proofTree.add(proofTree.getDepth(), net.clone());
+		
+		while (!tmpNet.isSolved() && tmpNet != null) {
+			//System.out.println("NodeID: " + nodeID);
+			if (ac3_la(nodeID)) {
+				// System.out.println(tmpNet);
+				// System.out.println("ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ");
+				if ((nodeID + 1) <= tmpNet.getNodes().size()) {
+					for (Type val : tmpNet.getDomain(nodeID + 1)) {
+						ConstraintNet tmp = tmpNet.clone();
+						tmp.assumeNodeValue(nodeID + 1, val);
+						proofTree.add(proofTree.getDepth(), tmp.clone());
+						// System.out.println(tmp);
+						// System.out.println("LLLLLLLLLLLLLLLLLLLLLLLLLLLL");
 					}
+					// System.out.println("###############################");
 					// System.out.println("2 " + actualNode.equals(net));
 					proofTree.incDepth();
-					try {
-					net = proofTree.getNextNode();
-					}catch(Exception e){
-						System.out.println("Net1: " + net);
-					}
-					nodeID = proofTree.getCurrentDepth();
+					
+					tmpNet = proofTree.getNextNode();
+				//	System.out.println("Net1: " + net);
+					nodeID = proofTree.getCurrentDepth() - 1;
 				} else {
-					try {
-					net = proofTree.getNextNode();
-					}catch(Exception e){
-						System.out.println("Net2: " + net);
-					}
+					
+					tmpNet = proofTree.getNextNode();
+					//System.out.println("Net2: " + net);
 					nodeID = proofTree.getCurrentDepth();
 				}
 			}
@@ -64,7 +79,7 @@ public class Backtracking {
 			// System.out.println("NodeID: " + nodeID);
 			// System.out.println(net);
 		}
-		return net;
+		return tmpNet;
 	}
 
 	public static void printSolution(ConstraintNet n) {
@@ -81,17 +96,19 @@ public class Backtracking {
 	}
 
 	// procedure AC3-LA(cv)
-	public static boolean ac3_la(int cv, ConstraintNet actualNode)
+	public static boolean ac3_la(int cv)
 			throws Exception {
 		HashSet<Edge> q = new HashSet<Edge>();
 		HashSet<Edge> q_clone;
 		boolean consistent;
 
 		// Q <- {(Vi,Vcv) in arcs(G), i>cv);
-		for (Edge e : actualNode.getEdges()) {
+		for (Edge e : tmpNet.getEdges()) {
 			if (e.getN2().getNr() == cv && e.getN1().getNr() > cv) {
 				q.add(e);
 			}
+			//System.out.println(e.getN2().getNr() + "== " + cv +  ", " + e.getN1().getNr() + " > " + cv);
+			//System.out.println("Edge: " + e);
 		}
 
 		// consistent <- true;
@@ -101,22 +118,27 @@ public class Backtracking {
 		Edge e;
 		int id = 0;
 		Iterator<Edge> iter = q.iterator();
-
+		String tmpName = "Q is Empty";
+		
 		// while not Q empty & consistent
 		while (iter.hasNext() && consistent) {
+			count++;
 			// select and delete any arc (Vk, Vm) from Q;
 			e = iter.next();
+			tmpName = e.getN1().getName();
 			if (id == 0) {
 				q_clone.remove(e);
 			} else if (id == 1) {
 				q.remove(e);
 			}
-
+			
 			// if REVISE(Vk, Vm) then
-			if (revise(e.getN1(), e.getN2(), e)) {
+			if (revise(e)) {
 				// Q <- Q union {(Vi, Vk) such that (Vi, Vk) in arcs(G), i#k,
 				// i#m, i>cv)
-				for (Edge edge : actualNode.getEdges()) {
+//				System.out.println(tmpNet);
+//				System.out.println("#############################");
+				for (Edge edge : tmpNet.getEdges()) {
 					if (edge.getN2().getName().equals(e.getN1().getName())
 							&& edge.getN1().getNr() != e.getN1().getNr()
 							&& edge.getN1().getNr() != e.getN2().getNr()
@@ -128,8 +150,9 @@ public class Backtracking {
 						}
 					}
 				}
-
+				
 				consistent = (!e.getN1().getDomain().isEmpty());
+					
 				if (id == 0) {
 					iter = q_clone.iterator();
 					id = 1;
@@ -141,22 +164,29 @@ public class Backtracking {
 				}
 
 			}
-
+			//System.out.println(count);
 		}
-		System.out.println("consistent: " + consistent);
+		//System.out.println("DomainName: " + tmpName + " id: " + (cv));
+//		System.out.println("consistent: " + consistent);
+//		System.out.println(actualNode);
+//		System.out.println("##############################################");
 		return consistent;
 	}
 
-	private static boolean revise(Node vi, Node vj, Edge e) throws Exception {
+	private static boolean revise(Edge e) throws Exception {
 		boolean delete = false;
 		boolean delete_ti = true;
+		Node vi = e.getN1();
+		Node vj = e.getN2();
 		Node vi_clone = vi.clone();
+		
 
 		for (Type ti : vi.getDomain()) {
 			for (Constraint c : e.getConstraints()) {
 				delete_ti = true;
 				for (Type tj : vj.getDomain()) {
 					if (c.isSatisfied(ti, tj)) {
+						//System.out.println(c.getName() + " is satisfied: " + ti.getElem() + " " + tj.getElem());
 						delete_ti = false;
 						break;
 					}
@@ -168,9 +198,12 @@ public class Backtracking {
 			}
 		}
 
-		actualNode.removeNode(vi);
-		actualNode.insertNode(vi_clone);
-
+		tmpNet.removeNode(vi);
+		tmpNet.insertNode(vi_clone);
+//		if(delete){
+//			System.out.println("VORHER: " + vi);
+//			System.out.println("NACHHER: " + vi_clone);
+//		}
 		return delete;
 	}
 

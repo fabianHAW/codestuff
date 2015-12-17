@@ -19,6 +19,10 @@ public abstract class Constraint implements Cloneable {
 		this.val2 = v2;
 	}
 	
+	public String getName(){
+		return name;
+	}
+	
 	@Override
 	public Constraint clone() throws CloneNotSupportedException{
 		Constraint c = (Constraint) super.clone();

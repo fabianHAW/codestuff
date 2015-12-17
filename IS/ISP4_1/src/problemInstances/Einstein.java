@@ -180,6 +180,23 @@ public static ConstraintNet generateConstraintNet(){
 		
 		constraintNet.setConstraint(getraenk, hausposition, hausposition_getraenk);
 		
+		//
+		constraintNet.setConstraint(nationalitaet, hausfarbe, nation_hausfarbe);
+		constraintNet.setConstraint(nationalitaet, zigaretten, nation_zigaretten);
+		constraintNet.setConstraint(nationalitaet, hausposition, nation_hausposition);
+		constraintNet.setConstraint(nationalitaet, getraenk, nation_getraenk);
+		constraintNet.setConstraint(nationalitaet, haustier, nation_haustier);
+		
+		constraintNet.setConstraint(hausfarbe, zigaretten, hausfarbe_zigaretten);
+		constraintNet.setConstraint(hausfarbe, hausposition, hausfarbe_hausposition);
+		constraintNet.setConstraint(hausfarbe, getraenk, hausfarbe_getraenk);
+		constraintNet.setConstraint(hausfarbe, haustier, hausfarbe_haustier);
+		
+		constraintNet.setConstraint(zigaretten, getraenk, zigaretten_getraenk);
+		constraintNet.setConstraint(zigaretten, haustier, zigaretten_haustier);
+		
+		constraintNet.setConstraint(hausposition, getraenk, hausposition_getraenk);
+		
 		return constraintNet;
 	}
 

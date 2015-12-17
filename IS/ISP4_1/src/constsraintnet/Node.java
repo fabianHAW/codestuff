@@ -15,7 +15,7 @@ public class Node implements Cloneable{
 	}
 	
 	public boolean removeElem(Type t){
-		return domain.remove(t.getElem());
+		return domain.remove(t);
 	}
 
 	@Override
@@ -47,6 +47,8 @@ public class Node implements Cloneable{
 			l.add(t.clone());
 		}
 		n.setDomain(l);
+		n.name = name;
+		n.nr = nr;
 		
 		return n;
 	}
