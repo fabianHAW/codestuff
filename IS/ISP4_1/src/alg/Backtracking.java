@@ -26,7 +26,7 @@ public class Backtracking {
 			proofTree.add(proofTree.getDepth(), tmpNet.clone());
 			proofTree.incDepth();
 			//System.out.println("count2: " + count2);
-			Backtracking.tmpNet = tmpNet.clone();
+			Backtracking.tmpNet = proofTree.getNextNode();
 			ConstraintNet solution = backtracking(1);
 			System.out.println("#############################");
 			System.out.println("#############################");
@@ -48,9 +48,9 @@ public class Backtracking {
 
 		
 		while (!tmpNet.isSolved() && tmpNet != null) {
-			//System.out.println("NodeID: " + nodeID);
+			System.out.println("NodeID: " + nodeID);
 			if (ac3_la(nodeID)) {
-				// System.out.println(tmpNet);
+				 System.out.println(tmpNet);
 				// System.out.println("ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ");
 				if ((nodeID + 1) <= tmpNet.getNodes().size()) {
 					for (Type val : tmpNet.getDomain(nodeID + 1)) {
@@ -66,7 +66,7 @@ public class Backtracking {
 					
 					tmpNet = proofTree.getNextNode();
 				//	System.out.println("Net1: " + net);
-					nodeID = proofTree.getCurrentDepth() - 1;
+					nodeID = proofTree.getCurrentDepth();
 				} else {
 					
 					tmpNet = proofTree.getNextNode();
@@ -79,6 +79,10 @@ public class Backtracking {
 			// System.out.println("NodeID: " + nodeID);
 			// System.out.println(net);
 		}
+		//System.out.println("SOLVED: " + tmpNet);
+		System.out.println("NodeID: " + nodeID);
+		
+			 System.out.println(tmpNet);
 		return tmpNet;
 	}
 
@@ -179,8 +183,9 @@ public class Backtracking {
 		Node vi = e.getN1();
 		Node vj = e.getN2();
 		Node vi_clone = vi.clone();
+		String constraintFail = "";
+		int constraint = 0;
 		
-
 		for (Type ti : vi.getDomain()) {
 			for (Constraint c : e.getConstraints()) {
 				delete_ti = true;
@@ -188,16 +193,27 @@ public class Backtracking {
 					if (c.isSatisfied(ti, tj)) {
 						//System.out.println(c.getName() + " is satisfied: " + ti.getElem() + " " + tj.getElem());
 						delete_ti = false;
+						constraint++;
 						break;
+					}else {
+						constraintFail = constraintFail + "-" + c.getName();
 					}
 				}
 			}
-			if (delete_ti) {
+			if (/*delete_ti && */constraint != e.getConstraints().size()) {
+				System.out.print("d: " + ti + ", ");
 				vi_clone.removeElem(ti);
 				delete = true;
 			}
+//			if(delete){
+//				System.out.print("d: " + ti + ", ");
+//			}
+			constraint = 0;
 		}
-
+		if(delete){
+			System.out.println("Revise: " + vi.getName() + " " + vj.getName() + "//" + constraintFail);
+			//System.out.println("");
+			}
 		tmpNet.removeNode(vi);
 		tmpNet.insertNode(vi_clone);
 //		if(delete){

@@ -22,7 +22,7 @@ public class ConstraintNet implements Cloneable{
 
 	@Override
 	public String toString() {
-		return "ConstraintNet [nodes=" + nodes +  System.getProperty("line.separator") +", edges=" + edges + "]";
+		return "ConstraintNet [nodes=" + nodes /*+  System.getProperty("line.separator") +", edges=" + edges */+ "]";
 	}
 
 	public Set<Node> getNodes() {

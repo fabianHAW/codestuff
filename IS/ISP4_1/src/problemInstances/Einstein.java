@@ -7,6 +7,7 @@ import constsraintnet.ConstraintNet;
 import constsraintnet.EquiConstraint;
 import constsraintnet.ImplicationNegativeConstraint;
 import constsraintnet.Node;
+import constsraintnet.OrConstraint;
 import constsraintnet.Type;
 import domains.Getraenk;
 import domains.Hausfarbe;
@@ -33,12 +34,30 @@ public static ConstraintNet generateConstraintNet(){
 		EquiConstraint c3 = new EquiConstraint("c3", 
 				new Type(Nationalitaet.Daenisch), 
 				new Type(Getraenk.Tee));
-		ImplicationNegativeConstraint c4 = new ImplicationNegativeConstraint("c4", 
+		EquiConstraint c4_x = new EquiConstraint("c4.x", 
 				new Type(Hausfarbe.Gruen), 
-				new Type(Hausposition.Fuenf));
-		ImplicationNegativeConstraint c4_1 = new ImplicationNegativeConstraint("c4", 
+				new Type(Hausposition.Vier));
+		EquiConstraint c4_y = new EquiConstraint("c4.y", 
+				new Type(Hausposition.Vier),
+				new Type(Hausfarbe.Gruen));
+//		ImplicationNegativeConstraint c4 = new ImplicationNegativeConstraint("c4", 
+//				new Type(Hausfarbe.Gruen), 
+//				new Type(Hausposition.Fuenf));
+//		ImplicationNegativeConstraint c4_1_1 = new ImplicationNegativeConstraint("c4_1_1",  
+//				new Type(Hausposition.Fuenf),
+//				new Type(Hausfarbe.Gruen));
+		ImplicationNegativeConstraint c4_1 = new ImplicationNegativeConstraint("c4_1", 
 				new Type(Hausfarbe.Weiss), 
 				new Type(Hausposition.Eins));
+		ImplicationNegativeConstraint c4_1_2 = new ImplicationNegativeConstraint("c4_1_2",  
+				new Type(Hausposition.Eins),
+				new Type(Hausfarbe.Weiss));
+		EquiConstraint c4_x1 = new EquiConstraint("c4.x1", 
+				new Type(Hausfarbe.Weiss), 
+				new Type(Hausposition.Fuenf));
+		EquiConstraint c4_y1 = new EquiConstraint("c4.y1", 
+				new Type(Hausposition.Fuenf),
+				new Type(Hausfarbe.Weiss));
 		EquiConstraint c5 = new EquiConstraint("c5", 
 				new Type(Hausfarbe.Gruen), 
 				new Type(Getraenk.Kaffee));
@@ -57,12 +76,21 @@ public static ConstraintNet generateConstraintNet(){
 		ImplicationNegativeConstraint c10 = new ImplicationNegativeConstraint("c10", 
 				new Type(Zigarettenmarke.Malboro), 
 				new Type(Haustier.Katze));
-		ImplicationNegativeConstraint c11_1 = new ImplicationNegativeConstraint("c10", 
+		ImplicationNegativeConstraint c10_1 = new ImplicationNegativeConstraint("c10_1",  
+				new Type(Haustier.Katze),
+				new Type(Zigarettenmarke.Malboro));
+		ImplicationNegativeConstraint c11_1 = new ImplicationNegativeConstraint("c11_1", 
 				new Type(Haustier.Pferd), 
 				new Type(Zigarettenmarke.Dunhill));
-		ImplicationNegativeConstraint c11_2 = new ImplicationNegativeConstraint("c10", 
+		ImplicationNegativeConstraint c11_2 = new ImplicationNegativeConstraint("c11_2", 
 				new Type(Haustier.Pferd), 
 				new Type(Hausfarbe.Gelb));
+		ImplicationNegativeConstraint c11_4 = new ImplicationNegativeConstraint("c11_4",  
+				new Type(Hausfarbe.Gelb),
+				new Type(Haustier.Pferd));
+		ImplicationNegativeConstraint c11_3 = new ImplicationNegativeConstraint("c11_3", 
+				new Type(Zigarettenmarke.Dunhill), 
+				new Type(Haustier.Pferd));
 		EquiConstraint c12 = new EquiConstraint("c12", 
 				new Type(Zigarettenmarke.Winfield), 
 				new Type(Getraenk.Bier));
@@ -75,8 +103,12 @@ public static ConstraintNet generateConstraintNet(){
 		ImplicationNegativeConstraint c15 = new ImplicationNegativeConstraint("c15", 
 				new Type(Zigarettenmarke.Malboro), 
 				new Type(Getraenk.Wasser));
-		
+		ImplicationNegativeConstraint c15_1 = new ImplicationNegativeConstraint("c15_1",  
+				new Type(Getraenk.Wasser),
+				new Type(Zigarettenmarke.Malboro));
 		//Constraint 16 nicht modelliert da nur implizit im Raetsel.
+		OrConstraint c16 = new OrConstraint("c16",
+				new Type(Hausfarbe.Weiss), new Type(Hausposition.Drei), new Type(Hausposition.Vier));
 		
 		//Knoten
 		ArrayList<Type> nationDomain = new ArrayList<Type>();
@@ -101,11 +133,11 @@ public static ConstraintNet generateConstraintNet(){
 		getraenkDomain.add(new Type(Getraenk.Wasser));
 		
 		ArrayList<Type> haustierDomain = new ArrayList<Type>();
-		haustierDomain.add(new Type(Haustier.Fisch));
 		haustierDomain.add(new Type(Haustier.Hund));
 		haustierDomain.add(new Type(Haustier.Katze));
 		haustierDomain.add(new Type(Haustier.Pferd));
 		haustierDomain.add(new Type(Haustier.Vogel));
+		haustierDomain.add(new Type(Haustier.Fisch));
 		
 		ArrayList<Type> zigarettenDomain = new ArrayList<Type>();
 		zigarettenDomain.add(new Type(Zigarettenmarke.Dunhill));
@@ -124,9 +156,9 @@ public static ConstraintNet generateConstraintNet(){
 		Node nationalitaet = new Node("Nationalität", nationDomain, 1);
 		Node getraenk = new Node("Getränk", getraenkDomain, 2);
 		Node hausfarbe = new Node("Farbe", farbeDomain, 3);
-		Node haustier = new Node("Haustier", haustierDomain, 4);
-		Node hausposition = new Node("Hausposition", hauspositionDomain, 5);
-		Node zigaretten = new Node("Zigarettenmarke", zigarettenDomain, 6);
+		Node haustier = new Node("Haustier", haustierDomain, 6);
+		Node hausposition = new Node("Hausposition", hauspositionDomain, 4);
+		Node zigaretten = new Node("Zigarettenmarke", zigarettenDomain, 5);
 		
 		//Constraints auf gemeinsamer Kante
 		ArrayList<Constraint> nation_hausfarbe = new ArrayList<>();
@@ -143,9 +175,16 @@ public static ConstraintNet generateConstraintNet(){
 		ArrayList<Constraint> hausfarbe_zigaretten = new ArrayList<>();
 		hausfarbe_zigaretten.add(c8);
 		ArrayList<Constraint> hausfarbe_hausposition = new ArrayList<>();
-		hausfarbe_hausposition.add(c4);
+		//hausfarbe_hausposition.add(c4);
 		hausfarbe_hausposition.add(c4_1);
+		hausfarbe_hausposition.add(c4_x);
+		hausfarbe_hausposition.add(c4_y);
+		hausfarbe_hausposition.add(c4_x1);
+		hausfarbe_hausposition.add(c4_y1);
+		//hausfarbe_hausposition.add(c4_1_1);
+		hausfarbe_hausposition.add(c4_1_2);
 		hausfarbe_hausposition.add(c13);
+		//hausfarbe_hausposition.add(c16);
 		ArrayList<Constraint> hausfarbe_getraenk = new ArrayList<>();
 		hausfarbe_getraenk.add(c5);
 		ArrayList<Constraint> hausfarbe_haustier = new ArrayList<>();
@@ -154,10 +193,15 @@ public static ConstraintNet generateConstraintNet(){
 		ArrayList<Constraint> zigaretten_getraenk = new ArrayList<>();
 		zigaretten_getraenk.add(c12);
 		zigaretten_getraenk.add(c15);
+		zigaretten_getraenk.add(c15_1);
+		
 		ArrayList<Constraint> zigaretten_haustier = new ArrayList<>();
 		zigaretten_haustier.add(c6);
 		zigaretten_haustier.add(c10);
+		zigaretten_haustier.add(c10_1);
 		zigaretten_haustier.add(c11_1);
+		zigaretten_haustier.add(c11_3);
+		zigaretten_haustier.add(c11_4);
 		
 		ArrayList<Constraint> hausposition_getraenk = new ArrayList<>();
 		hausposition_getraenk.add(c7);

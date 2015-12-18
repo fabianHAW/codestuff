@@ -12,6 +12,7 @@ import constsraintnet.Edge;
 import constsraintnet.EquiConstraint;
 import constsraintnet.ImplicationNegativeConstraint;
 import constsraintnet.Node;
+import constsraintnet.OrConstraint;
 import constsraintnet.Type;
 import datastructures.ProofLevel;
 import datastructures.ProofTree;
@@ -28,6 +29,7 @@ public class Tests {
 		//ConstraintNet net = generateConstraintNet();
 		//generateProofTree();
 		//SetManipulations();
+		//constraints();
 		Backtracking.solve(Einstein.generateConstraintNet());
 		
 	}
@@ -47,9 +49,15 @@ public static ConstraintNet generateConstraintNet(){
 		ImplicationNegativeConstraint c4 = new ImplicationNegativeConstraint("c4", 
 				new Type(Hausfarbe.Gruen), 
 				new Type(Hausposition.Fuenf));
-		ImplicationNegativeConstraint c4_1 = new ImplicationNegativeConstraint("c4", 
+		ImplicationNegativeConstraint c4_1_1 = new ImplicationNegativeConstraint("c4_1_1",  
+				new Type(Hausposition.Fuenf),
+				new Type(Hausfarbe.Gruen));
+		ImplicationNegativeConstraint c4_1 = new ImplicationNegativeConstraint("c4_1", 
 				new Type(Hausfarbe.Weiss), 
 				new Type(Hausposition.Eins));
+		ImplicationNegativeConstraint c4_1_2 = new ImplicationNegativeConstraint("c4_1_2",  
+				new Type(Hausposition.Eins),
+				new Type(Hausfarbe.Weiss));
 		EquiConstraint c5 = new EquiConstraint("c5", 
 				new Type(Hausfarbe.Gruen), 
 				new Type(Getraenk.Kaffee));
@@ -68,12 +76,21 @@ public static ConstraintNet generateConstraintNet(){
 		ImplicationNegativeConstraint c10 = new ImplicationNegativeConstraint("c10", 
 				new Type(Zigarettenmarke.Malboro), 
 				new Type(Haustier.Katze));
-		ImplicationNegativeConstraint c11_1 = new ImplicationNegativeConstraint("c10", 
+		ImplicationNegativeConstraint c10_1 = new ImplicationNegativeConstraint("c10_1",  
+				new Type(Haustier.Katze),
+				new Type(Zigarettenmarke.Malboro));
+		ImplicationNegativeConstraint c11_1 = new ImplicationNegativeConstraint("c11_1", 
 				new Type(Haustier.Pferd), 
 				new Type(Zigarettenmarke.Dunhill));
-		ImplicationNegativeConstraint c11_2 = new ImplicationNegativeConstraint("c10", 
+		ImplicationNegativeConstraint c11_2 = new ImplicationNegativeConstraint("c11_2", 
 				new Type(Haustier.Pferd), 
 				new Type(Hausfarbe.Gelb));
+		ImplicationNegativeConstraint c11_4 = new ImplicationNegativeConstraint("c11_4",  
+				new Type(Hausfarbe.Gelb),
+				new Type(Haustier.Pferd));
+		ImplicationNegativeConstraint c11_3 = new ImplicationNegativeConstraint("c11_3", 
+				new Type(Zigarettenmarke.Dunhill), 
+				new Type(Haustier.Pferd));
 		EquiConstraint c12 = new EquiConstraint("c12", 
 				new Type(Zigarettenmarke.Winfield), 
 				new Type(Getraenk.Bier));
@@ -86,8 +103,12 @@ public static ConstraintNet generateConstraintNet(){
 		ImplicationNegativeConstraint c15 = new ImplicationNegativeConstraint("c15", 
 				new Type(Zigarettenmarke.Malboro), 
 				new Type(Getraenk.Wasser));
-		
+		ImplicationNegativeConstraint c15_1 = new ImplicationNegativeConstraint("c15_1",  
+				new Type(Getraenk.Wasser),
+				new Type(Zigarettenmarke.Malboro));
 		//Constraint 16 nicht modelliert da nur implizit im Raetsel.
+		OrConstraint c16 = new OrConstraint("c16",
+				new Type(Hausfarbe.Weiss), new Type(Hausposition.Drei), new Type(Hausposition.Vier));
 		
 		//Knoten
 		ArrayList<Type> nationDomain = new ArrayList<Type>();
@@ -156,7 +177,10 @@ public static ConstraintNet generateConstraintNet(){
 		ArrayList<Constraint> hausfarbe_hausposition = new ArrayList<>();
 		hausfarbe_hausposition.add(c4);
 		hausfarbe_hausposition.add(c4_1);
+		hausfarbe_hausposition.add(c4_1_1);
+		hausfarbe_hausposition.add(c4_1_2);
 		hausfarbe_hausposition.add(c13);
+		hausfarbe_hausposition.add(c16);
 		ArrayList<Constraint> hausfarbe_getraenk = new ArrayList<>();
 		hausfarbe_getraenk.add(c5);
 		ArrayList<Constraint> hausfarbe_haustier = new ArrayList<>();
@@ -165,10 +189,15 @@ public static ConstraintNet generateConstraintNet(){
 		ArrayList<Constraint> zigaretten_getraenk = new ArrayList<>();
 		zigaretten_getraenk.add(c12);
 		zigaretten_getraenk.add(c15);
+		zigaretten_getraenk.add(c15_1);
+		
 		ArrayList<Constraint> zigaretten_haustier = new ArrayList<>();
 		zigaretten_haustier.add(c6);
 		zigaretten_haustier.add(c10);
+		zigaretten_haustier.add(c10_1);
 		zigaretten_haustier.add(c11_1);
+		zigaretten_haustier.add(c11_3);
+		zigaretten_haustier.add(c11_4);
 		
 		ArrayList<Constraint> hausposition_getraenk = new ArrayList<>();
 		hausposition_getraenk.add(c7);
@@ -190,6 +219,23 @@ public static ConstraintNet generateConstraintNet(){
 		constraintNet.setConstraint(haustier, zigaretten, zigaretten_haustier);
 		
 		constraintNet.setConstraint(getraenk, hausposition, hausposition_getraenk);
+		
+		//
+		constraintNet.setConstraint(nationalitaet, hausfarbe, nation_hausfarbe);
+		constraintNet.setConstraint(nationalitaet, zigaretten, nation_zigaretten);
+		constraintNet.setConstraint(nationalitaet, hausposition, nation_hausposition);
+		constraintNet.setConstraint(nationalitaet, getraenk, nation_getraenk);
+		constraintNet.setConstraint(nationalitaet, haustier, nation_haustier);
+		
+		constraintNet.setConstraint(hausfarbe, zigaretten, hausfarbe_zigaretten);
+		constraintNet.setConstraint(hausfarbe, hausposition, hausfarbe_hausposition);
+		constraintNet.setConstraint(hausfarbe, getraenk, hausfarbe_getraenk);
+		constraintNet.setConstraint(hausfarbe, haustier, hausfarbe_haustier);
+		
+		constraintNet.setConstraint(zigaretten, getraenk, zigaretten_getraenk);
+		constraintNet.setConstraint(zigaretten, haustier, zigaretten_haustier);
+		
+		constraintNet.setConstraint(hausposition, getraenk, hausposition_getraenk);
 		
 		return constraintNet;
 	}
@@ -279,5 +325,106 @@ public static ConstraintNet generateConstraintNet(){
     	System.out.println("q.size: " + q.size());
     	System.out.println("q_clone.size: " + q_clone.size());
 
+	}
+
+	public static void constraints(){
+		//Constraints
+				EquiConstraint c1 = new EquiConstraint("c1", 
+						new Type(Nationalitaet.Britisch), 
+						new Type(Hausfarbe.Rot));
+				EquiConstraint c2 = new EquiConstraint("c2", 
+						new Type(Nationalitaet.Schwedisch), 
+						new Type(Haustier.Hund));
+				EquiConstraint c3 = new EquiConstraint("c3", 
+						new Type(Nationalitaet.Daenisch), 
+						new Type(Getraenk.Tee));
+				ImplicationNegativeConstraint c4 = new ImplicationNegativeConstraint("c4", 
+						new Type(Hausfarbe.Gruen), 
+						new Type(Hausposition.Fuenf));
+				ImplicationNegativeConstraint c4_1_1 = new ImplicationNegativeConstraint("c4_1_1",  
+						new Type(Hausposition.Fuenf),
+						new Type(Hausfarbe.Gruen));
+				ImplicationNegativeConstraint c4_1 = new ImplicationNegativeConstraint("c4_1", 
+						new Type(Hausfarbe.Weiss), 
+						new Type(Hausposition.Eins));
+				ImplicationNegativeConstraint c4_1_2 = new ImplicationNegativeConstraint("c4_1_2",  
+						new Type(Hausposition.Eins),
+						new Type(Hausfarbe.Weiss));
+				EquiConstraint c5 = new EquiConstraint("c5", 
+						new Type(Hausfarbe.Gruen), 
+						new Type(Getraenk.Kaffee));
+				EquiConstraint c6 = new EquiConstraint("c6", 
+						new Type(Zigarettenmarke.Pallmall), 
+						new Type(Haustier.Vogel));
+				EquiConstraint c7 = new EquiConstraint("c7", 
+						new Type(Hausposition.Drei), 
+						new Type(Getraenk.Milch));
+				EquiConstraint c8 = new EquiConstraint("c8", 
+						new Type(Hausfarbe.Gelb), 
+						new Type(Zigarettenmarke.Dunhill));
+				EquiConstraint c9 = new EquiConstraint("c9", 
+						new Type(Nationalitaet.Norwegisch), 
+						new Type(Hausposition.Eins));
+				ImplicationNegativeConstraint c10 = new ImplicationNegativeConstraint("c10", 
+						new Type(Zigarettenmarke.Malboro), 
+						new Type(Haustier.Katze));
+				ImplicationNegativeConstraint c10_1 = new ImplicationNegativeConstraint("c10_1",  
+						new Type(Haustier.Katze),
+						new Type(Zigarettenmarke.Malboro));
+				ImplicationNegativeConstraint c11_1 = new ImplicationNegativeConstraint("c11_1", 
+						new Type(Haustier.Pferd), 
+						new Type(Zigarettenmarke.Dunhill));
+				ImplicationNegativeConstraint c11_2 = new ImplicationNegativeConstraint("c11_2", 
+						new Type(Haustier.Pferd), 
+						new Type(Hausfarbe.Gelb));
+				ImplicationNegativeConstraint c11_4 = new ImplicationNegativeConstraint("c11_4",  
+						new Type(Hausfarbe.Gelb),
+						new Type(Haustier.Pferd));
+				ImplicationNegativeConstraint c11_3 = new ImplicationNegativeConstraint("c11_3", 
+						new Type(Zigarettenmarke.Dunhill), 
+						new Type(Haustier.Pferd));
+				EquiConstraint c12 = new EquiConstraint("c12", 
+						new Type(Zigarettenmarke.Winfield), 
+						new Type(Getraenk.Bier));
+				EquiConstraint c13 = new EquiConstraint("c13", 
+						new Type(Hausposition.Zwei), 
+						new Type(Hausfarbe.Blau));
+				EquiConstraint c14 = new EquiConstraint("c14", 
+						new Type(Nationalitaet.Deutsch), 
+						new Type(Zigarettenmarke.Rothmanns));
+				ImplicationNegativeConstraint c15 = new ImplicationNegativeConstraint("c15", 
+						new Type(Zigarettenmarke.Malboro), 
+						new Type(Getraenk.Wasser));
+				ImplicationNegativeConstraint c15_1 = new ImplicationNegativeConstraint("c15_1",  
+						new Type(Getraenk.Wasser),
+						new Type(Zigarettenmarke.Malboro));
+				//Constraint 16 nicht modelliert da nur implizit im Raetsel.
+				OrConstraint c16 = new OrConstraint("c16",
+						new Type(Hausfarbe.Weiss), new Type(Hausposition.Drei), new Type(Hausposition.Vier));
+
+				System.out.println("c1: " + c1.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+				System.out.println("c2: " + c2.isSatisfied(new Type(Nationalitaet.Schwedisch), new Type(Haustier.Hund)));
+				System.out.println("c3: " + c3.isSatisfied(new Type(Nationalitaet.Daenisch), new Type(Getraenk.Tee)));
+//				System.out.println("c4: " + c4.isSatisfied(new Type(Hausfarbe.Gruen), new Type(Hausposition.Vier)));
+//				System.out.println("c4_1: " + c4_1.isSatisfied(new Type(Hausfarbe.Weiss), new Type(Hausfarbe.Rot)));
+//				System.out.println("c4_1_1: " + c4_1_1.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c4_1_2: " + c4_1_2.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c5: " + c5.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c6: " + c6.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c7: " + c7.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c8: " + c8.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c9: " + c9.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c10: " + c10.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c10_1: " + c10_1.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c11_1: " + c11_1.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c11_2: " + c11_2.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c11_3: " + c11_3.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c11_4: " + c11_4.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c12: " + c12.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c13: " + c13.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c14: " + c14.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c15: " + c15.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c15_1: " + c15_1.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
+//				System.out.println("c16: " + c16.isSatisfied(new Type(Nationalitaet.Britisch), new Type(Hausfarbe.Rot)));
 	}
 }
