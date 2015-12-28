@@ -14,9 +14,8 @@ public class Node {
 	private int depth = 0;
 	// private List<Vertex> vList;
 
-	public Node(UndirectedGraph<Vertex, Edge> graphOrig, int counter) {
+	public Node(UndirectedGraph<Vertex, Edge<Vertex>> graphOrig, int counter) {
 		depth = counter;
-
 		List<Vertex> vList = new ArrayList<Vertex>(graphOrig.vertexSet());
 		Collections.sort(vList);
 		if (depth < vList.size()) {
@@ -27,7 +26,7 @@ public class Node {
 				assumptionValueList.remove(0);
 			}
 		}
-		
+
 	}
 
 	public Vertex getAssumptionVertex() {

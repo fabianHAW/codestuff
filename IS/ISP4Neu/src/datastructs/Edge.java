@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jgraph.graph.DefaultEdge;
 
-import constraint.Constraint;
+import constraint.BinaryConstraint;
 
 public class Edge<V> extends DefaultEdge{
 
@@ -15,9 +15,9 @@ public class Edge<V> extends DefaultEdge{
 	
 	private V v1;
     private V v2;
-    private List<Constraint> constraintList;
+    private List<BinaryConstraint> constraintList;
 
-    public Edge(V v1, V v2, List<Constraint> list) {
+    public Edge(V v1, V v2, List<BinaryConstraint> list) {
         this.v1 = v1;
         this.v2 = v2;
         this.constraintList = list;
@@ -31,11 +31,11 @@ public class Edge<V> extends DefaultEdge{
         return v2;
     }
 
-	public List<Constraint> getConstraintList() {
+	public List<BinaryConstraint> getConstraintList() {
 		return constraintList;
 	}
 
-	public void setConstraintList(List<Constraint> list) {
+	public void setConstraintList(List<BinaryConstraint> list) {
 		this.constraintList = list;
 	}
 
@@ -58,7 +58,8 @@ public class Edge<V> extends DefaultEdge{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Edge other = (Edge) obj;
+		@SuppressWarnings("unchecked")
+		Edge<Vertex> other = (Edge<Vertex>) obj;
 		if (constraintList == null) {
 			if (other.constraintList != null)
 				return false;
