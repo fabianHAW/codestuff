@@ -13,7 +13,8 @@ public class NachbarMinusEinsConstraint implements Constraint, Serializable {
 	public boolean operationBinary(Integer x, Integer y, String varName) {
 		if (varName.equals("gruen"))
 			// return !(x == y - 1);
-			return x <= y;
+//			return x < y;
+			return (x - y == -1);
 		return false;
 		// return x < 1;
 	}

@@ -30,6 +30,8 @@ public class AC3_LA {
 
 		boolean consistent = true;
 		Set<Edge> q = new HashSet<Edge>();
+//		System.out.println(constraintNetz.containsVertex(assumptionVertex));
+//		System.out.println(constraintNetz.toString());
 		List<Edge> neighborsOfCv = new ArrayList<Edge>(constraintNetz.edgesOf(assumptionVertex));
 		// this.getAllNeighbors(assumptionVertex);
 		// constraintNetz.getVertex("" + cv).getNeighbors();
@@ -47,9 +49,9 @@ public class AC3_LA {
 				q.add(new Edge(((Vertex) item.getV2()), ((Vertex) item.getV1()), item.getConstraintList()));
 			}
 		}
-
+		Vertex vK = null;
 		while (!q.isEmpty() && consistent) {
-			System.out.println("Q: " + q.toString());
+//			System.out.println("Q: " + q.toString());
 			Edge arc = null;
 			boolean isAssumptionVertex = false;
 			for (Edge item : q) {
@@ -63,13 +65,13 @@ public class AC3_LA {
 				arc = q.iterator().next();
 			}
 			q.remove(arc);
-			System.out.println("gewählte arc: " + arc.toString());
+//			System.out.println("gewählte arc: " + arc.toString() + " isAssumptionVertex: " + isAssumptionVertex);
 
 			if (revise(arc)) {
-				Vertex vK = ((Vertex) arc.getV1());
+				vK = ((Vertex) arc.getV1());
 				int k = Integer.valueOf(vK.getId());
 				int m = Integer.valueOf(((Vertex) arc.getV2()).getId());
-				System.out.println(vK.toString());
+//				System.out.println(vK.toString());
 				List<Edge> neighborsOfK = new ArrayList<Edge>(constraintNetz.edgesOf(assumptionVertex));
 
 				for (Edge item : neighborsOfK) {
@@ -94,10 +96,17 @@ public class AC3_LA {
 		}
 
 		if (!consistent) {
+			System.out.println("***********");
+			System.out.println("Consistent: " + consistent);
+			System.out.println("Vk: " + vK);
 			System.out.println("Wertemenge von Vertex " + leereWertemenge + " ist leer");
-			System.out.println("q: " + q.toString());
-		} else if (q.isEmpty())
+			System.out.println("Rest von Q: " + q.toString());
+			System.out.println("***********");
+		} else if (q.isEmpty()){
+			System.out.println("***********");
 			System.out.println("Menge Q ist leer");
+			System.out.println("***********");
+		}
 		else
 			System.out.println("consistent: " + consistent + " q: " + q.toString());
 
@@ -122,9 +131,9 @@ public class AC3_LA {
 		List<Constraint> constraintList = (List<Constraint>) arc.getConstraintList();
 		for (Constraint constraint : constraintList) {
 			if (constraint instanceof AllDiffConstraint) {
-				if (!domX.equals(domY)) {
+//				if (!domX.equals(domY)) {
 					delete = domX.removeAll(getIntersection(domX, domY));
-				}
+//				}
 			}
 		}
 		// System.out.println(arc.getOne().getLabel() + " " + domX.toString() +
@@ -156,7 +165,14 @@ public class AC3_LA {
 		// newSet.removeAll(delSet);
 		newSet.removeAll(delSet);
 		// arc.getOne().setDomain(newSet);
-		((Vertex) arc.getV1()).setDomain(newSet);
+		Vertex vOld = (Vertex) arc.getV1();
+		vOld.setDomain(newSet);
+		
+		for(Vertex item : constraintNetz.vertexSet()){
+			if(item.equals(vOld))
+				item.setDomain(newSet);
+		}
+		
 		return delete;
 	}
 

@@ -47,9 +47,9 @@ public class Vertex implements Comparable<Vertex>, Serializable{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((domain == null) ? 0 : domain.hashCode());
+//		result = prime * result + ((domain == null) ? 0 : domain.hashCode());
 		result = prime * result + id;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+//		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
@@ -59,21 +59,21 @@ public class Vertex implements Comparable<Vertex>, Serializable{
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
+//		if (getClass() != obj.getClass())
+//			return false;
 		Vertex other = (Vertex) obj;
-		if (domain == null) {
-			if (other.domain != null)
-				return false;
-		} else if (!domain.equals(other.domain))
-			return false;
+//		if (domain == null) {
+//			if (other.domain != null)
+//				return false;
+//		} else if (!domain.equals(other.domain))
+//			return false;
 		if (id != other.id)
 			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
+//		if (name == null) {
+//			if (other.name != null)
+//				return false;
+//		} else if (!name.equals(other.name))
+//			return false;
 		return true;
 	}
 

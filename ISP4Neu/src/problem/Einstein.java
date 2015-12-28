@@ -3,6 +3,7 @@ package problem;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,37 @@ public class Einstein {
 		UndirectedGraph<Vertex, Edge> graphOrig =
 		        new SimpleGraph<Vertex, Edge>(Edge.class);
 		
+		Map<String, Integer> rightSolution = new HashMap<String, Integer>();
+		rightSolution.put("wasser", 1);
+		rightSolution.put("norweger", 1);
+		rightSolution.put("katze", 1);
+		rightSolution.put("gelb", 1);
+		rightSolution.put("dunhill", 1);
+		
+		rightSolution.put("malboro", 2);
+		rightSolution.put("blau", 2);
+		rightSolution.put("daene", 2);
+		rightSolution.put("tee", 2);
+		rightSolution.put("pferd", 2);
+		
+		rightSolution.put("milch", 3);
+		rightSolution.put("vogel", 3);
+		rightSolution.put("brite", 3);
+		rightSolution.put("rot", 3);
+		rightSolution.put("pallmall", 3);
+
+		rightSolution.put("rothmanns", 4);
+		rightSolution.put("deutscher", 4);
+		rightSolution.put("fisch", 4);
+		rightSolution.put("gruen", 4);
+		rightSolution.put("kaffee", 4);
+
+		rightSolution.put("winfield", 5);
+		rightSolution.put("weiss", 5);
+		rightSolution.put("bier", 5);
+		rightSolution.put("schwede", 5);
+		rightSolution.put("hund", 5);
+		
 		Set<Integer> fullDomain = new HashSet<Integer>();
 		// Set<Integer> blauWeissDomain = new HashSet<Integer>();
 		// Set<Integer> gruenDomain = new HashSet<Integer>();
@@ -46,12 +78,49 @@ public class Einstein {
 		Set<Integer> gelbSet = new HashSet<Integer>();
 		Set<Integer> gruenSet = new HashSet<Integer>();
 		Set<Integer> weissSet = new HashSet<Integer>();
+		
+
+		Set<Integer> colourSet = new HashSet<Integer>();
+		Set<Integer> natSet = new HashSet<Integer>();
+		Set<Integer> animalSet = new HashSet<Integer>();
+		Set<Integer> drinkSet = new HashSet<Integer>();
+		Set<Integer> cigaretteSet = new HashSet<Integer>();
+		
+		for (int i = 1; i < 6; i++) {
+			colourSet.add(i);
+			natSet.add(i);
+			animalSet.add(i);
+			drinkSet.add(i);
+			cigaretteSet.add(i);
+		}
 
 		gelbSet.add(1);
+		gelbSet.add(2);
+		gelbSet.add(3);
+		gelbSet.add(4);
+		gelbSet.add(5);
+		
+		blauSet.add(1);
 		blauSet.add(2);
-		rotSet.add(3);;
+		blauSet.add(3);
+		blauSet.add(4);
+		blauSet.add(5);
+		
+		rotSet.add(1);
+		rotSet.add(2);
+		rotSet.add(3);
+		rotSet.add(4);
+		rotSet.add(5);
+		
+		gruenSet.add(1);
+		gruenSet.add(2);
+		gruenSet.add(3);
 		gruenSet.add(4);
 		gruenSet.add(5);
+		
+		weissSet.add(1);
+		weissSet.add(2);
+		weissSet.add(3);
 		weissSet.add(4);
 		weissSet.add(5);
 		
@@ -59,117 +128,173 @@ public class Einstein {
 		milchDomain.add(3);
 
 		
-//		Vertex rot = new Vertex("1", "rot", rotSet);
+//		Vertex rot = new Vertex(1, "rot", fullDomain);
 //		graphOrig.addVertex(rot);
-//		Vertex blau = new Vertex("2", "blau", fullDomain);
+//		Vertex blau = new Vertex(2, "blau", fullDomain);
 //		graphOrig.addVertex(blau);
-//		Vertex weiss = new Vertex("3", "weiss", fullDomain);
+//		Vertex weiss = new Vertex(3, "weiss", fullDomain);
 //		graphOrig.addVertex(weiss);
-//		Vertex gelb = new Vertex("4", "gelb", fullDomain);
+//		Vertex gelb = new Vertex(4, "gelb", fullDomain);
 //		graphOrig.addVertex(gelb);
-//		Vertex gruen = new Vertex("5", "gruen", fullDomain);
+//		Vertex gruen = new Vertex(5, "gruen", fullDomain);
 //		graphOrig.addVertex(gruen);
 //
-//		Vertex brite = new Vertex("6", "brite", fullDomain);
+//		Vertex brite = new Vertex(6, "brite", fullDomain);
 //		graphOrig.addVertex(brite);
-//		Vertex norweger = new Vertex("7", "norweger", norwegerDomain);
+//		Vertex norweger = new Vertex(7, "norweger", norwegerDomain);
 //		graphOrig.addVertex(norweger);
-//		Vertex schwede = new Vertex("8", "schwede", fullDomain);
+//		Vertex schwede = new Vertex(8, "schwede", fullDomain);
 //		graphOrig.addVertex(schwede);
-//		Vertex daene = new Vertex("9", "daene", fullDomain);
+//		Vertex daene = new Vertex(9, "daene", fullDomain);
 //		graphOrig.addVertex(daene);
-//		Vertex deutscher = new Vertex("10", "deutscher", fullDomain);
+//		Vertex deutscher = new Vertex(10, "deutscher", fullDomain);
 //		graphOrig.addVertex(deutscher);
 //
-//		Vertex hund = new Vertex("11", "hund", fullDomain);
+//		Vertex hund = new Vertex(11, "hund", fullDomain);
 //		graphOrig.addVertex(hund);
-//		Vertex katze = new Vertex("12", "katze", fullDomain);
+//		Vertex katze = new Vertex(12, "katze", fullDomain);
 //		graphOrig.addVertex(katze);
-//		Vertex vogel = new Vertex("13", "vogel", fullDomain);
+//		Vertex vogel = new Vertex(13, "vogel", fullDomain);
 //		graphOrig.addVertex(vogel);
-//		Vertex pferd = new Vertex("14", "pferd", fullDomain);
+//		Vertex pferd = new Vertex(14, "pferd", fullDomain);
 //		graphOrig.addVertex(pferd);
-//		Vertex fisch = new Vertex("15", "fisch", fullDomain);
+//		Vertex fisch = new Vertex(15, "fisch", fullDomain);
 //		graphOrig.addVertex(fisch);
 //
-//		Vertex kaffee = new Vertex("16", "kaffee", fullDomain);
+//		Vertex kaffee = new Vertex(16, "kaffee", fullDomain);
 //		graphOrig.addVertex(kaffee);
-//		Vertex tee = new Vertex("17", "tee", fullDomain);
+//		Vertex tee = new Vertex(17, "tee", fullDomain);
 //		graphOrig.addVertex(tee);
-//		Vertex milch = new Vertex("18", "milch", milchDomain);
+//		Vertex milch = new Vertex(18, "milch", milchDomain);
 //		graphOrig.addVertex(milch);
-//		Vertex wasser = new Vertex("19", "wasser", fullDomain);
+//		Vertex wasser = new Vertex(19, "wasser", fullDomain);
 //		graphOrig.addVertex(wasser);
-//		Vertex bier = new Vertex("20", "bier", fullDomain);
+//		Vertex bier = new Vertex(20, "bier", fullDomain);
 //		graphOrig.addVertex(bier);
 //
-//		Vertex dunhill = new Vertex("21", "dunhill", fullDomain);
+//		Vertex dunhill = new Vertex(21, "dunhill", fullDomain);
 //		graphOrig.addVertex(dunhill);
-//		Vertex malboro = new Vertex("22", "malboro", fullDomain);
+//		Vertex malboro = new Vertex(22, "malboro", fullDomain);
 //		graphOrig.addVertex(malboro);
-//		Vertex winfield = new Vertex("23", "winfield", fullDomain);
+//		Vertex winfield = new Vertex(23, "winfield", fullDomain);
 //		graphOrig.addVertex(winfield);
-//		Vertex pallmall = new Vertex("24", "pallmall", fullDomain);
+//		Vertex pallmall = new Vertex(24, "pallmall", fullDomain);
 //		graphOrig.addVertex(pallmall);
-//		Vertex rothmanns = new Vertex("25", "rothmanns", fullDomain);
+//		Vertex rothmanns = new Vertex(25, "rothmanns", fullDomain);
 //		graphOrig.addVertex(rothmanns);
 
 		
 		
-		Vertex rot = new Vertex(1, "rot", rotSet);
+//		Vertex rot = new Vertex(1, "rot", rotSet);
+//		graphOrig.addVertex(rot);
+//		Vertex blau = new Vertex(2, "blau", blauSet);
+//		graphOrig.addVertex(blau);
+//		Vertex weiss = new Vertex(3, "weiss", weissSet);
+//		graphOrig.addVertex(weiss);
+//		Vertex gelb = new Vertex(4, "gelb", gelbSet);
+//		graphOrig.addVertex(gelb);
+//		Vertex gruen = new Vertex(5, "gruen", gruenSet);
+//		graphOrig.addVertex(gruen);
+//
+//		Vertex brite = new Vertex(6, "brite", rotSet);
+//		graphOrig.addVertex(brite);
+//		Vertex norweger = new Vertex(7, "norweger", norwegerDomain);
+//		graphOrig.addVertex(norweger);
+//		Vertex schwede = new Vertex(8, "schwede", weissSet);
+//		graphOrig.addVertex(schwede);
+//		Vertex daene = new Vertex(9, "daene", blauSet);
+//		graphOrig.addVertex(daene);
+//		Vertex deutscher = new Vertex(10, "deutscher", gruenSet);
+//		graphOrig.addVertex(deutscher);
+//
+//		Vertex hund = new Vertex(11, "hund", weissSet);
+//		graphOrig.addVertex(hund);
+//		Vertex katze = new Vertex(12, "katze", gelbSet);
+//		graphOrig.addVertex(katze);
+//		Vertex vogel = new Vertex(13, "vogel", rotSet);
+//		graphOrig.addVertex(vogel);
+//		Vertex pferd = new Vertex(14, "pferd", blauSet);
+//		graphOrig.addVertex(pferd);
+//		Vertex fisch = new Vertex(15, "fisch", gruenSet);
+//		graphOrig.addVertex(fisch);
+//
+//		Vertex kaffee = new Vertex(16, "kaffee", gruenSet);
+//		graphOrig.addVertex(kaffee);
+//		Vertex tee = new Vertex(17, "tee", blauSet);
+//		graphOrig.addVertex(tee);
+//		Vertex milch = new Vertex(18, "milch", milchDomain);
+//		graphOrig.addVertex(milch);
+//		Vertex wasser = new Vertex(19, "wasser", gelbSet);
+//		graphOrig.addVertex(wasser);
+//		Vertex bier = new Vertex(20, "bier", weissSet);
+//		graphOrig.addVertex(bier);
+//
+//		Vertex dunhill = new Vertex(21, "dunhill", gelbSet);
+//		graphOrig.addVertex(dunhill);
+//		Vertex malboro = new Vertex(22, "malboro", blauSet);
+//		graphOrig.addVertex(malboro);
+//		Vertex winfield = new Vertex(23, "winfield", weissSet);
+//		graphOrig.addVertex(winfield);
+//		Vertex pallmall = new Vertex(24, "pallmall", rotSet);
+//		graphOrig.addVertex(pallmall);
+//		Vertex rothmanns = new Vertex(25, "rothmanns", gruenSet);
+//		graphOrig.addVertex(rothmanns);
+		
+		Vertex rot = new Vertex(1, "rot", drinkSet);
 		graphOrig.addVertex(rot);
-		Vertex blau = new Vertex(2, "blau", blauSet);
+		Vertex blau = new Vertex(2, "blau", drinkSet);
 		graphOrig.addVertex(blau);
-		Vertex weiss = new Vertex(3, "weiss", weissSet);
+		Vertex weiss = new Vertex(3, "weiss", drinkSet);
 		graphOrig.addVertex(weiss);
-		Vertex gelb = new Vertex(4, "gelb", gelbSet);
+		Vertex gelb = new Vertex(4, "gelb", drinkSet);
 		graphOrig.addVertex(gelb);
-		Vertex gruen = new Vertex(5, "gruen", gruenSet);
+		Vertex gruen = new Vertex(5, "gruen", drinkSet);
 		graphOrig.addVertex(gruen);
 
-		Vertex brite = new Vertex(6, "brite", rotSet);
+		Vertex brite = new Vertex(6, "brite", natSet);
 		graphOrig.addVertex(brite);
 		Vertex norweger = new Vertex(7, "norweger", norwegerDomain);
 		graphOrig.addVertex(norweger);
-		Vertex schwede = new Vertex(8, "schwede", weissSet);
+		Vertex schwede = new Vertex(8, "schwede", natSet);
 		graphOrig.addVertex(schwede);
-		Vertex daene = new Vertex(9, "daene", blauSet);
+		Vertex daene = new Vertex(9, "daene", natSet);
 		graphOrig.addVertex(daene);
-		Vertex deutscher = new Vertex(10, "deutscher", gruenSet);
+		Vertex deutscher = new Vertex(10, "deutscher", natSet);
 		graphOrig.addVertex(deutscher);
 
-		Vertex hund = new Vertex(11, "hund", weissSet);
+		Vertex hund = new Vertex(11, "hund", animalSet);
 		graphOrig.addVertex(hund);
-		Vertex katze = new Vertex(12, "katze", gelbSet);
+		Vertex katze = new Vertex(12, "katze", animalSet);
 		graphOrig.addVertex(katze);
-		Vertex vogel = new Vertex(13, "vogel", rotSet);
+		Vertex vogel = new Vertex(13, "vogel", animalSet);
 		graphOrig.addVertex(vogel);
-		Vertex pferd = new Vertex(14, "pferd", blauSet);
+		Vertex pferd = new Vertex(14, "pferd", animalSet);
 		graphOrig.addVertex(pferd);
-		Vertex fisch = new Vertex(15, "fisch", gruenSet);
+		Vertex fisch = new Vertex(15, "fisch", animalSet);
 		graphOrig.addVertex(fisch);
 
-		Vertex kaffee = new Vertex(16, "kaffee", gruenSet);
+		Vertex kaffee = new Vertex(16, "kaffee", drinkSet);
 		graphOrig.addVertex(kaffee);
-		Vertex tee = new Vertex(17, "tee", blauSet);
+		Vertex tee = new Vertex(17, "tee", drinkSet);
 		graphOrig.addVertex(tee);
 		Vertex milch = new Vertex(18, "milch", milchDomain);
 		graphOrig.addVertex(milch);
-		Vertex wasser = new Vertex(19, "wasser", gelbSet);
+		Vertex wasser = new Vertex(19, "wasser", drinkSet);
 		graphOrig.addVertex(wasser);
-		Vertex bier = new Vertex(20, "bier", weissSet);
+		Vertex bier = new Vertex(20, "bier", drinkSet);
 		graphOrig.addVertex(bier);
 
-		Vertex dunhill = new Vertex(21, "dunhill", gelbSet);
+		Vertex dunhill = new Vertex(21, "dunhill", cigaretteSet);
 		graphOrig.addVertex(dunhill);
-		Vertex malboro = new Vertex(22, "malboro", blauSet);
+		Vertex malboro = new Vertex(22, "malboro", cigaretteSet);
 		graphOrig.addVertex(malboro);
-		Vertex winfield = new Vertex(23, "winfield", weissSet);
+		Vertex winfield = new Vertex(23, "winfield", cigaretteSet);
 		graphOrig.addVertex(winfield);
-		Vertex pallmall = new Vertex(24, "pallmall", rotSet);
+		Vertex pallmall = new Vertex(24, "pallmall", cigaretteSet);
 		graphOrig.addVertex(pallmall);
-		Vertex rothmanns = new Vertex(25, "rothmanns", gruenSet);
+		Vertex rothmanns = new Vertex(25, "rothmanns", cigaretteSet);
 		graphOrig.addVertex(rothmanns);
+		
 		
 
 		List<Constraint> allDiff = new ArrayList<Constraint>();
@@ -255,7 +380,7 @@ public class Einstein {
 		graphOrig.addEdge(dunhill, pferd, new Edge<Vertex>(dunhill, pferd, neighboorPlusMinusOne));
 		graphOrig.addEdge(malboro, katze, new Edge<Vertex>(malboro, katze, neighboorPlusMinusOne));
 
-		System.out.println(graphOrig.toString());
+//		System.out.println(graphOrig.toString());
 
 		CSolver solver = new CSolver();
 		
@@ -267,9 +392,9 @@ public class Einstein {
 		List<Vertex> vList = new ArrayList<Vertex>(graphOrig.vertexSet());
 		Collections.sort(vList);
 		
-		for(Vertex item : vList){
-			System.out.println(item.getName());
-		}
+//		for(Vertex item : vList){
+//			System.out.println(item.getName());
+//		}
 
 		assumptionVertex = vList.get(vertexCounter);
 		assumptionValueList = new ArrayList<Integer>(assumptionVertex.getDomain());
@@ -278,9 +403,9 @@ public class Einstein {
 		vertexCounter++;
 
 //		System.out.println(graphOrig.edgesOf(assumptionVertex));
-		
-		Map<String, Integer> solutionMap = solver.solve(graphOrig, vList, assumptionVertex, assumptionValueList,
-				assumptionValue, vertexCounter);
+		solver.solve(graphOrig);
+//		Map<String, Integer> solutionMap = solver.solve(graphOrig, vList, assumptionVertex, assumptionValueList,
+//				assumptionValue, vertexCounter);
 
 		System.out.println("\n***SOLUTION***");
 
@@ -291,7 +416,7 @@ public class Einstein {
 		List<String> fuenf = new ArrayList<String>();
 		
 		
-		for (Entry<String, Integer> item : solutionMap.entrySet()) {
+		for (Entry<String, Integer> item : solver.getSolutionMap().entrySet()) {
 			if(item.getValue() == 1)
 				eins.add(item.getKey());
 			else if(item.getValue() == 2)
@@ -311,6 +436,8 @@ public class Einstein {
 		System.out.println(Arrays.deepToString(drei.toArray()));
 		System.out.println(Arrays.deepToString(vier.toArray()));
 		System.out.println(Arrays.deepToString(fuenf.toArray()));
+		
+		System.out.println("\nSOLUTION is right? " + rightSolution.equals(solver.getSolutionMap()));
 	}
 
 }

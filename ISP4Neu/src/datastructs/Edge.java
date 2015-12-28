@@ -39,42 +39,43 @@ public class Edge<V> extends DefaultEdge{
 		this.constraintList = list;
 	}
 
-//	@Override
-//	public int hashCode() {
-//		final int prime = 31;
-//		int result = 1;
-//		result = prime * result + ((list == null) ? 0 : list.hashCode());
-//		result = prime * result + ((v1 == null) ? 0 : v1.hashCode());
-//		result = prime * result + ((v2 == null) ? 0 : v2.hashCode());
-//		return result;
-//	}
-//
-//	@Override
-//	public boolean equals(Object obj) {
-//		if (this == obj)
-//			return true;
-//		if (obj == null)
-//			return false;
-//		if (getClass() != obj.getClass())
-//			return false;
-//		Edge<?> other = (Edge<?>) obj;
-//		if (list == null) {
-//			if (other.list != null)
-//				return false;
-//		} else if (!list.equals(other.list))
-//			return false;
-//		if (v1 == null) {
-//			if (other.v1 != null)
-//				return false;
-//		} else if (!v1.equals(other.v1))
-//			return false;
-//		if (v2 == null) {
-//			if (other.v2 != null)
-//				return false;
-//		} else if (!v2.equals(other.v2))
-//			return false;
-//		return true;
-//	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((constraintList == null) ? 0 : constraintList.hashCode());
+		result = prime * result + ((v1 == null) ? 0 : v1.hashCode());
+		result = prime * result + ((v2 == null) ? 0 : v2.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Edge other = (Edge) obj;
+		if (constraintList == null) {
+			if (other.constraintList != null)
+				return false;
+		} else if (!constraintList.equals(other.constraintList))
+			return false;
+		if (v1 == null) {
+			if (other.v1 != null)
+				return false;
+		} else if (!v1.equals(other.v1))
+			return false;
+		if (v2 == null) {
+			if (other.v2 != null)
+				return false;
+		} else if (!v2.equals(other.v2))
+			return false;
+		return true;
+	}
 
 	@Override
 	public String toString() {
