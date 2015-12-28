@@ -80,7 +80,7 @@ public class Edge<V> extends DefaultEdge{
 
 	@Override
 	public String toString() {
-		return "v1=" + v1.toString() + ", v2=" + v2.toString();
+		return "v1=" + v1.toString() + ", v2=" + v2.toString() + "\n";
 	}
 	
 	

@@ -31,8 +31,6 @@ public class Einstein {
 				(Class<? extends Edge<Vertex>>) Edge.class);
 
 		// Domaenen generieren
-		Set<Integer> norwegianDomain = new HashSet<Integer>();
-		Set<Integer> milkDomain = new HashSet<Integer>();
 
 		Set<Integer> colorDomain = new HashSet<Integer>();
 		Set<Integer> nationalityDomain = new HashSet<Integer>();
@@ -48,9 +46,6 @@ public class Einstein {
 			cigaretteDomain.add(i);
 		}
 
-		norwegianDomain.add(1);
-		milkDomain.add(3);
-
 		// Knoten erzeugen
 		Vertex rot = new Vertex(1, "rot", colorDomain);
 		graphOrig.addVertex(rot);
@@ -65,7 +60,6 @@ public class Einstein {
 
 		Vertex brite = new Vertex(6, "brite", nationalityDomain);
 		graphOrig.addVertex(brite);
-//		Vertex norweger = new Vertex(7, "norweger", norwegianDomain);
 		Vertex norweger = new Vertex(7, "norweger", nationalityDomain);
 		graphOrig.addVertex(norweger);
 		Vertex schwede = new Vertex(8, "schwede", nationalityDomain);
@@ -90,7 +84,6 @@ public class Einstein {
 		graphOrig.addVertex(kaffee);
 		Vertex tee = new Vertex(17, "tee", drinkDomain);
 		graphOrig.addVertex(tee);
-//		Vertex milch = new Vertex(18, "milch", milkDomain);
 		Vertex milch = new Vertex(18, "milch", drinkDomain);
 		graphOrig.addVertex(milch);
 		Vertex wasser = new Vertex(19, "wasser", drinkDomain);
@@ -114,7 +107,7 @@ public class Einstein {
 		List<BinaryConstraint> allDiffAndNeighboorMinusOneList = new ArrayList<BinaryConstraint>();
 		List<BinaryConstraint> equalList = new ArrayList<BinaryConstraint>();
 		List<BinaryConstraint> neighboorPlusMinusOneList = new ArrayList<BinaryConstraint>();
-		
+
 		List<UnaryConstraint> einsteinList = new ArrayList<UnaryConstraint>();
 
 		allDiff.add(new AllDiffConstraint());
@@ -125,9 +118,9 @@ public class Einstein {
 		equalList.add(new EqualConstraint());
 
 		neighboorPlusMinusOneList.add(new NeighboorPlusMinusOneConstraint());
-		
+
 		einsteinList.add(new EinsteinUnaryConstraint());
-		
+
 		norweger.setUnaryConstraintList(einsteinList);
 		milch.setUnaryConstraintList(einsteinList);
 

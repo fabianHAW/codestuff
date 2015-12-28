@@ -44,6 +44,7 @@ public class AC3_LA {
 				q.add(new Edge<Vertex>(((Vertex) item.getV2()), ((Vertex) item.getV1()), item.getConstraintList()));
 			}
 		}
+		System.out.println("Q: " + q.toString());
 		Vertex vK = null;
 
 		while (!q.isEmpty() && consistent) {
@@ -54,12 +55,12 @@ public class AC3_LA {
 				vK = ((Vertex) arc.getV1());
 				int k = Integer.valueOf(vK.getId());
 				int m = Integer.valueOf(((Vertex) arc.getV2()).getId());
-				List<Edge<Vertex>> neighborsOfK = new ArrayList<Edge<Vertex>>(constraintNetz.edgesOf(assumptionVertex));
+				List<Edge<Vertex>> neighborsOfK = new ArrayList<Edge<Vertex>>(constraintNetz.edgesOf(vK));
 
 				for (Edge<Vertex> item : neighborsOfK) {
-					int i = Integer.valueOf(((Vertex) arc.getV1()).getId());
+					int i = Integer.valueOf(((Vertex) item.getV1()).getId());
 					if (i == k)
-						i = Integer.valueOf(((Vertex) arc.getV2()).getId());
+						i = Integer.valueOf(((Vertex) item.getV2()).getId());
 					if (i != k && i != m && i > cv) {
 						q.add(new Edge<Vertex>(item.getV2(), item.getV1(), item.getConstraintList()));
 					}
