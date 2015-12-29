@@ -28,48 +28,71 @@ public class AC3_LA {
 		int cv = assumptionVertex.getId();
 		this.assumptionVertex = assumptionVertex;
 		this.assumptionValue = assumptionValue;
+		
+//		Set<Integer> s = new HashSet<Integer>();
+//		s.add(assumptionValue);
+//		assumptionVertex.setDomain(s);
 
 		boolean consistent = true;
 		Set<Edge<Vertex>> q = new HashSet<Edge<Vertex>>();
-		List<Edge<Vertex>> neighborsOfCv = new ArrayList<Edge<Vertex>>(constraintNetz.edgesOf(assumptionVertex));
+//		List<Edge<Vertex>> neighborsOfCv = new ArrayList<Edge<Vertex>>(constraintNetz.edgesOf(assumptionVertex));
 
+		List<Edge<Vertex>> neighborsOfCv = rightNeighborList(constraintNetz.edgesOf(assumptionVertex), assumptionVertex);
 		/**
 		 * Menge Q erzeugen Hierbei muss unterschieden werden, an welchem Ende
 		 * der Kante der Knoten vK ist
 		 */
 		for (Edge<Vertex> item : neighborsOfCv) {
-			if (((Vertex) item.getV2()).getId() == cv && ((Vertex) item.getV1()).getId() > cv)
+			if (/*((Vertex) item.getV2()).getId() == cv && */((Vertex) item.getV1()).getId() > cv)
 				q.add(item);
-			else if (((Vertex) item.getV1()).getId() == cv && ((Vertex) item.getV2()).getId() > cv) {
-				q.add(new Edge<Vertex>(((Vertex) item.getV2()), ((Vertex) item.getV1()), item.getConstraintList()));
-			}
+//			else if (((Vertex) item.getV1()).getId() == cv && ((Vertex) item.getV2()).getId() > cv) {
+//				q.add(new Edge<Vertex>(((Vertex) item.getV2()), ((Vertex) item.getV1()), item.getConstraintList()));
+//			}
 		}
-		System.out.println("Q: " + q.toString());
 		Vertex vK = null;
 
 		while (!q.isEmpty() && consistent) {
+			// System.out.println("Q: " + q.toString());
 			Edge<Vertex> arc = q.iterator().next();
 			q.remove(arc);
+			
+			System.out.println("gewahlte arc: " + arc);
 
 			if (revise(arc)) {
 				vK = ((Vertex) arc.getV1());
 				int k = Integer.valueOf(vK.getId());
 				int m = Integer.valueOf(((Vertex) arc.getV2()).getId());
-				List<Edge<Vertex>> neighborsOfK = new ArrayList<Edge<Vertex>>(constraintNetz.edgesOf(vK));
+				int i = -1;
+				List<Edge<Vertex>> neighborsOfK = rightNeighborList(constraintNetz.edgesOf(vK), vK);
+
+				System.out.println("neighbors: " + neighborsOfK);
 
 				for (Edge<Vertex> item : neighborsOfK) {
-					int i = Integer.valueOf(((Vertex) item.getV1()).getId());
-					if (i == k)
-						i = Integer.valueOf(((Vertex) item.getV2()).getId());
+					i = ((Vertex) item.getV1()).getId();
 					if (i != k && i != m && i > cv) {
-						q.add(new Edge<Vertex>(item.getV2(), item.getV1(), item.getConstraintList()));
+						System.out.println(item);
+						
+						q.add(item);
+						consistent = !vK.getDomain().isEmpty();
 					}
-					consistent = !vK.getDomain().isEmpty();
 				}
 			}
 		}
 
 		return consistent;
+	}
+
+	private List<Edge<Vertex>> rightNeighborList(Set<Edge<Vertex>> set, Vertex vk) {
+		List<Edge<Vertex>> newList = new ArrayList<Edge<Vertex>>();
+
+		for (Edge<Vertex> item : set) {
+			if (item.getV1().equals(vk))
+				newList.add(new Edge<Vertex>(item.getV2(), item.getV1(), item.getConstraintList()));
+			else
+				newList.add(item);
+		}
+
+		return newList;
 	}
 
 	private boolean revise(Edge<Vertex> arc) {
@@ -98,11 +121,12 @@ public class AC3_LA {
 		else
 			domY = ((Vertex) arc.getV2()).getDomain();
 
-		//Im Vorfeld AllDifferent Constraint abarbeiten
 		List<BinaryConstraint> constraintListB = (List<BinaryConstraint>) arc.getConstraintList();
+		// Im Vorfeld AllDifferent Constraint abarbeiten
 		for (BinaryConstraint constraint : constraintListB) {
 			if (constraint instanceof AllDiffConstraint) {
-				delete = domX.removeAll(constraint.operationBinaryAllDiff(domX, domY));
+				if (domX.removeAll(constraint.operationBinaryAllDiff(domX, domY)))
+					delete = true;
 			}
 		}
 
@@ -111,7 +135,8 @@ public class AC3_LA {
 				if (!(constraint instanceof AllDiffConstraint)) {
 					List<Tupel> crossProduct = generateCrossProduct(x, domY);
 
-					// Iteration ueber die Menge Dj erfolgt in checkConstraints
+					// Iteration ueber die Menge Dj erfolgt in
+					// checkConstraints
 					if (checkTupelWithConstraints(crossProduct, arc.getConstraintList())) {
 						delete = true;
 						delSet.add(x);
@@ -122,7 +147,8 @@ public class AC3_LA {
 
 		}
 
-		//Zu loeschende Menge erzeugen und die Domaene des jeweiligen Knoten anpassen
+		// Zu loeschende Menge erzeugen und die Domaene des jeweiligen Knoten
+		// anpassen
 		Set<Integer> newSet = new HashSet<Integer>(domX);
 		newSet.removeAll(delSet);
 		((Vertex) arc.getV1()).setDomain(newSet);

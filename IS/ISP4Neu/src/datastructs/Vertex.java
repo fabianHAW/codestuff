@@ -93,7 +93,8 @@ public class Vertex implements Comparable<Vertex>, Serializable {
 
 	@Override
 	public String toString() {
-		return "id=" + id + ", name=" + name + ", domain=" + domain;
+//		return "id=" + id + ", name=" + name + ", domain=" + domain;
+		return name + " " + domain;
 	}
 
 	@Override
