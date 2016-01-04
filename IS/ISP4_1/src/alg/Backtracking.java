@@ -48,7 +48,7 @@ public class Backtracking {
 
 		
 		while (!tmpNet.isSolved() && tmpNet != null) {
-			System.out.println("NodeID: " + nodeID);
+			System.out.println("NodeID: " + actualNode.getNodeName(nodeID));
 			if (ac3_la(nodeID)) {
 				 System.out.println(tmpNet);
 				// System.out.println("ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ");
@@ -80,7 +80,7 @@ public class Backtracking {
 			// System.out.println(net);
 		}
 		//System.out.println("SOLVED: " + tmpNet);
-		System.out.println("NodeID: " + nodeID);
+		System.out.println("Node: " + actualNode.getNodeName(nodeID));
 		
 			 System.out.println(tmpNet);
 		return tmpNet;

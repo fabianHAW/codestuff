@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import alg.Backtracking;
 import problemInstances.Einstein;
+import problemInstances.Einstein2;
 import constsraintnet.Constraint;
 import constsraintnet.ConstraintNet;
 import constsraintnet.Edge;
@@ -30,6 +31,7 @@ public class Tests {
 		//generateProofTree();
 		//SetManipulations();
 		//constraints();
+		//Einstein2.generateConstraintNet();
 		Backtracking.solve(Einstein.generateConstraintNet());
 		
 	}

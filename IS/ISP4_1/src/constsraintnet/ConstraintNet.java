@@ -103,6 +103,15 @@ public class ConstraintNet implements Cloneable{
 		throw new Exception(ConstraintNet.class + ": getDomain Kein Knoten mit ID" + nodeID);
 	}
 	
+	public String getNodeName(int id){
+		for(Node n : nodes){
+			if(n.getNr() == id){
+				return n.getName();
+			}
+		}
+		return ConstraintNet.class + ": Fail in getNodeName";
+	}
+	
 	public boolean isSolved(){
 		int c = 0;
 		for(Node n : nodes){
