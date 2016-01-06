@@ -11,6 +11,7 @@ import constsraintnet.Edge;
 import constsraintnet.Node;
 import constsraintnet.Type;
 import datastructures.Stack;
+import domains.Hausposition;
 
 public class Solver {
 	
@@ -28,8 +29,8 @@ public class Solver {
 	}
 	
 	private void backtracking(ConstraintNet net, int cv) throws Exception{
-		
 		tmpNet = net.clone();
+	
 		for(int i = cv; i < net.getNodes().size();){
 			System.out.print("i: " + i + " ");
 			if(consistent){
@@ -67,6 +68,7 @@ public class Solver {
 		
 		if(tmpNet != null){
 			printSolution();
+			//System.out.println(tmpNet);
 		}
 	
 	}
@@ -75,15 +77,30 @@ public class Solver {
 		ConstraintNet n = tmpNet;
 		HashMap<Integer, Type> solution = new HashMap<Integer, Type>();
 		HashMap<Integer, String> solution2 = new HashMap<Integer, String>();
+		HashMap<Hausposition, ArrayList<String>> result = new HashMap<Hausposition, ArrayList<String>>();
+		result.put(Hausposition.Eins, new ArrayList<String>());
+		result.put(Hausposition.Zwei, new ArrayList<String>());
+		result.put(Hausposition.Drei, new ArrayList<String>());
+		result.put(Hausposition.Vier, new ArrayList<String>());
+		result.put(Hausposition.Fuenf, new ArrayList<String>());
 		for (Node node : n.getNodes()) {
 			if(node.getDomain().size() == 1){
-			solution.put(node.getNr(), node.getDomain().get(0));
-			solution2.put(node.getNr(), node.getName());
+				result.get(node.getDomain().get(0).getElem()).add(node.getName());
+//			solution.put(node.getNr(), node.getDomain().get(0));
+//			solution2.put(node.getNr(), node.getName());
 			}
 		}
-		for(Integer i : solution.keySet()){
-			System.out.println(solution2.get(i) + " " + solution.get(i));
+		
+		for(Hausposition h : result.keySet()){
+			System.out.println("#############");
+			for(String s : result.get(h)){
+				System.out.println(s);
+			}
+			System.out.println("#############");
 		}
+//		for(Integer i : solution.keySet()){
+//			System.out.println(solution2.get(i) + " " + solution.get(i));
+//		}
 	}
 	
 	public boolean ac3_la(int cv)//ok
@@ -173,7 +190,7 @@ public class Solver {
 		int constraint = 0;
 		int log_types_ti = 0;
 		int log_types_tj = 0;
-		System.out.println("Vi: " + vi.getName());
+		//System.out.println("Vi: " + vi.getName());
 		String constraintClass = "";
 		for (Type ti : vi.getDomain()) { //for each X in Di do //ok
 			log_types_ti++;
@@ -194,7 +211,7 @@ public class Solver {
 			}
 			if (delete_ti /*&& constraint != e.getConstraints().size()*/) {
 				//System.out.println("constraint: " + constraint + "e.getConstraint.size: " + e.getConstraints().size());
-				System.out.println("DEL(" + vi.getName() + ", " + ti + ") cause " + constraintClass + " ON " + "NODE(" + vj.getName() + ", " + vj.getDomain() +  ")" + ", ");
+				//System.out.println("DEL(" + vi.getName() + ", " + ti + ") cause " + constraintClass + " ON " + "NODE(" + vj.getName() + ", " + vj.getDomain() +  ")" + ", ");
 				vi_clone.removeElem(ti);
 				delete = true;
 			}
