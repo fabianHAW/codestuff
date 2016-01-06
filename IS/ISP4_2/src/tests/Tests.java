@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import alg.Backtracking;
-import alg.Backtracking2;
-import alg.Backtracking3;
+
+
+import alg.Solver;
 import problemInstances.Einstein;
 import problemInstances.Einstein2;
 import problemInstances.Einstein3;
@@ -18,8 +18,6 @@ import constsraintnet.ImplicationNegativeConstraint;
 import constsraintnet.Node;
 import constsraintnet.OrConstraint;
 import constsraintnet.Type;
-import datastructures.ProofLevel;
-import datastructures.ProofTree;
 import domains.Getraenk;
 import domains.Hausfarbe;
 import domains.Hausposition;
@@ -38,7 +36,9 @@ public class Tests {
 		//Backtracking.solve(Einstein.generateConstraintNet());
 		
 //		Backtracking2.solve(Einstein2.generateConstraintNet());
-		Backtracking3.solve(Einstein3.generateConstraintNet());
+		//Backtracking3.solve(Einstein3.generateConstraintNet());
+		Solver s = new Solver();
+		s.start(Einstein3.generateConstraintNet());
 		
 	}
 
@@ -249,23 +249,7 @@ public static ConstraintNet generateConstraintNet(){
 		return constraintNet;
 	}
 
-	public static ProofTree<Integer> generateProofTree() throws Exception{
-		ProofTree<Integer> tree = new ProofTree<Integer>();
-		tree.add(0, 1);
-		tree.incDepth();
-		tree.add(1, 2);
-		tree.add(1, 3);
-		tree.add(1, 4);
-		tree.incDepth();
-		tree.add(2, 5);
-		tree.add(2, 6);
-		
-		System.out.println("Level 0: Root: " + tree.getNextNode());
-		System.out.println("Level 1 Nodes: " + tree.getNextNode());
-		System.out.println("Level 2 Nodes: " + tree.getNextNode() + ", " + tree.getNextNode());
-		System.out.println("Level 1 Nodes: " + tree.getNextNode() + ", " + tree.getNextNode());
-		return tree;
-	}
+
 
 	public static void SetManipulations(){
 //		HashSet<Integer> set = new HashSet<Integer>();
