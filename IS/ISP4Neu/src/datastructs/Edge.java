@@ -44,7 +44,7 @@ public class Edge<V> extends DefaultEdge{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((constraintList == null) ? 0 : constraintList.hashCode());
+//		result = prime * result + ((constraintList == null) ? 0 : constraintList.hashCode());
 		result = prime * result + ((v1 == null) ? 0 : v1.hashCode());
 		result = prime * result + ((v2 == null) ? 0 : v2.hashCode());
 		return result;
@@ -60,11 +60,11 @@ public class Edge<V> extends DefaultEdge{
 			return false;
 		@SuppressWarnings("unchecked")
 		Edge<Vertex> other = (Edge<Vertex>) obj;
-		if (constraintList == null) {
-			if (other.constraintList != null)
-				return false;
-		} else if (!constraintList.equals(other.constraintList))
-			return false;
+//		if (constraintList == null) {
+//			if (other.constraintList != null)
+//				return false;
+//		} else if (!constraintList.equals(other.constraintList))
+//			return false;
 		if (v1 == null) {
 			if (other.v1 != null)
 				return false;

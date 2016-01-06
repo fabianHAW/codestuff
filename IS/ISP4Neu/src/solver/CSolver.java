@@ -2,6 +2,7 @@ package solver;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.jgrapht.UndirectedGraph;
 
@@ -13,8 +14,19 @@ import datastructs.Vertex;
 public class CSolver {
 
 	private Map<String, Integer> solutionMap = new HashMap<String, Integer>();
+	private Set<Edge<Vertex>> constSet;
 
+	
 	public void solve(UndirectedGraph<Vertex, Edge<Vertex>> graphOrig) {
+		int counter = 0;
+		Node n = new Node(graphOrig, counter);
+		counter++;
+		solve(graphOrig, n, counter);
+
+	}
+	
+	public void solve(UndirectedGraph<Vertex, Edge<Vertex>> graphOrig, Set<Edge<Vertex>> constSet) {
+		this.constSet = constSet;
 		int counter = 0;
 		Node n = new Node(graphOrig, counter);
 		counter++;
@@ -30,7 +42,7 @@ public class CSolver {
 		System.out.println("****EBENE: " + (n.getDepth()) + "*****");
 		System.out.println("Annahmeknoten: " + n.getAssumptionVertex() + " Annahmewert: " + n.getAssumptionValue());
 
-		AC3_LA ac3_la_alg = new AC3_LA(graphOrig);
+		AC3_LA ac3_la_alg = new AC3_LA(graphOrig, constSet);
 		UndirectedGraph<Vertex, Edge<Vertex>> graphCopy = getGraphCopy(graphOrig);
 
 		// Mit aktuellem Annahmeknoten und Annahmewert auf Konsistenz pruefen

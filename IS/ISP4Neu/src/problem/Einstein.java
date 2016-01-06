@@ -133,7 +133,9 @@ public class Einstein {
 		graphOrig.addEdge(blau, gelb, new Edge<Vertex>(blau, gelb, allDiff));
 		graphOrig.addEdge(blau, gruen, new Edge<Vertex>(blau, gruen, allDiff));
 		graphOrig.addEdge(weiss, gelb, new Edge<Vertex>(weiss, gelb, allDiff));
-		graphOrig.addEdge(weiss, gruen, new Edge<Vertex>(weiss, gruen, allDiffAndNeighboorMinusOneList));
+//		graphOrig.addEdge(weiss, gruen, new Edge<Vertex>(weiss, gruen, allDiff));
+		Edge<Vertex> e0 = new Edge<Vertex>(weiss, gruen, allDiffAndNeighboorMinusOneList);
+		graphOrig.addEdge(weiss, gruen, e0);
 //		graphOrig.addEdge(gruen, weiss, new Edge<Vertex>(gruen, weiss, allDiffAndNeighboorMinusOneList));
 		graphOrig.addEdge(gelb, gruen, new Edge<Vertex>(gelb, gruen, allDiff));
 
@@ -145,7 +147,7 @@ public class Einstein {
 		graphOrig.addEdge(norweger, daene, new Edge<Vertex>(norweger, daene, allDiff));
 		graphOrig.addEdge(norweger, deutscher, new Edge<Vertex>(norweger, deutscher, allDiff));
 		graphOrig.addEdge(schwede, daene, new Edge<Vertex>(schwede, daene, allDiff));
-//		graphOrig.addEdge(deutscher, schwede, new Edge<Vertex>(deutscher, schwede, allDiff));
+		graphOrig.addEdge(deutscher, schwede, new Edge<Vertex>(deutscher, schwede, allDiff));
 		graphOrig.addEdge(schwede, deutscher, new Edge<Vertex>(schwede, deutscher, allDiff));
 		graphOrig.addEdge(daene, deutscher, new Edge<Vertex>(daene, deutscher, allDiff));
 
@@ -153,7 +155,7 @@ public class Einstein {
 		graphOrig.addEdge(hund, vogel, new Edge<Vertex>(hund, vogel, allDiff));
 		graphOrig.addEdge(hund, pferd, new Edge<Vertex>(hund, pferd, allDiff));
 		graphOrig.addEdge(hund, fisch, new Edge<Vertex>(hund, fisch, allDiff));
-//		graphOrig.addEdge(fisch, hund, new Edge<Vertex>(fisch, hund, allDiff));
+		graphOrig.addEdge(fisch, hund, new Edge<Vertex>(fisch, hund, allDiff));
 		graphOrig.addEdge(katze, vogel, new Edge<Vertex>(katze, vogel, allDiff));
 		graphOrig.addEdge(katze, pferd, new Edge<Vertex>(katze, pferd, allDiff));
 		graphOrig.addEdge(katze, fisch, new Edge<Vertex>(katze, fisch, allDiff));
@@ -165,7 +167,7 @@ public class Einstein {
 		graphOrig.addEdge(kaffee, milch, new Edge<Vertex>(kaffee, milch, allDiff));
 		graphOrig.addEdge(kaffee, wasser, new Edge<Vertex>(kaffee, wasser, allDiff));
 		graphOrig.addEdge(kaffee, bier, new Edge<Vertex>(kaffee, bier, allDiff));
-//		graphOrig.addEdge(bier, kaffee, new Edge<Vertex>(bier, kaffee, allDiff));
+		graphOrig.addEdge(bier, kaffee, new Edge<Vertex>(bier, kaffee, allDiff));
 		graphOrig.addEdge(tee, milch, new Edge<Vertex>(tee, milch, allDiff));
 		graphOrig.addEdge(tee, wasser, new Edge<Vertex>(tee, wasser, allDiff));
 		graphOrig.addEdge(tee, bier, new Edge<Vertex>(tee, bier, allDiff));
@@ -182,25 +184,98 @@ public class Einstein {
 		graphOrig.addEdge(malboro, rothmanns, new Edge<Vertex>(malboro, rothmanns, allDiff));
 		graphOrig.addEdge(winfield, pallmall, new Edge<Vertex>(winfield, pallmall, allDiff));
 		graphOrig.addEdge(winfield, rothmanns, new Edge<Vertex>(winfield, rothmanns, allDiff));
-//		graphOrig.addEdge(rothmanns, winfield, new Edge<Vertex>(rothmanns, winfield, allDiff));
+		graphOrig.addEdge(rothmanns, winfield, new Edge<Vertex>(rothmanns, winfield, allDiff));
 		graphOrig.addEdge(pallmall, rothmanns, new Edge<Vertex>(pallmall, rothmanns, allDiff));
 
-		graphOrig.addEdge(rot, brite, new Edge<Vertex>(rot, brite, equalList));
-		graphOrig.addEdge(gelb, dunhill, new Edge<Vertex>(gelb, dunhill, equalList));
-		graphOrig.addEdge(hund, schwede, new Edge<Vertex>(hund, schwede, equalList));
-		graphOrig.addEdge(rothmanns, deutscher, new Edge<Vertex>(rothmanns, deutscher, equalList));
-		graphOrig.addEdge(kaffee, gruen, new Edge<Vertex>(kaffee, gruen, equalList));
-		graphOrig.addEdge(daene, tee, new Edge<Vertex>(daene, tee, equalList));
-		graphOrig.addEdge(winfield, bier, new Edge<Vertex>(winfield, bier, equalList));
-		graphOrig.addEdge(vogel, pallmall, new Edge<Vertex>(vogel, pallmall, equalList));
+//		Edge<Vertex> e1 = new Edge<Vertex>(brite, rot, equalList);
+//		graphOrig.addEdge(brite, rot, e1);
+		Edge<Vertex> e1 = new Edge<Vertex>(rot, brite, equalList);
+		graphOrig.addEdge(rot, brite, e1);
+//		Edge<Vertex> e2 = new Edge<Vertex>(dunhill, gelb, equalList);
+//		graphOrig.addEdge(dunhill, gelb, e2);
+		Edge<Vertex> e2 = new Edge<Vertex>(gelb, dunhill, equalList);
+		graphOrig.addEdge(gelb, dunhill, e2);
+		Edge<Vertex> e3 = new Edge<Vertex>(hund, schwede, equalList);
+		graphOrig.addEdge(hund, schwede, e3);
+		Edge<Vertex> e4 = new Edge<Vertex>(rothmanns, deutscher, equalList);
+		graphOrig.addEdge(rothmanns, deutscher, e4);
+		Edge<Vertex> e5 = new Edge<Vertex>(kaffee, gruen, equalList);
+		graphOrig.addEdge(kaffee, gruen, e5);
+//		Edge<Vertex> e6 = new Edge<Vertex>(tee, daene, equalList);
+//		graphOrig.addEdge(tee, daene, e6);
+		Edge<Vertex> e6 = new Edge<Vertex>(daene, tee, equalList);
+		graphOrig.addEdge(daene, tee, e6);
+		Edge<Vertex> e7 = new Edge<Vertex>(winfield, bier, equalList);
+		graphOrig.addEdge(winfield, bier, e7);
+//		Edge<Vertex> e8 = new Edge<Vertex>(pallmall, vogel, equalList);
+//		graphOrig.addEdge(pallmall, vogel, e8);
+		Edge<Vertex> e8 = new Edge<Vertex>(vogel, pallmall, equalList);
+		graphOrig.addEdge(vogel, pallmall, e8);
 
-		graphOrig.addEdge(norweger, blau, new Edge<Vertex>(norweger, blau, neighboorPlusMinusOneList));
-		graphOrig.addEdge(malboro, wasser, new Edge<Vertex>(malboro, wasser, neighboorPlusMinusOneList));
-		graphOrig.addEdge(dunhill, pferd, new Edge<Vertex>(dunhill, pferd, neighboorPlusMinusOneList));
-		graphOrig.addEdge(malboro, katze, new Edge<Vertex>(malboro, katze, neighboorPlusMinusOneList));
-
+		Edge<Vertex> e9 = new Edge<Vertex>(norweger, blau, neighboorPlusMinusOneList);
+		graphOrig.addEdge(norweger, blau, e9);
+		Edge<Vertex> e10 = new Edge<Vertex>(malboro, wasser, neighboorPlusMinusOneList);
+		graphOrig.addEdge(malboro, wasser, e10);
+		Edge<Vertex> e11 = new Edge<Vertex>(dunhill, pferd, neighboorPlusMinusOneList);
+		graphOrig.addEdge(dunhill, pferd, e11);
+		Edge<Vertex> e12 = new Edge<Vertex>(malboro, katze, neighboorPlusMinusOneList);
+		graphOrig.addEdge(malboro, katze, e12);
+		
+//		Edge<Vertex> e13 = new Edge<Vertex>(weiss, gruen, allDiffAndNeighboorMinusOneList);
+//		graphOrig.addEdge(weiss, gruen, e13);
+		
+//		Edge<Vertex> e1e = new Edge<Vertex>(brite, rot, equalList);
+//		Edge<Vertex> e2e = new Edge<Vertex>(dunhill, gelb, equalList);
+//		Edge<Vertex> e3e = new Edge<Vertex>(schwede, hund, equalList);
+//		Edge<Vertex> e4e = new Edge<Vertex>(deutscher, rothmanns, equalList);
+//		Edge<Vertex> e5e = new Edge<Vertex>(gruen, kaffee, equalList);
+//		Edge<Vertex> e6e = new Edge<Vertex>(tee, daene, equalList);
+//		Edge<Vertex> e7e = new Edge<Vertex>(bier, winfield, equalList);
+//		Edge<Vertex> e8e = new Edge<Vertex>(pallmall, vogel, equalList);
+//		Edge<Vertex> e9e = new Edge<Vertex>(blau, norweger, neighboorPlusMinusOneList);
+//		Edge<Vertex> e10e = new Edge<Vertex>(wasser, malboro, neighboorPlusMinusOneList);
+//		Edge<Vertex> e11e = new Edge<Vertex>(pferd, dunhill, neighboorPlusMinusOneList);
+//		Edge<Vertex> e12e = new Edge<Vertex>(katze, malboro, neighboorPlusMinusOneList);
+//		
+//		Edge<Vertex> e0e = new Edge<Vertex>(gruen, weiss, allDiffAndNeighboorMinusOneList);
+//		
+//		Set<Edge<Vertex>> constSet = new HashSet<Edge<Vertex>>();
+//		constSet.add(e1);
+//		constSet.add(e2);
+//		constSet.add(e3);
+//		constSet.add(e4);
+//		constSet.add(e5);
+//		constSet.add(e6);
+//		constSet.add(e7);
+//		constSet.add(e8);
+//
+//		constSet.add(e9);
+//		constSet.add(e10);
+//		constSet.add(e11);
+//		constSet.add(e12);
+//
+//		constSet.add(e0);
+//		
+//		constSet.add(e1e);
+//		constSet.add(e2e);
+//		constSet.add(e3e);
+//		constSet.add(e4e);
+//		constSet.add(e5e);
+//		constSet.add(e6e);
+//		constSet.add(e7e);
+//		constSet.add(e8e);
+//
+//		constSet.add(e9e);
+//		constSet.add(e10e);
+//		constSet.add(e11e);
+//		constSet.add(e12e);
+//
+//		constSet.add(e0e);
+//
+//		System.out.println(constSet);
 		CSolver solver = new CSolver();
 
+//		solver.solve(graphOrig, constSet);
 		solver.solve(graphOrig);
 
 		// Loesung formatieren

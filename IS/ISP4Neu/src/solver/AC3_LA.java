@@ -19,9 +19,11 @@ public class AC3_LA {
 	private UndirectedGraph<Vertex, Edge<Vertex>> constraintNetz = null;
 	private Vertex assumptionVertex;
 	private int assumptionValue;
+	private Set<Edge<Vertex>> constSet;
 
-	public AC3_LA(UndirectedGraph<Vertex, Edge<Vertex>> g) {
+	public AC3_LA(UndirectedGraph<Vertex, Edge<Vertex>> g, Set<Edge<Vertex>> constSet) {
 		constraintNetz = g;
+		this.constSet = constSet;
 	}
 
 	public boolean ac3_la_procedure(Vertex assumptionVertex, int assumptionValue) {
@@ -52,7 +54,10 @@ public class AC3_LA {
 		Vertex vK = null;
 
 		while (!q.isEmpty() && consistent) {
-			// System.out.println("Q: " + q.toString());
+//			 System.out.println("Q: " + q.toString());
+			
+//			Edge<Vertex> arc = chooseArc(q);
+			 
 			Edge<Vertex> arc = q.iterator().next();
 			q.remove(arc);
 			
@@ -72,7 +77,7 @@ public class AC3_LA {
 					if (i != k && i != m && i > cv) {
 						System.out.println(item);
 						
-						q.add(item);
+//						q.add(item);
 						consistent = !vK.getDomain().isEmpty();
 					}
 				}
@@ -82,6 +87,23 @@ public class AC3_LA {
 		return consistent;
 	}
 
+//	private Edge<Vertex>chooseArc(Set<Edge<Vertex>> q){
+//		Edge<Vertex> arc = null;
+//		
+//		for(Edge<Vertex> item : q){
+////			System.out.println("arc: " + item);
+//			if(constSet.contains(item)){
+//				arc = item;
+//				break;
+//			}
+//		}
+//		if(arc == null)
+//			arc = q.iterator().next();
+//
+////		q.remove(arc);
+//		return arc;
+//	}
+	
 	private List<Edge<Vertex>> rightNeighborList(Set<Edge<Vertex>> set, Vertex vk) {
 		List<Edge<Vertex>> newList = new ArrayList<Edge<Vertex>>();
 
