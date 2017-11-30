@@ -1,6 +1,6 @@
 #workspace settings
 .metadata
-
+.recommenders
 #beam-files (erlang)
 *.beam
 
