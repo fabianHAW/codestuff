@@ -1,0 +1,2 @@
+/*Aufgabe 7*/
+EG ((Sender == 1 -> EX S_Lost_Or_Forward_B0 == 1 -> EX Receiver == 1 -> EX R_Lost_Or_Forward_B0 == 1) & !Sender == 2 | !S_Lost_Or_Forward_B1 == 2 | !Receiver == 2 | !R_Lost_Or_Forward_B1 == 2);
