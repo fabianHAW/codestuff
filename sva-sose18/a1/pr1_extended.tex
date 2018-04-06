@@ -1,0 +1,466 @@
+\documentclass{article}
+
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows,shapes,backgrounds,calc,patterns}
+
+\usepackage[graphics,tightpage,active]{preview}
+\PreviewEnvironment{tikzpicture}
+\PreviewEnvironment{equation}
+\PreviewEnvironment{equation*}
+\newlength{\imagewidth}
+\newlength{\imagescale}
+\pagestyle{empty}
+\thispagestyle{empty}
+
+\begin{document}
+
+\begin{tikzpicture}[x=1pt,y=-1pt]
+
+\definecolor{BLACK}{RGB}{0,0,0}
+\definecolor{WHITE}{RGB}{255,255,255}
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(240,472) ellipse[x radius=10, y radius=10];
+\draw[BLACK]
+	(202,493.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{Sender};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(236,472) ellipse[x radius=3, y radius=3];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(244,472) ellipse[x radius=3, y radius=3];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(1260,460) ellipse[x radius=10, y radius=10];
+\draw[BLACK]
+	(1230,422.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{Receiver};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(440,220) ellipse[x radius=10, y radius=10];
+\draw[BLACK]
+	(438,194.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{S\_Lost\_Or\_Forward\_B1};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(740,420) ellipse[x radius=10, y radius=10];
+\draw[BLACK]
+	(683,441.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{S\_Lost\_Or\_Forward\_B0};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(840,720) ellipse[x radius=10, y radius=10];
+\draw[BLACK]
+	(731,745.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_Lost\_Or\_Forward\_B1};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(800,540) ellipse[x radius=10, y radius=10];
+\draw[BLACK]
+	(728,515.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_Lost\_Or\_Forward\_B0};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(420,540) ellipse[x radius=10, y radius=10];
+\draw[BLACK]
+	(407,562.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{S\_B1\_State};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(420,540) ellipse[x radius=3, y radius=3];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(520,580) ellipse[x radius=10, y radius=10];
+\draw[BLACK]
+	(487,598.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{S\_B0\_State};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(660,280) ellipse[x radius=10, y radius=10];
+\draw[BLACK]
+	(594,254.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_B1\_State};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(660,280) ellipse[x radius=3, y radius=3];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(740,320) ellipse[x radius=10, y radius=10];
+\draw[BLACK]
+	(769,305.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_B0\_State};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(750,210) rectangle +(20,20);
+\draw[BLACK]
+	(735,189.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{S\_R\_B1\_1};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(310,630) rectangle +(20,20);
+\draw[BLACK]
+	(295,663.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_S\_B1\_1};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(870,348) rectangle +(20,24);
+\draw[BLACK]
+	(854,383.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{S\_R\_B0\_1};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(530,510) rectangle +(20,20);
+\draw[BLACK]
+	(559,539.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_S\_B0\_1};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(430,330) rectangle +(20,20);
+\draw[BLACK]
+	(433,358.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{S\_R\_B1\_0};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(230,210) rectangle +(20,20);
+\draw[BLACK]
+	(229,238.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{S\_Lost\_B1};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(509,450) rectangle +(20,20);
+\draw[BLACK]
+	(486,481.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{S\_R\_B0\_0};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(630,350) rectangle +(20,20);
+\draw[BLACK]
+	(595,382.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{S\_Lost\_B0};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(1050,590) rectangle +(20,20);
+\draw[BLACK]
+	(1053,618.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_S\_B1\_0};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(1250,710) rectangle +(20,20);
+\draw[BLACK]
+	(1238,748.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_Lost\_B1};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(950,530) rectangle +(20,20);
+\draw[BLACK]
+	(928,562.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_S\_B0\_0};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(110,390) rectangle +(20,20);
+\draw[BLACK]
+	(18,372.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{S\_Switch\_B1\_To\_B0};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(1370,370) rectangle +(20,20);
+\draw[BLACK]
+	(1297,355.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_Switch\_B1\_To\_B0};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(770,225) -- (1060,360) -- (1180,420) -- (1250,455);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1250,455) -- (1240,454) -- (1243,448) -- (1250,455) -- cycle;
+\draw[BLACK]
+	(996,313.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{4};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(440,330) -- (440,230);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(440,230) -- (443,240) -- (437,240) -- (440,230) -- cycle;
+\draw[BLACK]
+	(450,268.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(450,220) -- (750,220);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(750,220) -- (740,223) -- (740,217) -- (750,220) -- cycle;
+\draw[BLACK]
+	(659,211.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(430,220) -- (250,220);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(250,220) -- (260,217) -- (260,223) -- (250,220) -- cycle;
+\draw[BLACK]
+	(377,227.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(250,465) -- (430,347);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(430,347) -- (423,355) -- (420,349) -- (430,347) -- cycle;
+\draw[BLACK]
+	(383,383.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(250,472) -- (509,460);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(509,460) -- (499,464) -- (499,458) -- (509,460) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(529,458) -- (730,422);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(730,422) -- (721,427) -- (720,420) -- (730,422) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(750,416) -- (870,364);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(870,364) -- (862,371) -- (859,365) -- (870,364) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(730,414) -- (650,366);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(650,366) -- (660,368) -- (657,374) -- (650,366) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(1250,467) -- (1070,593);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1070,593) -- (1076,585) -- (1080,590) -- (1070,593) -- cycle;
+\draw[BLACK]
+	(1149,517.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(1050,605) -- (850,715);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(850,715) -- (857,707) -- (860,713) -- (850,715) -- cycle;
+\draw[BLACK]
+	(934,647.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(1250,463) -- (970,537);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(970,537) -- (979,532) -- (981,538) -- (970,537) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(950,540) -- (810,540);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(810,540) -- (820,537) -- (820,543) -- (810,540) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(790,539) -- (550,521);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(550,521) -- (560,518) -- (560,525) -- (550,521) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(890,363) -- (1250,457);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1250,457) -- (1239,458) -- (1241,452) -- (1250,457) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(850,720) -- (1250,720);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1250,720) -- (1240,723) -- (1240,717) -- (1250,720) -- cycle;
+\draw[BLACK]
+	(1078,703.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(830,718) -- (330,642);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(330,642) -- (340,640) -- (339,646) -- (330,642) -- cycle;
+\draw[BLACK]
+	(608,705.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(530,518) -- (250,474);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(250,474) -- (260,472) -- (259,478) -- (250,474) -- cycle;
+\draw[BLACK]
+	(391,510.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{3};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(430,340) -- (240,340) -- (240,462);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(240,462) -- (237,452) -- (243,452) -- (240,462) -- cycle;
+\draw[BLACK]
+	(241,370.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(519,450) -- (520,400) -- (250,469);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(250,469) -- (259,464) -- (261,470) -- (250,469) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(960,530) -- (960,440) -- (1250,459);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1250,459) -- (1240,462) -- (1240,455) -- (1250,459) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(410,550) -- (330,630);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(330,630) -- (335,621) -- (339,625) -- (330,630) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(315,630) -- (245,482);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(245,482) -- (252,490) -- (246,492) -- (245,482) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(230,466) -- (130,406);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(130,406) -- (140,408) -- (137,414) -- (130,406) -- cycle;
+\draw[BLACK]
+	(157,435.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(1270,453) -- (1370,387);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1370,387) -- (1364,395) -- (1360,389) -- (1370,387) -- cycle;
+\draw[BLACK]
+	(1321,423.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(523,570) -- (537,530);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(537,530) -- (537,541) -- (530,538) -- (537,530) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(330,637) -- (510,583);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(510,583) -- (501,589) -- (499,583) -- (510,583) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(670,274) -- (750,226);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(750,226) -- (743,234) -- (740,228) -- (750,226) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(758,230) -- (742,310);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(742,310) -- (741,300) -- (747,301) -- (742,310) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(750,323) -- (870,357);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(870,357) -- (859,358) -- (861,351) -- (870,357) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(1070,600) -- (1260,600) -- (1260,470);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1260,470) -- (1263,480) -- (1257,480) -- (1260,470) -- cycle;
+\draw[BLACK]
+	(1176,598.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(248,462) -- (300,400) -- (430,344);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(426.5,345.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(415.5,350.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK]
+	(327,376.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(1250,460) -- (1120,460) -- (970,535);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(973.5,533.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(983.5,528.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(250,470) -- (440,440) -- (509,457);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(505.5,456.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(493.5,453.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(1254,470) -- (1200,560) -- (1070,597);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1073.5,596.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1084.5,592.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK]
+	(1182,546.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(233,462) -- (180,380) -- (130,397);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(133.5,395.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(144.5,391.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK]
+	(173,368.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{3};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(1270,460) -- (1380,460) -- (1380,390);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1380.5,393.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1380.5,405.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK]
+	(1336,458.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{3};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(90,450) rectangle +(20,20);
+\draw[BLACK]
+	(9,502.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{S\_Switch\_B0\_To\_B1};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(230,471) -- (110,461);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(110,461) -- (120,458) -- (120,465) -- (110,461) -- cycle;
+\draw[BLACK]
+	(159,470.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(230,476) -- (160,500) -- (110,467);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(112.5,468.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(122.5,475.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK]
+	(160,508.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{4};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(1390,510) rectangle +(20,20);
+\draw[BLACK]
+	(1402,546.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_First\_B1\_Receive\_Reset};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(1350,590) rectangle +(20,20);
+\draw[BLACK]
+	(1317,625.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_Switch\_B0\_To\_B1};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(1270,464) -- (1390,516);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1390,516) -- (1379,515) -- (1382,509) -- (1390,516) -- cycle;
+\draw[BLACK]
+	(1357,497.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{2};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(1267,470) -- (1353,590);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1353,590) -- (1344,584) -- (1350,580) -- (1353,590) -- cycle;
+\draw[BLACK]
+	(1311,533.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{3};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(1270,470) -- (1360,560) -- (1390,530);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1387.5,532.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1379.5,540.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK]
+	(1334,519.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{4};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(1262,470) -- (1280,560) -- (1350,595);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1346.5,593.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1336.5,588.5) ellipse[x radius=3.5, y radius=3.5];
+\draw[BLACK]
+	(1282,544.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{5};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(870,359) -- (680,340) -- (663,290);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(663,290) -- (670,298) -- (663,301) -- (663,290) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(530,522) -- (430,538);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(430,538) -- (439,533) -- (440,540) -- (430,538) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(430,216) -- (340,180) -- (250,216);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(250,216) -- (256,211) -- (257,216) -- (250,216) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(261,212) -- (267,207) -- (269,211) -- (261,212) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(735,410) -- (720,380) -- (650,363);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(650,363) -- (657,362) -- (656,366) -- (650,363) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(662,365) -- (669,365) -- (668,369) -- (662,365) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=WHITE]
+	(770,590) rectangle +(20,20);
+\draw[BLACK]
+	(769,618.5) node[rotate=0, font=\ttfamily\normalsize, BLACK, right=-.25]
+	{R\_Lost\_B0};
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(797,550) -- (783,590);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(783,590) -- (783,579) -- (790,582) -- (783,590) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(790,547) -- (740,580) -- (770,595);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(770,595) -- (763,594) -- (765,590) -- (770,595) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(759,590) -- (752,589) -- (754,584) -- (759,590) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1]
+	(850,722) -- (1040,760) -- (1250,722);
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1250,722) -- (1244,725) -- (1243,721) -- (1250,722) -- cycle;
+\draw[BLACK, solid, line join=round, line cap=round, line width=1, fill=BLACK]
+	(1238,724) -- (1232,728) -- (1231,723) -- (1238,724) -- cycle;
+\end{tikzpicture}
+
+\end{document}
+
