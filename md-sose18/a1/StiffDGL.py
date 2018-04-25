@@ -64,10 +64,10 @@ for h, step in step_values.items():
 
     ax.plot(x, y_euler_imp, label='euler_imp_{}'.format(h))
 
-    x = np.zeros(step)
+    # x = np.zeros(step)
     # analytic solution
     for i in range(step):
-        y_analytic[i] = y_analytic_func(x[i])
+        y_analytic[i] = y_analytic_func(i * h)
 
     ax.plot(x, y_analytic, label='y_analytic_{}'.format(h))
 

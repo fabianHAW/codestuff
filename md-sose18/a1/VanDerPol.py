@@ -47,7 +47,7 @@ for h, step in step_values.items():
         k1 = h * y1_dot(y1RK2[i], y2RK2[i])
         l1 = h * y2_dot(y1RK2[i])
 
-        k2 = h * y1_dot(y1RK2[i], y2RK2[i] + l1/2)
+        k2 = h * y1_dot(y1RK2[i] + k1/2, y2RK2[i] + l1/2)
         l2 = h * y2_dot(y1RK2[i] + k1/2)
 
         y1RK2[i+1] = y1RK2[i] + k2
