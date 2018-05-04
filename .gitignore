@@ -16,3 +16,7 @@
 #rsa-keys
 *.prv
 *.pub
+
+# matlab/simulink
+*.mat
+*.l
