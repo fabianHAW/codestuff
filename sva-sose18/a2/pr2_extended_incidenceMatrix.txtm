@@ -1,0 +1,16 @@
+placeNames = {P2 Two_Sends P3 Three_Sends One_Sends P1 Two_Becomes_Leader One_Becomes_Leader Three_Becomes_Leader Three_Passive_State One_Passive_State Two_Passive_State };
+transitionNames = {T_0 T_1 T_2 T_3 T_4 T_5 Three_Less_Reset Two_Less_Reset T_8 T_9 T_10 T_11 T_12 T_13 T_14 T_15 T_16 };
+C=[
+3 0 0 0 -2 0 0 0 0 0 0 2 1 0 -3 -1 0 ;
+0 -2 0 0 0 0 0 0 0 -2 0 0 0 0 0 0 0 ;
+0 0 1 -3 0 0 0 0 0 0 0 -2 -1 2 0 0 3 ;
+-3 0 0 0 0 0 0 0 -3 0 0 0 0 0 0 0 0 ;
+0 0 -1 0 0 0 0 0 0 0 -1 0 0 0 0 0 0 ;
+0 2 0 0 0 -1 0 0 0 0 0 0 0 -2 3 1 -3 ;
+0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 ;
+0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 ;
+0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 ;
+0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 ;
+0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 ;
+0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 ;
+];
